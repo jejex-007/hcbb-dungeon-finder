@@ -8,8 +8,8 @@ Effort scale (owner+Claude pair velocity): S < 1h · M 1–2h · L 3–5h · XL 
 - [x] Local repo scaffolding: git init + noreply identity, LICENSE (MIT,
   KySeEtH), README, `.gitignore`, `.luacheckrc`, `.luarc.json`, CI workflow,
   packaging script — done 2026-07-13 (actual: bundled into impl session)
-- [ ] Create the public GitHub repo (`hcbb-dungeon-finder`) + first push (S,
-  needs owner's go)
+- [x] Create the public GitHub repo (`jejex-007/hcbb-dungeon-finder`) + first
+  push, CI green — done 2026-07-14 (identity audit clean: KySeEtH/noreply)
 - [ ] In-game smoke test with 2 accounts: custom channel join/hide/send/receive,
   AceComm whisper, InviteUnit popup (S) — **gates the release**
 

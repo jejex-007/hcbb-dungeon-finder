@@ -1,5 +1,13 @@
 # Changelog — HCBB Dungeon Finder
 
+## 2026-07-14 — First public push (CI green)
+- Created the public repo `jejex-007/hcbb-dungeon-finder` and pushed `main`.
+  Commits authored/committed as KySeEtH <jejex-007@users.noreply.github.com>;
+  full identity grep clean.
+- CI fix: `luacheck` was linting the CI-installed `.luarocks` deps (1731
+  third-party warnings) and failing the build; now lints explicit source
+  dirs + excludes `.luarocks`. Lint + busted green on Ubuntu / Lua 5.1.
+
 ## 2026-07-14 — Documentation review before first public push
 - Aligned the docs with the shipped implementation (public repo hygiene):
   - `architecture.md`: strict-charset validation (not `\c` escaping),
