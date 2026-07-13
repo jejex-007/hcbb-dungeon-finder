@@ -23,7 +23,7 @@ jobs:
           luarocks install busted
 
       - name: Lint
-        run: luacheck .
+        run: luacheck HCBBDungeonFinder HCBBDungeonFinder_Loader tests
 
       - name: Test
         run: busted tests

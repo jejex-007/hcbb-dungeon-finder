@@ -6,6 +6,9 @@ self = false
 exclude_files = {
     "HCBBDungeonFinder/libs/**",
     ".git/**",
+    ".luarocks/**",   -- CI installs luacheck/busted here; never lint deps
+    ".install/**",
+    "lua_modules/**",
 }
 
 -- WoW 3.3.5a API surface used by the addon (NFR-C1: nothing newer), plus
