@@ -40,9 +40,10 @@ Environment ground truth: `docs/design/ascension-addon-environment.md`.
 ## NFR-A — Architecture
 
 - **NFR-A1.** Ace3 stack: AceAddon, AceEvent, AceTimer, AceComm (+
-  ChatThrottleLib), AceLocale, AceDB. Libraries are embedded (no external
+  ChatThrottleLib), AceConsole, AceDB. Libraries are embedded (no external
   dependency for users) and pinned; upstream source noted in
-  `libs/VERSIONS.md`.
+  `libs/VERSIONS.md`. Localization is a hand-rolled proxy in `Core.lua`
+  (not AceLocale) — see NFR-L1.
 - **NFR-A2.** Strict module boundaries: `Codec` (pure Lua, no WoW API),
   `Matcher` (pure Lua, no WoW API), `Comm`, `Pool`, `Session`, `UI`,
   `Data`, `Locale`. Pure modules must run under standalone Lua 5.1 for
@@ -100,8 +101,11 @@ Environment ground truth: `docs/design/ascension-addon-environment.md`.
 
 ## NFR-L — Localization
 
-- **NFR-L1.** AceLocale-3.0 with `enUS` as the complete base; `frFR`, `deDE`,
-  `esES`, `itIT` files may be partial (silent English fallback).
+- **NFR-L1.** A small locale proxy in `Core.lua` (a metatable over per-locale
+  tables) with `enUS` as the complete base; `frFR`, `deDE`, `esES`, `itIT`
+  may be partial (silent English fallback). AceLocale was dropped so the
+  manual language override (R21, no `itIT` client locale) and instant
+  in-place switching stay simple.
 - **NFR-L2.** No user-visible string outside locale files (enforced by code
   review; UI code contains only `L["key"]` lookups).
 - **NFR-L3.** Locale files are UTF-8; the 3.3.5 client renders UTF-8 chat

@@ -1,5 +1,20 @@
 # Changelog — HCBB Dungeon Finder
 
+## 2026-07-14 — Documentation review before first public push
+- Aligned the docs with the shipped implementation (public repo hygiene):
+  - `architecture.md`: strict-charset validation (not `\c` escaping),
+    heartbeat 30 s / expiry 120 s, added the SUGGEST (S) group message and
+    the PARTY/RAID transport row, fixed the DPS-leader hash (member names,
+    not matchId), COLLECTING→FORMING, removed the non-existent StatusStrip.lua,
+    and a UI-behaviours section (class colors, native menu, combat close,
+    grouped-disable, flat-tint rendering note).
+  - NFR-A1 / NFR-L1: localization is a hand-rolled proxy, not AceLocale.
+  - README: added `/hcbb log` and `/hcbb auras`, browser + behaviour features.
+  - Created `docs/project/smoke-test.md` (was referenced but missing).
+- Privacy hardening for the public repo: removed the first name from
+  `CLAUDE.md` and the private design-project UUID from the mockup notes.
+  Grep confirms zero real-name/email tokens across the tree.
+
 ## 2026-07-14 — Fix proposal countdown bar hiding its text
 - The countdown fill lived in a child frame (higher frame level), so it drew
   over the timer text. Moved the fill to an ARTWORK texture on the bar frame

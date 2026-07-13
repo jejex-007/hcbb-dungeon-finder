@@ -21,6 +21,11 @@ through a hidden chat channel and invisible addon whispers.
   popup showing the composition and *your assigned role*; the designated
   leader then sends the party invites. The addon never accepts invites or
   automates gameplay — you stay in control (it is hardcore, after all).
+- **Who's Looking browser**: class-colored names, freshness dots, dungeon
+  filter; right-click a listing for the native player menu (Invite / Suggest
+  Invite / Whisper).
+- **Stays out of the way**: the window auto-closes when you enter combat
+  (your search keeps running), and Search is disabled while you're grouped.
 - **Localized**: English (default), Français, Deutsch, Español, Italiano.
 - Lightweight: event-driven, virtualized lists, one 30 s heartbeat while
   searching.
@@ -46,6 +51,8 @@ matched must run the addon, so share it with your bracket buddies.
 | `/hcbb demo` | Seed fake listings + a fake proposal (visual tour, solo) |
 | `/hcbb pool` | Dump the current matchmaking pool |
 | `/hcbb debug` | Toggle verbose comm logging |
+| `/hcbb log` | Print the recent comm-log ring buffer |
+| `/hcbb auras` | List your buffs/debuffs with spellIds (marker diagnostics) |
 
 ## How matching works (short version)
 

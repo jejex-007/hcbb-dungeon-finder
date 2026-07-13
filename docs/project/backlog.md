@@ -38,9 +38,10 @@ Effort scale (owner+Claude pair velocity): S < 1h · M 1–2h · L 3–5h · XL 
 - [x] `/hcbb demo` solo visual smoke mode
 
 ## M5 — Beta & release (M)
-- [ ] In-game load test on Ascension (client parses .toc, window opens,
-  /hcbb demo) — first thing next session
-- [ ] `docs/project/smoke-test.md` checklist + full 2-client run (M)
+- [x] In-game load test on Ascension — done 2026-07-14 (iterated extensively:
+  UI fidelity, class colors, native menu, combat/group behaviours, bracket fix)
+- [x] `docs/project/smoke-test.md` checklist written — done 2026-07-14
+- [ ] Full 2-client match run on Ascension (the checklist end-to-end) (S)
 - [ ] v0.1.0 tag, GitHub release zip (scripts/package.ps1), announce (S)
 
 ## Open questions

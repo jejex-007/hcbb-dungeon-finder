@@ -55,9 +55,9 @@ HCBBDungeonFinder/              # ## LoadOnDemand: 1 — never loads without the
 ├── Session.lua                    # proposal/negotiation state machine
 ├── Comm.lua                       # channel join/hide, transport, routing
 └── UI/
-    ├── MainFrame.lua  Registration.lua  Browser.lua
-    ├── ProposalPopup.lua  StatusStrip.lua  Options.lua
-    └── Minimap.lua
+    ├── MainFrame.lua      # shell, tabs, status strip, shared widget factory
+    ├── Registration.lua  Browser.lua  ProposalPopup.lua
+    └── Options.lua  Minimap.lua
 ```
 
 `Codec` and `Matcher` import nothing from the WoW API (NFR-A2/T1) — they are
@@ -71,25 +71,29 @@ Two paths, mirroring the proven LootCollector pattern:
 |---|---|---|
 | **Broadcast** | Hidden custom chat channel `HCBBLFG`: `JoinPermanentChannel` at login (+ rejoin timer), `ChatFrame_RemoveChannel` on all frames, send via `SendChatMessage(payload, "CHANNEL", nil, id)`, receive via `CHAT_MSG_CHANNEL` filtered on channel name | HELLO / BYE presence (small, loss-tolerant), heartbeat 30 s / expiry 120 s |
 | **Unicast** | AceComm `SendCommMessage(prefix="HCBB", …, "WHISPER", target)` — invisible to chat, throttled, chunked | PROPOSE / ACK / NACK / CONFIRM / ABORT (reliable-ish, targeted) |
+| **Group** | AceComm `SendCommMessage(prefix="HCBB", …, "PARTY"/"RAID")` | SUGGEST (suggest-invite fallback, R24) |
 
 Rules: broadcast payloads ≤ 240 printable-ASCII bytes, one heartbeat per
-60 s max (NFR-P2); ChatThrottleLib priorities BULK (heartbeat), NORMAL
+30 s max (NFR-P2); ChatThrottleLib priorities BULK (heartbeat), NORMAL
 (negotiation), ALERT (CONFIRM). Sender identity always from the event's
 `sender` arg, never the payload (NFR-S2).
 
 ## 4. Wire protocol v1
 
-Compact positional, `:`-separated (values escape `:` as `\c`), header
-`HCBB<proto>` where proto is a single digit. Unknown major → drop (NFR-C5).
+Compact positional, `:`-separated. Values may not contain the separators
+(`:` `;` `,` `|`) — enforced by strict per-field charset validation on
+decode, not by escaping. Header `HCBB<proto>`, proto a single digit;
+unknown major → drop (NFR-C5).
 
 ```
 HELLO  HCBB1:H:<seq>:<bossId>:<level>:<roles>:<minSize>:<lead>:<ver>[:<class>]
 BYE    HCBB1:B:<seq>
-PROPOSE  (whisper)  HCBB1:P:<matchId>:<bossId>:<size>:<yourRole>:<m1,role,lvl>|…
-ACK    (whisper)  HCBB1:A:<matchId>
-NACK   (whisper)  HCBB1:N:<matchId>:<reason>     -- busy|changed|declined
-CONFIRM(whisper)  HCBB1:C:<matchId>              -- invites incoming
-ABORT  (whisper)  HCBB1:X:<matchId>:<reason>     -- refill|timeout|cancel
+PROPOSE  (whisper)      HCBB1:P:<matchId>:<bossId>:<size>:<yourRole>:<name,role,lvl;…>
+ACK    (whisper)        HCBB1:A:<matchId>
+NACK   (whisper)        HCBB1:N:<matchId>:<reason>   -- busy|changed|declined
+CONFIRM(whisper)        HCBB1:C:<matchId>            -- invites incoming
+ABORT  (whisper)        HCBB1:X:<matchId>:<reason>   -- refill|timeout|cancel|…
+SUGGEST(party/raid)     HCBB1:S:<target>:<bossId>    -- suggest-invite (R24)
 ```
 
 - `bossId`: index in the Data table (locale-independent, R22).
@@ -102,7 +106,8 @@ ABORT  (whisper)  HCBB1:X:<matchId>:<reason>     -- refill|timeout|cancel
   in `Data.lua`, mirroring the LootCollector ecosystem.
 - `matchId`: `<leaderName>-<seq>` — unique enough, attributable.
 - HELLO doubles as heartbeat and as update (fields replace the previous
-  listing for that sender). BYE removes it. TTL 3 × 60 s (R17).
+  listing for that sender). BYE removes it. Heartbeat 30 s, expiry 120 s
+  (R17).
 
 ## 5. Pool
 
@@ -126,8 +131,8 @@ player is searching.
    (R15). Tie-breaks are **total-ordered and stable** (listing age, then
    name) so every client computes the same match from the same pool.
 4. Leader election per R11 (tank-lead > heal-lead > support-lead > random†
-   DPS-lead > tank). †"random" is made deterministic by hashing `matchId`
-   over the eligible DPS, so all clients agree.
+   DPS-lead > tank). †"random" is made deterministic by hashing the sorted
+   member names, so all clients pick the same DPS leader.
 5. **Only the elected leader's client acts** on the computed match. Others
    do nothing — they will receive a PROPOSE. This removes the need for
    global consensus: pools may diverge transiently; a stale PROPOSE just
@@ -140,7 +145,7 @@ IDLE ──register──► SEARCHING ──HELLO/heartbeat──┐
   ▲                    │◄───────────────────────┘
   │                    ├─ matcher says I'm leader ─► COLLECTING (sent PROPOSE, await ACKs, 30 s)
   │                    └─ PROPOSE received ────────► PROPOSED  (popup, player accepts/declines)
-  │   COLLECTING: all ACK ─► CONFIRMING (send CONFIRM + InviteUnit each member)
+  │   COLLECTING: all ACK ─► FORMING (send CONFIRM + InviteUnit each member)
   │   COLLECTING: NACK/timeout ─► release reservations, back to SEARCHING (refill retry)
   │   PROPOSED: accept ─► ACK sent, FORMING (leader invites; ≤20 s watchdog, else back to SEARCHING + warn)
   │   PROPOSED: decline/timeout(auto-decline at 0 s) ─► NACK sent, back to SEARCHING
@@ -158,11 +163,23 @@ a manual player action (R19/NFR-S1).
 ## 8. UI
 
 Hand-built frames (NFR-A4): one main window (3 tabs: Find Group, Who's
-looking, Options), proposal modal, status strip, minimap button. Browser
-list virtualized via `FauxScrollFrame` + fixed row pool (NFR-P4). UI reads
+Looking, Options), proposal modal, status strip, minimap button. UI reads
 state only through AceEvent messages from Session/Pool — no logic in UI
 files. All strings via `L[...]` (NFR-L2). Design source of truth: the
-mockup produced from `ux-design-prompt.md`.
+mockup produced from `ux-design-prompt.md` (archived under
+`docs/reference/sources/`).
+
+Notable behaviours:
+- Registration disables Search while not enrolled (R23) or while already
+  grouped; the window auto-closes on entering combat (search continues in
+  the background — hiding never cancels it).
+- Browser (Who's Looking) is virtualized via `FauxScrollFrame` + a fixed row
+  pool (NFR-P4); names are class-colored (class carried on HELLO). Right-
+  click a listing to open the game's native player menu (Invite / Suggest
+  Invite / Whisper), with a custom menu + SUGGEST message as fallback (R24).
+- The Ascension client honors `SetVertexColor` but not `SetGradientAlpha`,
+  so panels/buttons use flat vertex-color tints; status marks (✓/✗) use
+  ready-check textures since the game font lacks those glyphs.
 
 ## 9. Key decisions & alternatives considered
 
