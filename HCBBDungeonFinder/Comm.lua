@@ -60,7 +60,6 @@ function Comm:Leave()
 end
 
 function Comm:HideFromChat()
-    if NS.debugChannel then return end
     for i = 1, NUM_CHAT_WINDOWS do
         local frame = _G["ChatFrame" .. i]
         if frame and ChatFrame_RemoveChannel then

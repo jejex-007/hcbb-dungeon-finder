@@ -38,15 +38,17 @@ function NS.SetLanguage(code)
 end
 
 -- --------------------------------------------------------------- debug ---
+-- Silent capped ring buffer only — never prints to chat (a live "debug"
+-- print mode would flood the chat and lag the client under heavy channel
+-- traffic). Surfaced on demand, bounded, via /hcbb log.
 
-local debugLog, debugOn = {}, false
+local LOG_MAX = 50
+local debugLog = {}
 function NS.Debug(...)
     local parts = {}
     for i = 1, select("#", ...) do parts[i] = tostring(select(i, ...)) end
-    local line = table.concat(parts, " ")
-    debugLog[#debugLog + 1] = ("%.1f %s"):format(NS.now() or 0, line)
-    if #debugLog > 100 then table.remove(debugLog, 1) end -- NFR-O1 ring buffer
-    if debugOn then addon:Print("|cff888888" .. line .. "|r") end
+    debugLog[#debugLog + 1] = ("%.1f %s"):format(NS.now() or 0, table.concat(parts, " "))
+    if #debugLog > LOG_MAX then table.remove(debugLog, 1) end
 end
 
 local versionNoticed = false
@@ -165,12 +167,9 @@ function addon:OnSlash(input)
     local cmd = (input or ""):lower():match("^%s*(%S*)")
     if cmd == "" or cmd == "show" then
         if NS.UI and NS.UI.Toggle then NS.UI.Toggle() end
-    elseif cmd == "debug" then
-        debugOn = not debugOn
-        NS.debugChannel = debugOn
-        self:Print("debug " .. (debugOn and "ON" or "OFF"))
-    elseif cmd == "log" then
-        for _, line in ipairs(debugLog) do self:Print(line) end
+    elseif cmd == "log" then -- last LOG_MAX comm events only (no flood)
+        local n = #debugLog
+        for i = math.max(1, n - LOG_MAX + 1), n do self:Print(debugLog[i]) end
     elseif cmd == "pool" then
         self:Print(("pool: %d listings, channel %s (id %d)"):format(
             NS.Pool.count, NS.Comm.healthy and "OK" or "DOWN", NS.Comm.channelId))
@@ -178,16 +177,6 @@ function addon:OnSlash(input)
             self:Print(("  %s lv%d boss#%d roles=%d min=%d lead=%d age=%ds"):format(
                 name, e.level, e.bossId, e.roles, e.minSize, e.lead,
                 NS.now() - e.firstSeen))
-        end
-    elseif cmd == "auras" then
-        -- Identify the exact trial marker to put in Data.CHALLENGE_AURAS.
-        self:Print(("eligible=%s — player auras:"):format(tostring(NS.eligible)))
-        for _, kind in ipairs({ { "BUFF", UnitBuff }, { "DEBUFF", UnitDebuff } }) do
-            for i = 1, 40 do
-                local name, _, _, _, _, _, _, _, _, _, spellId = kind[2]("player", i)
-                if not name then break end
-                self:Print(("  [%s] %s (spellId %s)"):format(kind[1], name, tostring(spellId)))
-            end
         end
     elseif cmd == "demo" then
         self:Demo()

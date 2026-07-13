@@ -82,5 +82,5 @@ NS.locales.frFR = {
 
     MSG_BOSS_CLEARED = "%s marqué comme vaincu.",
     MSG_NEWER_PROTO = "Une version plus récente de HCBB Dungeon Finder circule — pensez à mettre à jour.",
-    MSG_USAGE = "/hcbb — fenêtre · /hcbb demo · /hcbb debug · /hcbb pool",
+    MSG_USAGE = "/hcbb — ouvrir la fenêtre · /hcbb demo — visite guidée",
 }

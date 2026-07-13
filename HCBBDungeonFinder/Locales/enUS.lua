@@ -83,5 +83,5 @@ NS.locales.enUS = {
 
     MSG_BOSS_CLEARED = "%s marked as cleared.",
     MSG_NEWER_PROTO = "A newer version of HCBB Dungeon Finder is out there — consider updating.",
-    MSG_USAGE = "/hcbb — toggle window · /hcbb demo · /hcbb debug · /hcbb pool",
+    MSG_USAGE = "/hcbb — toggle the window · /hcbb demo — visual tour",
 }

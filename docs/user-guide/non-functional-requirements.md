@@ -82,8 +82,11 @@ Environment ground truth: `docs/design/ascension-addon-environment.md`.
 
 ## NFR-O — Observability
 
-- **NFR-O1.** `/hcbb debug` toggles a diagnostics mode: comm log ring buffer
-  (last 100 messages in/out), pool dump, channel health, timer states.
+- **NFR-O1.** Diagnostics are read-only and bounded: a silent comm-log ring
+  buffer (last 50 events in/out) surfaced via `/hcbb log`, and a pool dump via
+  `/hcbb pool`. There is **no** live "debug print" mode — echoing every
+  message to chat would flood it and lag the client under heavy channel
+  traffic; the buffer never prints unless the user asks.
 - **NFR-O2.** User-facing errors are actionable and localized; internal
   errors go through a single `HCBB:Error()` sink (no raw `error()` reaching
   the user in release builds).

@@ -23,7 +23,7 @@ through a hidden chat channel and invisible addon whispers.
   automates gameplay — you stay in control (it is hardcore, after all).
 - **Who's Looking browser**: class-colored names, freshness dots, dungeon
   filter; right-click a listing for the native player menu (Invite / Suggest
-  Invite / Whisper).
+  Invite / Whisper / Target).
 - **Stays out of the way**: the window auto-closes when you enter combat
   (your search keeps running), and Search is disabled while you're grouped.
 - **Localized**: English (default), Français, Deutsch, Español, Italiano.
@@ -50,9 +50,7 @@ matched must run the addon, so share it with your bracket buddies.
 | `/hcbb` | Toggle the main window |
 | `/hcbb demo` | Seed fake listings + a fake proposal (visual tour, solo) |
 | `/hcbb pool` | Dump the current matchmaking pool |
-| `/hcbb debug` | Toggle verbose comm logging |
-| `/hcbb log` | Print the recent comm-log ring buffer |
-| `/hcbb auras` | List your buffs/debuffs with spellIds (marker diagnostics) |
+| `/hcbb log` | Print the last 50 comm events (diagnostics) |
 
 ## How matching works (short version)
 
