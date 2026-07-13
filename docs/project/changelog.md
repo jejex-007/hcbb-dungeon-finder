@@ -1,5 +1,13 @@
 # Changelog — HCBB Dungeon Finder
 
+## 2026-07-14 — Harden diagnostic slash commands
+- Removed `/hcbb debug`: its live "print every message" mode could flood the
+  chat and lag the client under heavy channel traffic. Debug is now a silent
+  capped ring buffer (50 events); the channel is always hidden from chat.
+- `/hcbb log` prints at most the last 50 comm events (was up to 100).
+- Removed `/hcbb auras` (one-shot used to discover the Boss Blitz debuff
+  spellId 93131, now hard-coded). Docs/locales updated. CI green.
+
 ## 2026-07-14 — First public push (CI green)
 - Created the public repo `jejex-007/hcbb-dungeon-finder` and pushed `main`.
   Commits authored/committed as KySeEtH <jejex-007@users.noreply.github.com>;
