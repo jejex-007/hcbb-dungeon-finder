@@ -1,0 +1,39 @@
+## Interface: 30300
+## Title: HCBB Dungeon Finder
+## Notes: Decentralized group finder for the Hardcore Boss Blitz challenge.
+## Author: KySeEtH
+## Version: 0.1.0
+## LoadOnDemand: 1
+## SavedVariables: HCBB_DB
+## X-Website: https://github.com/jejex-007/hcbb-dungeon-finder
+## X-Category: Group Finder
+
+libs\LibStub\LibStub.lua
+libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+libs\AceAddon-3.0\AceAddon-3.0.xml
+libs\AceEvent-3.0\AceEvent-3.0.xml
+libs\AceTimer-3.0\AceTimer-3.0.xml
+libs\AceConsole-3.0\AceConsole-3.0.xml
+libs\AceComm-3.0\AceComm-3.0.xml
+libs\AceDB-3.0\AceDB-3.0.xml
+
+Locales\enUS.lua
+Locales\frFR.lua
+Locales\deDE.lua
+Locales\esES.lua
+Locales\itIT.lua
+
+Data.lua
+Codec.lua
+Pool.lua
+Matcher.lua
+Comm.lua
+Session.lua
+Core.lua
+
+UI\MainFrame.lua
+UI\Registration.lua
+UI\Browser.lua
+UI\ProposalPopup.lua
+UI\Options.lua
+UI\Minimap.lua

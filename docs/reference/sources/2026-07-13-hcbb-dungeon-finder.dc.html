@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Caudex:wght@700&amp;family=PT+Sans+Narrow:wght@400;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0c0a08;color:#cfc3a5;font-family:'PT Sans Narrow',Arial,sans-serif;background-image:radial-gradient(rgba(200,170,110,.05) 1px,transparent 1px);background-size:26px 26px}
+a{color:#ffd100}a:hover{color:#ffe680}
+.dv-turn{padding:44px 48px 40px;scroll-margin-top:16px}
+.dv-thd{display:flex;align-items:baseline;gap:12px;margin:0 0 6px}
+.dv-tid{font:700 11px ui-monospace,Menlo,monospace;padding:3px 8px;background:#c8aa6e;color:#1a1410;border-radius:3px;text-decoration:none}
+.dv-tname{font-family:Caudex,'Palatino Linotype',serif;font-size:21px;font-weight:700;color:#c8aa6e;text-shadow:0 1px 2px #000}
+.dv-sub{font-size:13.5px;color:#8f846c;margin:0}
+.dv-group{display:flex;align-items:center;gap:14px;margin:36px 0 18px}
+.dv-glabel{font-size:11px;font-weight:700;letter-spacing:2.2px;color:#8f846c}
+.dv-gline{flex:1;height:1px;background:#2a2318}
+.dv-opts{display:flex;flex-wrap:wrap;gap:36px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:8px;scroll-margin-top:16px}
+.dv-oid{font:700 10.5px ui-monospace,Menlo,monospace;padding:2px 7px;background:rgba(200,170,110,.14);color:#ffd100;border:1px solid #4a3c24;border-radius:3px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:9px;font-size:13px;color:#c8aa6e;font-weight:700}
+.dv-ocap{max-width:480px;font-size:11.5px;line-height:1.5;color:#8f846c}
+.dv-opt:target .dv-oid{background:#ffd100;color:#1a1410}
+.dv-next{margin:34px 0 0;font-size:12.5px;color:#8f846c}
+@keyframes hcbbPulse{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</helmet>
+
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">HCBB Dungeon Finder â€” every screen &amp; state, WotLK 3.3.5a shell</span></div>
+<p class="dv-sub">Scenario used throughout: <b style="color:#c8aa6e">Morwenna, level 29</b>, cleared through BFD â†’ auto-suggested <b style="color:#c8aa6e">SM: Graveyard â€” Bloodmage Thalnos</b>. Live tweaks (panel): your assigned role Â· channel health Â· bracket pool count. Spec at <a class="dv-oid" href="#1k">1k</a>, flow at <a class="dv-oid" href="#1l">1l</a>, rationale at <a class="dv-oid" href="#1m">1m</a>.</p>
+
+<div class="dv-group"><span class="dv-glabel">FIND GROUP â€” REGISTRATION</span><div class="dv-gline"></div></div>
+<div class="dv-opts">
+
+<!-- ============ 1a Registration idle ============ -->
+<div class="dv-opt" id="1a" data-screen-label="Registration â€” Idle">
+<div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Registration â€” idle</div>
+<div style="position:relative;padding-bottom:26px">
+<div style="position:relative;width:480px;height:420px;display:flex;flex-direction:column;background:linear-gradient(165deg,#261d12,#1a1410 55%,#131009);border:2px solid #4a3c24;box-shadow:inset 1px 1px 0 rgba(232,205,150,.16),inset -1px -1px 0 rgba(0,0,0,.62),0 0 0 1px #000,0 14px 34px rgba(0,0,0,.6)">
+  <div style="position:relative;flex:none;height:30px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#2e2314,#1d160d);border-bottom:1px solid #000;box-shadow:inset 0 1px 0 rgba(232,205,150,.12)">
+    <span style="font-family:Caudex,'Palatino Linotype',serif;font-weight:700;font-size:15px;color:#c8aa6e;letter-spacing:.5px;text-shadow:0 1px 2px #000">HCBB Dungeon Finder</span>
+    <span style="position:absolute;right:5px;top:5px;width:19px;height:19px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#3a2c1a,#241a0e);border:1px solid #000;box-shadow:inset 0 0 0 1px #6b5734;color:#c8aa6e;font-size:11px;font-weight:700;cursor:pointer">âœ•</span>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;gap:8px;padding:11px 14px 8px">
+    <span style="font-size:11px;font-weight:700;letter-spacing:1.3px;color:#c8aa6e;text-shadow:0 1px 1px #000">TARGET BOSS</span>
+    <div style="height:26px;display:flex;align-items:stretch;background:rgba(0,0,0,.45);border:1px solid #000;box-shadow:inset 0 0 0 1px #3c3020,inset 0 2px 5px rgba(0,0,0,.55)">
+      <span style="flex:1;display:flex;align-items:center;gap:8px;padding:0 9px;font-size:13px;color:#fff"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">SM: Graveyard â€” Bloodmage Thalnos</span><span style="margin-left:auto;color:#8f846c;font-size:12px">28â€“34</span></span>
+      <span style="width:22px;display:flex;align-items:center;justify-content:center;border-left:1px solid #000;box-shadow:inset 1px 0 0 #3c3020;color:#c8aa6e;font-size:9px">â–¼</span>
+    </div>
+    <span style="font-size:12px;color:#8f846c">Auto-suggested: first boss you haven't cleared that fits level 29.</span>
+    <span style="margin-top:2px;font-size:11px;font-weight:700;letter-spacing:1.3px;color:#c8aa6e;text-shadow:0 1px 1px #000">YOUR ROLES</span>
+    <div style="display:flex;gap:8px">
+      <div style="flex:1;height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:rgba(0,0,0,.30);border:1px solid #3c3020">
+        <svg width="17" height="17" viewBox="0 0 16 16" style="opacity:.75"><path d="M8 1 L14 3.2 L14 7.6 C14 11.8 8 15 8 15 C8 15 2 11.8 2 7.6 L2 3.2 Z" fill="#7da2c4"></path></svg>
+        <span style="font-size:12px;color:#b3a789;letter-spacing:.4px">TANK</span>
+      </div>
+      <div style="flex:1;height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:rgba(200,170,110,.10);border:1px solid #c8aa6e;box-shadow:inset 0 0 10px rgba(200,170,110,.12)">
+        <svg width="17" height="17" viewBox="0 0 16 16"><path d="M6.2 2 L9.8 2 L9.8 6.2 L14 6.2 L14 9.8 L9.8 9.8 L9.8 14 L6.2 14 L6.2 9.8 L2 9.8 L2 6.2 L6.2 6.2 Z" fill="#58c458"></path></svg>
+        <span style="font-size:12px;font-weight:700;color:#ffd100;letter-spacing:.4px">HEALER</span>
+      </div>
+      <div style="flex:1;height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:rgba(0,0,0,.30);border:1px solid #3c3020">
+        <svg width="17" height="17" viewBox="0 0 16 16" style="opacity:.75"><path d="M8 1 L9.8 6.2 L15 8 L9.8 9.8 L8 15 L6.2 9.8 L1 8 L6.2 6.2 Z" fill="#b48ad4"></path></svg>
+        <span style="font-size:12px;color:#b3a789;letter-spacing:.4px">SUPPORT</span>
+      </div>
+      <div style="flex:1;height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:rgba(200,170,110,.10);border:1px solid #c8aa6e;box-shadow:inset 0 0 10px rgba(200,170,110,.12)">
+        <svg width="17" height="17" viewBox="0 0 16 16"><path d="M12.6 1.4 L14.6 3.4 L7 11 L8.6 12.6 L7.2 14 L5.4 12.2 L3 14.6 L1.4 13 L3.8 10.6 L2 8.8 L3.4 7.4 L5 9 Z" fill="#d45a4a"></path></svg>
+        <span style="font-size:12px;font-weight:700;color:#ffd100;letter-spacing:.4px">DPS</span>
+      </div>
+    </div>
+    <span style="font-size:12px;color:#8f846c">Pick every role you can actually play â€” at least one required.</span>
+    <span style="margin-top:2px;font-size:11px;font-weight:700;letter-spacing:1.3px;color:#c8aa6e;text-shadow:0 1px 1px #000">MINIMUM GROUP SIZE</span>
+    <div style="display:flex;align-items:center;gap:20px">
+      <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:#e8dcc0"><span style="width:14px;height:14px;border-radius:50%;background:#0d0a06;border:1px solid #6b5a34;box-shadow:inset 1px 1px 2px rgba(0,0,0,.8)"></span>3+</span>
+      <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:#e8dcc0"><span style="width:14px;height:14px;border-radius:50%;background:#0d0a06;border:1px solid #6b5a34;box-shadow:inset 1px 1px 2px rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center"><span style="width:6px;height:6px;border-radius:50%;background:#ffd100;box-shadow:0 0 4px #ffd100"></span></span>4+</span>
+      <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:#e8dcc0"><span style="width:14px;height:14px;border-radius:50%;background:#0d0a06;border:1px solid #6b5a34;box-shadow:inset 1px 1px 2px rgba(0,0,0,.8)"></span>5 only</span>
+    </div>
+    <span style="font-size:12px;color:#8f846c">5-player groups are always preferred; smaller sizes widen your match.</span>
+    <div style="display:flex;align-items:center;gap:7px;margin-top:2px">
+      <span style="width:15px;height:15px;background:#0d0a06;border:1px solid #6b5a34;box-shadow:inset 1px 1px 2px rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;color:#ffce00;font-size:12px;font-weight:700">âœ“</span>
+      <span style="font-size:13px;color:#e8dcc0">I'm willing to lead the group</span>
+      <svg width="13" height="13" viewBox="0 0 16 16"><path d="M2 12 L2 5.5 L5.3 8.4 L8 4 L10.7 8.4 L14 5.5 L14 12 Z" fill="#ffd100"></path></svg>
+    </div>
+    <div style="height:1px;background:linear-gradient(90deg,transparent,#3c3020,transparent);margin:1px 0"></div>
+    <div style="align-self:center;min-width:210px;height:28px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#9a3b26,#6e2013 45%,#471008);border:1px solid #000;box-shadow:inset 0 0 0 1px #8a6d3b,inset 0 1px 0 rgba(255,215,140,.25),0 2px 4px rgba(0,0,0,.5);color:#ffd100;font-size:14px;font-weight:700;letter-spacing:.3px;text-shadow:0 1px 2px #000;cursor:pointer">Search for Group</div>
+  </div>
+  <div style="flex:none;height:24px;display:flex;align-items:center;gap:7px;padding:0 10px;background:rgba(0,0,0,.45);border-top:1px solid #000;box-shadow:inset 0 1px 0 rgba(232,205,150,.08)">
+    <span style="width:8px;height:8px;border-radius:50%;background:#6f6552"></span>
+    <span style="flex:1;font-size:12px;color:#b3a789">Idle â€” not listed. Pick a boss and search.</span>
+    <span style="width:7px;height:7px;border-radius:50%;background:{{ chColor }};box-shadow:0 0 4px {{ chColor }};animation:{{ chAnim }}"></span>
+    <span style="font-size:11px;color:{{ chTextColor }}">{{ chLabel }}</span>
+  </div>
+</div>
+<div style="display:flex;gap:3px;padding-left:12px">
+  <span style="padding:4px 14px 5px;background:linear-gradient(#2c2214,#1a1410);border:2px solid #4a3c24;border-top:none;font-size:12px;font-weight:700;color:#ffd100;text-shadow:0 1px 1px #000">Find Group</span>
+  <span style="padding:4px 14px 5px;background:#171208;border:2px solid #33291a;border-top:none;font-size:12px;color:#9c927c">Who's Looking</span>
+  <span style="padding:4px 14px 5px;background:#171208;border:2px solid #33291a;border-top:none;font-size:12px;color:#9c927c">Options</span>
+</div>
+</div>
+<div class="dv-ocap">Defaults: first eligible uncleared boss pre-selected; roles remembered per character. Search stays disabled at zero roles (inline red hint). Window drags by title bar, Esc closes. All widths sized for +35&nbsp;% German strings.</div>
+</div>
+
+<!-- ============ 1b Boss picker open ============ -->
+<div class="dv-opt" id="1b" data-screen-label="Boss picker â€” open">
+<div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Boss picker â€” open, disabled row + tooltip</div>
+<div style="position:relative;padding-bottom:26px">
+<div style="position:relative;width:480px;height:420px;display:flex;flex-direction:column;background:linear-gradient(165deg,#261d12,#1a1410 55%,#131009);border:2px solid #4a3c24;box-shadow:inset 1px 1px 0 rgba(232,205,150,.16),inset -1px -1px 0 rgba(0,0,0,.62),0 0 0 1px #000,0 14px 34px rgba(0,0,0,.6)">
+  <div style="position:relative;flex:none;height:30px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#2e2314,#1d160d);border-bottom:1px solid #000;box-shadow:inset 0 1px 0 rgba(232,205,150,.12)">
+    <span style="font-family:Caudex,'Palatino Linotype',serif;font-weight:700;font-size:15px;color:#c8aa6e;letter-spacing:.5px;text-shadow:0 1px 2px #000">HCBB Dungeon Finder</span>
+    <span style="position:absolute;right:5px;top:5px;width:19px;height:19px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#3a2c1a,#241a0e);border:1px solid #000;box-shadow:inset 0 0 0 1px #6b5734;color:#c8aa6e;font-size:11px;font-weight:700">âœ•</span>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;gap:8px;padding:11px 14px 8px">
+    <span style="font-size:11px;font-weight:700;letter-spacing:1.3px;color:#c8aa6e;text-shadow:0 1px 1px #000">TARGET BOSS</span>
+    <div style="height:26px;display:flex;align-items:stretch;background:rgba(0,0,0,.45);border:1px solid #c8aa6e;box-shadow:inset 0 0 0 1px rgba(200,170,110,.3),inset 0 2px 5px rgba(0,0,0,.55)">
+      <span style="flex:1;display:flex;align-items:center;gap:8px;padding:0 9px;font-size:13px;color:#fff"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">SM: Graveyard â€” Bloodmage Thalnos</span><span style="margin-left:auto;color:#8f846c;font-size:12px">28â€“34</span></span>
+      <span style="width:22px;display:flex;align-items:center;justify-content:center;border-left:1px solid #000;box-shadow:inset 1px 0 0 #3c3020;color:#ffd100;font-size:9px">â–²</span>
+    </div>
+    <div style="opacity:.45;display:flex;flex-direction:column;gap:8px">
+      <span style="margin-top:16px;font-size:11px;font-weight:700;letter-spacing:1.3px;color:#c8aa6e">YOUR ROLES</span>
+      <div style="display:flex;gap:8px">
+        <div style="flex:1;height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:rgba(0,0,0,.30);border:1px solid #3c3020"><svg width="17" height="17" viewBox="0 0 16 16" style="opacity:.75"><path d="M8 1 L14 3.2 L14 7.6 C14 11.8 8 15 8 15 C8 15 2 11.8 2 7.6 L2 3.2 Z" fill="#7da2c4"></path></svg><span style="font-size:12px;color:#b3a789;letter-spacing:.4px">TANK</span></div>
+        <div style="flex:1;height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:rgba(200,170,110,.10);border:1px solid #c8aa6e"><svg width="17" height="17" viewBox="0 0 16 16"><path d="M6.2 2 L9.8 2 L9.8 6.2 L14 6.2 L14 9.8 L9.8 9.8 L9.8 14 L6.2 14 L6.2 9.8 L2 9.8 L2 6.2 L6.2 6.2 Z" fill="#58c458"></path></svg><span style="font-size:12px;font-weight:700;color:#ffd100;letter-spacing:.4px">HEALER</span></div>
+        <div style="flex:1;height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:rgba(0,0,0,.30);border:1px solid #3c3020"><svg width="17" height="17" viewBox="0 0 16 16" style="opacity:.75"><path d="M8 1 L9.8 6.2 L15 8 L9.8 9.8 L8 15 L6.2 9.8 L1 8 L6.2 6.2 Z" fill="#b48ad4"></path></svg><span style="font-size:12px;color:#b3a789;letter-spacing:.4px">SUPPORT</span></div>
+        <div style="flex:1;height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:rgba(200,170,110,.10);border:1px solid #c8aa6e"><svg width="17" height="17" viewBox="0 0 16 16"><path d="M12.6 1.4 L14.6 3.4 L7 11 L8.6 12.6 L7.2 14 L5.4 12.2 L3 14.6 L1.4 13 L3.8 10.6 L2 8.8 L3.4 7.4 L5 9 Z" fill="#d45a4a"></path></svg><span style="font-size:12px;font-weight:700;color:#ffd100;letter-spacing:.4px">DPS</span></div>
+      </div>
+      <span style="margin-top:2px;font-size:11px;font-weight:700;letter-spacing:1.3px;color:#c8aa6e">MINIMUM GROUP SIZE</span>
+      <div style="height:20px"></div>
+      <div style="height:17px"></div>
+      <div style="align-self:center;min-width:210px;height:28px;background:linear-gradient(#9a3b26,#6e2013 45%,#471008);border:1px solid #000;box-shadow:inset 0 0 0 1px #8a6d3b"></div>
+    </div>
+  </div>
+  <div style="flex:none;height:24px;display:flex;align-items:center;gap:7px;padding:0 10px;background:rgba(0,0,0,.45);border-top:1px solid #000;box-shadow:inset 0 1px 0 rgba(232,205,150,.08)">
+    <span style="width:8px;height:8px;border-radius:50%;background:#6f6552"></span>
+    <span style="flex:1;font-size:12px;color:#b3a789">Idle â€” not listed. Pick a boss and search.</span>
+    <span style="width:7px;height:7px;border-radius:50%;background:{{ chColor }};box-shadow:0 0 4px {{ chColor }};animation:{{ chAnim }}"></span>
+    <span style="font-size:11px;color:{{ chTextColor }}">{{ chLabel }}</span>
+  </div>
+  <!-- open menu -->
+  <div style="position:absolute;left:14px;top:90px;width:312px;z-index:2;display:flex;background:rgba(12,9,5,.97);border:1px solid #000;box-shadow:inset 0 0 0 1px #4a3c24,0 12px 26px rgba(0,0,0,.75);padding:4px 5px 4px 6px">
+    <div style="flex:1;display:flex;flex-direction:column">
+      <div style="height:16px;display:flex;align-items:center;justify-content:center;font-size:10.5px;color:#6f6552">â–² 6 cleared bosses above</div>
+      <div style="height:18px;display:flex;align-items:flex-end;padding:0 6px 1px;font-size:10.5px;font-weight:700;letter-spacing:1.1px;color:#c8aa6e">BLACKFATHOM DEEPS</div>
+      <div style="height:22px;display:flex;align-items:center;gap:5px;padding:0 6px"><span style="color:#ffce00;font-size:11px;font-weight:700">âœ“</span><span style="flex:1;font-size:13px;color:#b3a789">Aku'mai</span><span style="font-size:11px;color:#6f6552">24â€“30</span></div>
+      <div style="height:18px;display:flex;align-items:flex-end;padding:0 6px 1px;font-size:10.5px;font-weight:700;letter-spacing:1.1px;color:#c8aa6e">GNOMEREGAN</div>
+      <div style="height:22px;display:flex;align-items:center;gap:5px;padding:0 6px"><span style="flex:1;font-size:13px;color:#fff">Mekgineer Thermaplugg</span><span style="font-size:11px;color:#8f846c">26â€“32</span></div>
+      <div style="height:18px;display:flex;align-items:flex-end;padding:0 6px 1px;font-size:10.5px;font-weight:700;letter-spacing:1.1px;color:#c8aa6e">RAZORFEN KRAUL</div>
+      <div style="height:22px;display:flex;align-items:center;gap:5px;padding:0 6px"><span style="flex:1;font-size:13px;color:#fff">Charlga Razorflank</span><span style="font-size:11px;color:#8f846c">27â€“33</span></div>
+      <div style="height:18px;display:flex;align-items:flex-end;padding:0 6px 1px;font-size:10.5px;font-weight:700;letter-spacing:1.1px;color:#c8aa6e">SCARLET MONASTERY</div>
+      <div style="height:22px;display:flex;align-items:center;gap:5px;padding:0 6px;background:rgba(200,170,110,.14);box-shadow:inset 0 0 0 1px rgba(200,170,110,.35)"><span style="flex:1;font-size:13px;font-weight:700;color:#ffd100">Graveyard â€” Bloodmage Thalnos</span><span style="font-size:11px;color:#c8aa6e">28â€“34</span></div>
+      <div style="height:22px;display:flex;align-items:center;gap:5px;padding:0 6px;background:rgba(255,255,255,.04)"><span style="flex:1;font-size:13px;color:#6f6552">Library â€” Arcanist Doan</span><span style="font-size:11px;color:#544c3e">33â€“37</span></div>
+      <div style="height:22px;display:flex;align-items:center;gap:5px;padding:0 6px"><span style="flex:1;font-size:13px;color:#6f6552">Armory â€” Herod</span><span style="font-size:11px;color:#544c3e">36â€“41</span></div>
+      <div style="height:22px;display:flex;align-items:center;gap:5px;padding:0 6px"><span style="flex:1;font-size:13px;color:#6f6552">Cathedral â€” Whitemane &amp; Mograine</span><span style="font-size:11px;color:#544c3e">38â€“43</span></div>
+      <div style="height:18px;display:flex;align-items:flex-end;padding:0 6px 1px;font-size:10.5px;font-weight:700;letter-spacing:1.1px;color:#c8aa6e">RAZORFEN DOWNS</div>
+      <div style="height:22px;display:flex;align-items:center;gap:5px;padding:0 6px"><span style="flex:1;font-size:13px;color:#6f6552">Amnennar the Coldbringer</span><span style="font-size:11px;color:#544c3e">37â€“42</span></div>
+      <div style="height:16px;display:flex;align-items:center;justify-content:center;font-size:10.5px;color:#6f6552">â–¼ 11 more in progression order</div>
+    </div>
+    <div style="width:13px;display:flex;flex-direction:column;gap:2px;padding-left:3px">
+      <div style="height:13px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#3a2c1a,#241a0e);border:1px solid #000;box-shadow:inset 0 0 0 1px #5a4a2e;color:#c8aa6e;font-size:6px">â–²</div>
+      <div style="flex:1;position:relative;background:rgba(0,0,0,.5);border:1px solid #000"><div style="position:absolute;left:1px;right:1px;top:28%;height:34%;background:linear-gradient(#4a3c24,#33291a);box-shadow:inset 0 0 0 1px #6b5a34"></div></div>
+      <div style="height:13px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#3a2c1a,#241a0e);border:1px solid #000;box-shadow:inset 0 0 0 1px #5a4a2e;color:#c8aa6e;font-size:6px">â–¼</div>
+    </div>
+  </div>
+  <!-- tooltip on disabled row -->
+  <div style="position:absolute;left:250px;top:266px;width:222px;z-index:3;background:rgba(6,6,11,.97);border:1px solid #6f6f80;box-shadow:0 8px 20px rgba(0,0,0,.7);padding:8px 10px;display:flex;flex-direction:column;gap:4px">
+    <span style="font-size:13px;font-weight:700;color:#fff">SM: Library â€” Arcanist Doan</span>
+    <span style="font-size:12px;color:#ff4636">Requires level 33â€“37 â€” you are level 29.</span>
+    <span style="font-size:11.5px;color:#9c927c;line-height:1.4">Bosses unlock in progression order. Clear Bloodmage Thalnos first.</span>
+  </div>
+</div>
+<div style="display:flex;gap:3px;padding-left:12px">
+  <span style="padding:4px 14px 5px;background:linear-gradient(#2c2214,#1a1410);border:2px solid #4a3c24;border-top:none;font-size:12px;font-weight:700;color:#ffd100;text-shadow:0 1px 1px #000">Find Group</span>
+  <span style="padding:4px 14px 5px;background:#171208;border:2px solid #33291a;border-top:none;font-size:12px;color:#9c927c">Who's Looking</span>
+  <span style="padding:4px 14px 5px;background:#171208;border:2px solid #33291a;border-top:none;font-size:12px;color:#9c927c">Options</span>
+</div>
+</div>
+<div class="dv-ocap">25 bosses, fixed progression order, grouped by dungeon wing â€” 8-row scroll menu. Ineligible bosses stay <i>visible</i> but disabled; hover tooltip states the exact gate. âœ“&nbsp;= already cleared. Selected row highlighted gold.</div>
+</div>
+
+<!-- ============ 1c Registration searching ============ -->
+<div class="dv-opt" id="1c" data-screen-label="Registration â€” Searching">
+<div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Registration â€” searching</div>
+<div style="position:relative;padding-bottom:26px">
+<div style="position:relative;width:480px;height:420px;display:flex;flex-direction:column;background:linear-gradient(165deg,#261d12,#1a1410 55%,#131009);border:2px solid #4a3c24;box-shadow:inset 1px 1px 0 rgba(232,205,150,.16),inset -1px -1px 0 rgba(0,0,0,.62),0 0 0 1px #000,0 14px 34px rgba(0,0,0,.6)">
+  <div style="position:relative;flex:none;height:30px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#2e2314,#1d160d);border-bottom:1px solid #000;box-shadow:inset 0 1px 0 rgba(232,205,150,.12)">
+    <span style="font-family:Caudex,'Palatino Linotype',serif;font-weight:700;font-size:15px;color:#c8aa6e;letter-spacing:.5px;text-shadow:0 1px 2px #000">HCBB Dungeon Finder</span>
+    <span style="position:absolute;right:5px;top:5px;width:19px;height:19px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#3a2c1a,#241a0e);border:1px solid #000;box-shadow:inset 0 0 0 1px #6b5734;color:#c8aa6e;font-size:11px;font-weight:700">âœ•</span>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;gap:8px;padding:11px 14px 8px">
+    <div style="opacity:.5;display:flex;flex-direction:column;gap:8px">
+      <span style="font-size:11px;font-weight:700;letter-spacing:1.3px;color:#c8aa6e">TARGET BOSS</span>
+      <div style="height:26px;display:flex;align-items:stretch;background:rgba(0,0,0,.45);border:1px solid #000;box-shadow:inset 0 0 0 1px #3c3020,inset 0 2px 5px rgba(0,0,0,.55)">
+        <span style="flex:1;display:flex;align-items:center;gap:8px;padding:0 9px;font-size:13px;color:#cfc3a5"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">SM: Graveyard â€” Bloodmage Thalnos</span><span style="margin-left:auto;color:#8f846c;font-size:12px">28â€“34</span></span>
+        <span style="width:22px;display:flex;align-items:center;justify-content:center;border-left:1px solid #000;color:#8f846c;font-size:9px">â–¼</span>
+      </div>
+      <span style="font-size:11px;font-weight:700;letter-spacing:1.3px;color:#c8aa6e">YOUR ROLES</span>
+      <div style="display:flex;gap:8px">
+        <div style="flex:1;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:rgba(0,0,0,.30);border:1px solid #3c3020"><svg width="15" height="15" viewBox="0 0 16 16" style="opacity:.7"><path d="M8 1 L14 3.2 L14 7.6 C14 11.8 8 15 8 15 C8 15 2 11.8 2 7.6 L2 3.2 Z" fill="#7da2c4"></path></svg><span style="font-size:11px;color:#b3a789">TANK</span></div>
+        <div style="flex:1;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:rgba(200,170,110,.10);border:1px solid #c8aa6e"><svg width="15" height="15" viewBox="0 0 16 16"><path d="M6.2 2 L9.8 2 L9.8 6.2 L14 6.2 L14 9.8 L9.8 9.8 L9.8 14 L6.2 14 L6.2 9.8 L2 9.8 L2 6.2 L6.2 6.2 Z" fill="#58c458"></path></svg><span style="font-size:11px;font-weight:700;color:#ffd100">HEALER</span></div>
+        <div style="flex:1;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:rgba(0,0,0,.30);border:1px solid #3c3020"><svg width="15" height="15" viewBox="0 0 16 16" style="opacity:.7"><path d="M8 1 L9.8 6.2 L15 8 L9.8 9.8 L8 15 L6.2 9.8 L1 8 L6.2 6.2 Z" fill="#b48ad4"></path></svg><span style="font-size:11px;color:#b3a789">SUPPORT</span></div>
+        <div style="flex:1;height:44px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:rgba(200,170,110,.10);border:1px solid #c8aa6e"><svg width="15" height="15" viewBox="0 0 16 16"><path d="M12.6 1.4 L14.6 3.4 L7 11 L8.6 12.6 L7.2 14 L5.4 12.2 L3 14.6 L1.4 13 L3.8 10.6 L2 8.8 L3.4 7.4 L5 9 Z" fill="#d45a4a"></path></svg><span style="font-size:11px;font-weight:700;color:#ffd100">DPS</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:20px">
+        <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:#e8dcc0"><span style="width:14px;height:14px;border-radius:50%;background:#0d0a06;border:1px solid #6b5a34"></span>3+</span>
+        <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:#e8dcc0"><span style="width:14px;height:14px;border-radius:50%;background:#0d0a06;border:1px solid #6b5a34;display:flex;align-items:center;justify-content:center"><span style="width:6px;height:6px;border-radius:50%;background:#ffd100"></span></span>4+</span>
+        <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:#e8dcc0"><span style="width:14px;height:14px;border-radius:50%;background:#0d0a06;border:1px solid #6b5a34"></span>5 only</span>
+        <span style="margin-left:auto;display:flex;align-items:center;gap:6px;font-size:13px;color:#e8dcc0;white-space:nowrap"><span style="flex:none;width:15px;height:15px;background:#0d0a06;border:1px solid #6b5a34;display:flex;align-items:center;justify-content:center;color:#ffce00;font-size:12px;font-weight:700">âœ“</span>Willing to lead</span>
+      </div>
+      <span style="font-size:11.5px;color:#8f846c;font-style:italic">Listing locked while searching â€” cancel to edit.</span>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px;background:rgba(0,0,0,.35);border:1px solid #000;box-shadow:inset 0 0 0 1px #3c3020">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="width:9px;height:9px;border-radius:50%;background:#ffd100;box-shadow:0 0 6px #ffd100;animation:hcbbPulse 1.4s ease-in-out infinite"></span>
+        <span style="font-size:15px;font-weight:700;color:#ffd100;text-shadow:0 1px 2px #000">Searching â€” 03:41</span>
+      </div>
+      <span style="font-size:13px;color:#fff">{{ poolCount }} players searching in your bracket</span>
+      <span style="font-size:12px;color:#8f846c">Keep playing â€” the proposal pops up wherever you are.</span>
+    </div>
+    <div style="align-self:center;min-width:210px;height:28px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#7a4a28,#553017 45%,#3a1e0c);border:1px solid #000;box-shadow:inset 0 0 0 1px #8a6d3b,inset 0 1px 0 rgba(255,215,140,.2),0 2px 4px rgba(0,0,0,.5);color:#ffd100;font-size:14px;font-weight:700;text-shadow:0 1px 2px #000;cursor:pointer">Cancel Search</div>
+  </div>
+  <div style="flex:none;height:24px;display:flex;align-items:center;gap:7px;padding:0 10px;background:rgba(0,0,0,.45);border-top:1px solid #000;box-shadow:inset 0 1px 0 rgba(232,205,150,.08)">
+    <span style="width:8px;height:8px;border-radius:50%;background:#ffd100;box-shadow:0 0 5px #ffd100;animation:hcbbPulse 1.4s ease-in-out infinite"></span>
+    <span style="flex:1;font-size:12px;color:#ffd100">Searching â€” 03:41 Â· {{ poolCount }} in your bracket</span>
+    <span style="width:7px;height:7px;border-radius:50%;background:{{ chColor }};box-shadow:0 0 4px {{ chColor }};animation:{{ chAnim }}"></span>
+    <span style="font-size:11px;color:{{ chTextColor }}">{{ chLabel }}</span>
+  </div>
+</div>
+<div style="display:flex;gap:3px;padding-left:12px">
+  <span style="padding:4px 14px 5px;background:linear-gradient(#2c2214,#1a1410);border:2px solid #4a3c24;border-top:none;font-size:12px;font-weight:700;color:#ffd100;text-shadow:0 1px 1px #000">Find Group</span>
+  <span style="padding:4px 14px 5px;background:#171208;border:2px solid #33291a;border-top:none;font-size:12px;color:#9c927c">Who's Looking</span>
+  <span style="padding:4px 14px 5px;background:#171208;border:2px solid #33291a;border-top:none;font-size:12px;color:#9c927c">Options</span>
+</div>
+</div>
+<div class="dv-ocap">Inputs lock while listed (Cancel to edit â€” prevents half-edited broadcasts). Elapsed ticks 1/s client-side; the bracket pool count comes from heartbeats â€” live proof the system is working. Tabs stay usable while searching.</div>
+</div>
+
+</div>
+
+<div class="dv-group"><span class="dv-glabel">MATCH PROPOSAL â€” THE CRITICAL 30 SECONDS</span><div class="dv-gline"></div></div>
+<div class="dv-opts">
+
+<!-- ============ 1d Proposal pending ============ -->
+<div class="dv-opt" id="1d" data-screen-label="Proposal â€” pending">
+<div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Proposal â€” pending, your call</div>
+<div style="width:384px;display:flex;flex-direction:column;background:linear-gradient(165deg,#291f12,#1a1410 55%,#131009);border:2px solid #6b5a34;box-shadow:inset 1px 1px 0 rgba(232,205,150,.18),inset -1px -1px 0 rgba(0,0,0,.62),0 0 0 1px #000,0 0 22px rgba(200,170,110,.12),0 16px 38px rgba(0,0,0,.7)">
+  <div style="flex:none;height:28px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#332714,#1d160d);border-bottom:1px solid #000;box-shadow:inset 0 1px 0 rgba(232,205,150,.14)">
+    <span style="font-family:Caudex,'Palatino Linotype',serif;font-weight:700;font-size:15px;color:#ffd100;letter-spacing:.5px;text-shadow:0 1px 2px #000">Group Found!</span>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px;padding:10px 14px 12px">
+    <div style="text-align:center;font-size:14px;font-weight:700;color:#fff">Bloodmage Thalnos <span style="color:#8f846c;font-weight:400">Â· SM: Graveyard Â· 5 players</span></div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:7px;height:30px;background:rgba(0,0,0,.35);border:1px solid {{ yourRoleColor }};box-shadow:inset 0 0 12px rgba(0,0,0,.5)">
+      <svg width="15" height="15" viewBox="0 0 16 16"><path d="{{ yourRolePath }}" fill="{{ yourRoleColor }}"></path></svg>
+      <span style="font-size:12.5px;color:#cfc3a5">You were assigned:</span>
+      <span style="font-size:14px;font-weight:700;letter-spacing:.6px;color:{{ yourRoleColor }}">{{ yourRoleName }}</span>
+    </div>
+    <div style="background:rgba(0,0,0,.32);border:1px solid #000;box-shadow:inset 0 0 0 1px #3c3020">
+      <sc-for list="{{ membersPending }}" as="m" hint-placeholder-count="5">
+        <div style="height:26px;display:flex;align-items:center;gap:7px;padding:0 9px;background:{{ m.bg }};border-bottom:1px solid rgba(0,0,0,.3)">
+          <svg width="13" height="13" viewBox="0 0 16 16" style="flex:none;opacity:{{ m.crownOp }}"><path d="M2 12 L2 5.5 L5.3 8.4 L8 4 L10.7 8.4 L14 5.5 L14 12 Z" fill="#ffd100"></path></svg>
+          <span style="width:132px;font-size:13px;font-weight:700;color:{{ m.nameColor }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ m.name }} <span style="font-weight:400;color:#9c927c">{{ m.lvl }}</span></span>
+          <span style="flex:1;display:flex;align-items:center;gap:5px">
+            <svg width="14" height="14" viewBox="0 0 16 16" style="flex:none"><path d="{{ m.rolePath }}" fill="{{ m.roleColor }}"></path></svg>
+            <span style="font-size:11.5px;font-weight:700;letter-spacing:.4px;color:{{ m.roleColor }}">{{ m.roleLabel }}</span>
+          </span>
+          <span style="font-size:13px;font-weight:700;color:{{ m.statusColor }}">{{ m.statusChar }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#8f846c">
+      <span>2 of 5 accepted</span>
+      <span style="display:flex;align-items:center;gap:5px"><svg width="12" height="12" viewBox="0 0 16 16"><path d="M2 12 L2 5.5 L5.3 8.4 L8 4 L10.7 8.4 L14 5.5 L14 12 Z" fill="#ffd100"></path></svg>Leader: <b style="color:#e8dcc0">Thordak</b></span>
+    </div>
+    <div style="position:relative;height:16px;background:rgba(0,0,0,.5);border:1px solid #000;box-shadow:inset 0 0 0 1px #3c3020">
+      <div style="position:absolute;top:1px;bottom:1px;left:1px;width:72%;background:linear-gradient(#ffd94d,#e0a11a 60%,#b97a10)"></div>
+      <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 2px #000">22 s to respond</span>
+    </div>
+    <div style="display:flex;justify-content:center;gap:10px;padding-top:2px">
+      <div style="min-width:130px;height:26px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#9a3b26,#6e2013 45%,#471008);border:1px solid #000;box-shadow:inset 0 0 0 1px #8a6d3b,inset 0 1px 0 rgba(255,215,140,.25);color:#ffd100;font-size:13.5px;font-weight:700;text-shadow:0 1px 2px #000;cursor:pointer">Accept</div>
+      <div style="min-width:130px;height:26px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#4a3a22,#2e2212 55%,#1e160a);border:1px solid #000;box-shadow:inset 0 0 0 1px #5a4a2e;color:#cfc3a5;font-size:13.5px;font-weight:700;text-shadow:0 1px 2px #000;cursor:pointer">Decline</div>
+    </div>
+    <div style="text-align:center;font-size:11.5px;color:#8f846c">Everyone sees this popup â€” the group forms only if all five accept.</div>
+  </div>
+</div>
+<div class="dv-ocap" style="max-width:384px">DIALOG strata, sound cue, <b>no âœ•</b> â€” Accept, Decline or timeout are the only exits. Your row + assigned role are the loudest elements. Countdown 30â†’0&nbsp;s, turns red under 10&nbsp;s, timeout = decline.</div>
+</div>
+
+<!-- ============ 1e Proposal accepted ============ -->
+<div class="dv-opt" id="1e" data-screen-label="Proposal â€” all accepted">
+<div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>Proposal â€” everyone accepted</div>
+<div style="width:384px;display:flex;flex-direction:column;background:linear-gradient(165deg,#291f12,#1a1410 55%,#131009);border:2px solid #6b5a34;box-shadow:inset 1px 1px 0 rgba(232,205,150,.18),inset -1px -1px 0 rgba(0,0,0,.62),0 0 0 1px #000,0 16px 38px rgba(0,0,0,.7)">
+  <div style="flex:none;height:28px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#332714,#1d160d);border-bottom:1px solid #000;box-shadow:inset 0 1px 0 rgba(232,205,150,.14)">
+    <span style="font-family:Caudex,'Palatino Linotype',serif;font-weight:700;font-size:15px;color:#ffd100;letter-spacing:.5px;text-shadow:0 1px 2px #000">Group Found!</span>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px;padding:10px 14px 12px">
+    <div style="text-align:center;font-size:14px;font-weight:700;color:#fff">Bloodmage Thalnos <span style="color:#8f846c;font-weight:400">Â· SM: Graveyard Â· 5 players</span></div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:7px;height:30px;background:rgba(0,0,0,.35);border:1px solid {{ yourRoleColor }};box-shadow:inset 0 0 12px rgba(0,0,0,.5)">
+      <svg width="15" height="15" viewBox="0 0 16 16"><path d="{{ yourRolePath }}" fill="{{ yourRoleColor }}"></path></svg>
+      <span style="font-size:12.5px;color:#cfc3a5">You were assigned:</span>
+      <span style="font-size:14px;font-weight:700;letter-spacing:.6px;color:{{ yourRoleColor }}">{{ yourRoleName }}</span>
+    </div>
+    <div style="background:rgba(0,0,0,.32);border:1px solid #000;box-shadow:inset 0 0 0 1px #3c3020">
+      <sc-for list="{{ membersAccepted }}" as="m" hint-placeholder-count="5">
+        <div style="height:26px;display:flex;align-items:center;gap:7px;padding:0 9px;background:{{ m.bg }};border-bottom:1px solid rgba(0,0,0,.3)">
+          <svg width="13" height="13" viewBox="0 0 16 16" style="flex:none;opacity:{{ m.crownOp }}"><path d="M2 12 L2 5.5 L5.3 8.4 L8 4 L10.7 8.4 L14 5.5 L14 12 Z" fill="#ffd100"></path></svg>
+          <span style="width:132px;font-size:13px;font-weight:700;color:{{ m.nameColor }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ m.name }} <span style="font-weight:400;color:#9c927c">{{ m.lvl }}</span></span>
+          <span style="flex:1;display:flex;align-items:center;gap:5px">
+            <svg width="14" height="14" viewBox="0 0 16 16" style="flex:none"><path d="{{ m.rolePath }}" fill="{{ m.roleColor }}"></path></svg>
+            <span style="font-size:11.5px;font-weight:700;letter-spacing:.4px;color:{{ m.roleColor }}">{{ m.roleLabel }}</span>
+          </span>
+          <span style="font-size:13px;font-weight:700;color:{{ m.statusColor }}">{{ m.statusChar }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="position:relative;height:16px;background:rgba(0,0,0,.5);border:1px solid #000;box-shadow:inset 0 0 0 1px #3c3020">
+      <div style="position:absolute;inset:1px;background:linear-gradient(#4ade63,#22a03c 60%,#187a2c)"></div>
+      <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 2px #000">5 of 5 accepted â€” group forming</span>
+    </div>
+    <div style="text-align:center;font-size:13.5px;font-weight:700;color:#35d94a;text-shadow:0 1px 2px #000">Thordak is inviting you now.</div>
+    <div style="text-align:center;font-size:12px;color:#cfc3a5">Watch for the party invite â€” it can take a few seconds.</div>
+    <div style="align-self:center;min-width:110px;height:24px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#4a3a22,#2e2212 55%,#1e160a);border:1px solid #000;box-shadow:inset 0 0 0 1px #5a4a2e;color:#cfc3a5;font-size:13px;font-weight:700;cursor:pointer">Okay</div>
+  </div>
+</div>
+<div class="dv-ocap" style="max-width:384px">Footer swaps in place â€” no second popup. Status â†’ <b>Group forming</b>. If the leader's invite doesn't arrive within 20&nbsp;s: warn + auto-return to Searching.</div>
+</div>
+
+<!-- ============ 1f Proposal declined ============ -->
+<div class="dv-opt" id="1f" data-screen-label="Proposal â€” declined">
+<div class="dv-olabel"><a class="dv-oid" href="#1f">1f</a>Proposal â€” someone declined</div>
+<div style="width:384px;display:flex;flex-direction:column;background:linear-gradient(165deg,#291f12,#1a1410 55%,#131009);border:2px solid #6b5a34;box-shadow:inset 1px 1px 0 rgba(232,205,150,.18),inset -1px -1px 0 rgba(0,0,0,.62),0 0 0 1px #000,0 16px 38px rgba(0,0,0,.7)">
+  <div style="flex:none;height:28px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#332714,#1d160d);border-bottom:1px solid #000;box-shadow:inset 0 1px 0 rgba(232,205,150,.14)">
+    <span style="font-family:Caudex,'Palatino Linotype',serif;font-weight:700;font-size:15px;color:#c8aa6e;letter-spacing:.5px;text-shadow:0 1px 2px #000">Group Found!</span>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px;padding:10px 14px 12px">
+    <div style="text-align:center;font-size:14px;font-weight:700;color:#fff">Bloodmage Thalnos <span style="color:#8f846c;font-weight:400">Â· SM: Graveyard Â· 5 players</span></div>
+    <div style="background:rgba(0,0,0,.32);border:1px solid #000;box-shadow:inset 0 0 0 1px #3c3020">
+      <sc-for list="{{ membersDeclined }}" as="m" hint-placeholder-count="5">
+        <div style="height:26px;display:flex;align-items:center;gap:7px;padding:0 9px;background:{{ m.bg }};border-bottom:1px solid rgba(0,0,0,.3)">
+          <svg width="13" height="13" viewBox="0 0 16 16" style="flex:none;opacity:{{ m.crownOp }}"><path d="M2 12 L2 5.5 L5.3 8.4 L8 4 L10.7 8.4 L14 5.5 L14 12 Z" fill="#ffd100"></path></svg>
+          <span style="width:132px;font-size:13px;font-weight:700;color:{{ m.nameColor }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ m.name }} <span style="font-weight:400;color:#9c927c">{{ m.lvl }}</span></span>
+          <span style="flex:1;display:flex;align-items:center;gap:5px">
+            <svg width="14" height="14" viewBox="0 0 16 16" style="flex:none"><path d="{{ m.rolePath }}" fill="{{ m.roleColor }}"></path></svg>
+            <span style="font-size:11.5px;font-weight:700;letter-spacing:.4px;color:{{ m.roleColor }}">{{ m.roleLabel }}</span>
+          </span>
+          <span style="font-size:13px;font-weight:700;color:{{ m.statusColor }}">{{ m.statusChar }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="position:relative;height:16px;background:rgba(0,0,0,.5);border:1px solid #000;box-shadow:inset 0 0 0 1px #3c3020">
+      <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#8f846c">Proposal cancelled</span>
+    </div>
+    <div style="text-align:center;font-size:13.5px;font-weight:700;color:#ff4636;text-shadow:0 1px 2px #000">Bramble declined.</div>
+    <div style="text-align:center;font-size:12px;color:#cfc3a5;line-height:1.45">You're back in the search â€” your listing is intact and<br>a replacement is being matched. Nothing to redo.</div>
+    <div style="align-self:center;min-width:110px;height:24px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#4a3a22,#2e2212 55%,#1e160a);border:1px solid #000;box-shadow:inset 0 0 0 1px #5a4a2e;color:#cfc3a5;font-size:13px;font-weight:700;cursor:pointer">Okay</div>
+  </div>
+</div>
+<div class="dv-ocap" style="max-width:384px">Any decline cancels for everyone; all clients auto-return to <b>Searching</b> (no form re-entry). Popup auto-closes after 5&nbsp;s. The decliner's name is shown â€” social accountability, no other penalty.</div>
+</div>
+
+<!-- ============ 1g Proposal timed out ============ -->
+<div class="dv-opt" id="1g" data-screen-label="Proposal â€” timed out">
+<div class="dv-olabel"><a class="dv-oid" href="#1g">1g</a>Proposal â€” timed out</div>
+<div style="width:384px;display:flex;flex-direction:column;background:linear-gradient(165deg,#291f12,#1a1410 55%,#131009);border:2px solid #6b5a34;box-shadow:inset 1px 1px 0 rgba(232,205,150,.18),inset -1px -1px 0 rgba(0,0,0,.62),0 0 0 1px #000,0 16px 38px rgba(0,0,0,.7)">
+  <div style="flex:none;height:28px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#332714,#1d160d);border-bottom:1px solid #000;box-shadow:inset 0 1px 0 rgba(232,205,150,.14)">
+    <span style="font-family:Caudex,'Palatino Linotype',serif;font-weight:700;font-size:15px;color:#c8aa6e;letter-spacing:.5px;text-shadow:0 1px 2px #000">Group Found!</span>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px;padding:10px 14px 12px">
+    <div style="text-align:center;font-size:14px;font-weight:700;color:#fff">Bloodmage Thalnos <span style="color:#8f846c;font-weight:400">Â· SM: Graveyard Â· 5 players</span></div>
+    <div style="background:rgba(0,0,0,.32);border:1px solid #000;box-shadow:inset 0 0 0 1px #3c3020">
+      <sc-for list="{{ membersTimeout }}" as="m" hint-placeholder-count="5">
+        <div style="height:26px;display:flex;align-items:center;gap:7px;padding:0 9px;background:{{ m.bg }};border-bottom:1px solid rgba(0,0,0,.3)">
+          <svg width="13" height="13" viewBox="0 0 16 16" style="flex:none;opacity:{{ m.crownOp }}"><path d="M2 12 L2 5.5 L5.3 8.4 L8 4 L10.7 8.4 L14 5.5 L14 12 Z" fill="#ffd100"></path></svg>
+          <span style="width:132px;font-size:13px;font-weight:700;color:{{ m.nameColor }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ m.name }} <span style="font-weight:400;color:#9c927c">{{ m.lvl }}</span></span>
+          <span style="flex:1;display:flex;align-items:center;gap:5px">
+            <svg width="14" height="14" viewBox="0 0 16 16" style="flex:none"><path d="{{ m.rolePath }}" fill="{{ m.roleColor }}"></path></svg>
+            <span style="font-size:11.5px;font-weight:700;letter-spacing:.4px;color:{{ m.roleColor }}">{{ m.roleLabel }}</span>
+          </span>
+          <span style="font-size:13px;font-weight:700;color:{{ m.statusColor }}">{{ m.statusChar }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="position:relative;height:16px;background:rgba(0,0,0,.5);border:1px solid #000;box-shadow:inset 0 0 0 1px #3c3020">
+      <span style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#8f846c">Expired â€” 0 s</span>
+    </div>
+    <div style="text-align:center;font-size:13.5px;font-weight:700;color:#ff8c1a;text-shadow:0 1px 2px #000">No response from 2 players.</div>
+    <div style="text-align:center;font-size:12px;color:#cfc3a5;line-height:1.45">The proposal expired. You're back in the search<br>automatically â€” non-responders drop from the pool.</div>
+    <div style="align-self:center;min-width:110px;height:24px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#4a3a22,#2e2212 55%,#1e160a);border:1px solid #000;box-shadow:inset 0 0 0 1px #5a4a2e;color:#cfc3a5;font-size:13px;font-weight:700;cursor:pointer">Okay</div>
+  </div>
+</div>
+<div class="dv-ocap" style="max-width:384px">Timeout = silent decline. Non-responders shown gray âœ— and their stale listings drop; everyone who accepted re-queues instantly with priority on the refill.</div>
+</div>
+
+</div>
+
+<div class="dv-group"><span class="dv-glabel">POOL Â· OPTIONS Â· STATUS STRIP</span><div class="dv-gline"></div></div>
+<div class="dv-opts">
+
+<!-- ============ 1h Pool browser ============ -->
+<div class="dv-opt" id="1h" data-screen-label="Pool browser â€” Who's Looking">
+<div class="dv-olabel"><a class="dv-oid" href="#1h">1h</a>Pool browser â€” "Who's Looking"</div>
+<div style="position:relative;padding-bottom:26px">
+<div style="position:relative;width:480px;height:420px;display:flex;flex-direction:column;background:linear-gradient(165deg,#261d12,#1a1410 55%,#131009);border:2px solid #4a3c24;box-shadow:inset 1px 1px 0 rgba(232,205,150,.16),inset -1px -1px 0 rgba(0,0,0,.62),0 0 0 1px #000,0 14px 34px rgba(0,0,0,.6)">
+  <div style="position:relative;flex:none;height:30px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#2e2314,#1d160d);border-bottom:1px solid #000;box-shadow:inset 0 1px 0 rgba(232,205,150,.12)">
+    <span style="font-family:Caudex,'Palatino Linotype',serif;font-weight:700;font-size:15px;color:#c8aa6e;letter-spacing:.5px;text-shadow:0 1px 2px #000">HCBB Dungeon Finder</span>
+    <span style="position:absolute;right:5px;top:5px;width:19px;height:19px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#3a2c1a,#241a0e);border:1px solid #000;box-shadow:inset 0 0 0 1px #6b5734;color:#c8aa6e;font-size:11px;font-weight:700">âœ•</span>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;gap:7px;padding:10px 14px 8px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:190px;height:26px;display:flex;align-items:stretch;background:rgba(0,0,0,.45);border:1px solid #000;box-shadow:inset 0 0 0 1px #3c3020,inset 0 2px 5px rgba(0,0,0,.55)">
+        <span style="flex:1;display:flex;align-items:center;padding:0 9px;font-size:13px;color:#fff">All dungeons</span>
+        <span style="width:22px;display:flex;align-items:center;justify-content:center;border-left:1px solid #000;box-shadow:inset 1px 0 0 #3c3020;color:#c8aa6e;font-size:9px">â–¼</span>
+      </div>
+      <span style="margin-left:auto;font-size:12px;color:#8f846c">23 players listed Â· newest first</span>
+    </div>
+    <div style="flex:none;display:flex;background:rgba(0,0,0,.32);border:1px solid #000;box-shadow:inset 0 0 0 1px #3c3020">
+      <div style="flex:1;display:flex;flex-direction:column">
+        <div style="height:19px;display:flex;align-items:center;gap:8px;padding:0 8px;border-bottom:1px solid #3c3020">
+          <span style="width:13px"></span>
+          <span style="width:126px;font-size:10.5px;font-weight:700;letter-spacing:.8px;color:#6f6552">PLAYER</span>
+          <span style="width:56px;font-size:10.5px;font-weight:700;letter-spacing:.8px;color:#6f6552">ROLES</span>
+          <span style="flex:1;font-size:10.5px;font-weight:700;letter-spacing:.8px;color:#6f6552">TARGET</span>
+          <span style="width:26px;font-size:10.5px;font-weight:700;letter-spacing:.8px;color:#6f6552;text-align:center">MIN</span>
+          <span style="width:12px;font-size:10.5px;font-weight:700;color:#6f6552"></span>
+        </div>
+        <sc-for list="{{ poolRows }}" as="row" hint-placeholder-count="8">
+          <div style="height:24px;display:flex;align-items:center;gap:8px;padding:0 8px;background:{{ row.bg }};border-bottom:1px solid rgba(0,0,0,.3)">
+            <svg width="12" height="12" viewBox="0 0 16 16" style="flex:none;opacity:{{ row.crownOp }}"><path d="M2 12 L2 5.5 L5.3 8.4 L8 4 L10.7 8.4 L14 5.5 L14 12 Z" fill="#ffd100"></path></svg>
+            <span style="width:126px;font-size:13px;font-weight:700;color:{{ row.nameColor }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ row.name }} <span style="font-weight:400;color:#9c927c">{{ row.lvl }}</span></span>
+            <span style="width:56px;display:flex;gap:3px">
+              <sc-for list="{{ row.roles }}" as="rr" hint-placeholder-count="1">
+                <svg width="13" height="13" viewBox="0 0 16 16" style="flex:none"><path d="{{ rr.path }}" fill="{{ rr.color }}"></path></svg>
+              </sc-for>
+            </span>
+            <span style="flex:1;font-size:12.5px;color:#cfc3a5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ row.boss }}</span>
+            <span style="width:26px;text-align:center;font-size:12px;color:#b3a789">{{ row.min }}</span>
+            <span style="width:12px;display:flex;justify-content:center"><span style="width:8px;height:8px;border-radius:50%;background:{{ row.dot }};box-shadow:0 0 5px {{ row.dot }}"></span></span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="width:13px;display:flex;flex-direction:column;gap:2px;padding:2px 2px 2px 0">
+        <div style="height:13px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#3a2c1a,#241a0e);border:1px solid #000;box-shadow:inset 0 0 0 1px #5a4a2e;color:#c8aa6e;font-size:6px">â–²</div>
+        <div style="flex:1;position:relative;background:rgba(0,0,0,.5);border:1px solid #000"><div style="position:absolute;left:1px;right:1px;top:0;height:38%;background:linear-gradient(#4a3c24,#33291a);box-shadow:inset 0 0 0 1px #6b5a34"></div></div>
+        <div style="height:13px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#3a2c1a,#241a0e);border:1px solid #000;box-shadow:inset 0 0 0 1px #5a4a2e;color:#c8aa6e;font-size:6px">â–¼</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;font-size:11px;color:#6f6552;padding:0 2px">
+      <span style="display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:#35d94a"></span>fresh &lt; 60 s</span>
+      <span style="display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:#ffd100"></span>&lt; 120 s</span>
+      <span style="display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:#ff4636"></span>about to expire</span>
+      <span style="margin-left:auto;display:flex;align-items:center;gap:5px"><svg width="11" height="11" viewBox="0 0 16 16"><path d="M2 12 L2 5.5 L5.3 8.4 L8 4 L10.7 8.4 L14 5.5 L14 12 Z" fill="#ffd100"></path></svg>willing to lead</span>
+    </div>
+    <div style="margin-top:auto;font-size:11.5px;color:#8f846c;font-style:italic;text-align:center;padding-bottom:2px">Read-only â€” matching is automatic. This is who's out there right now.</div>
+  </div>
+  <div style="flex:none;height:24px;display:flex;align-items:center;gap:7px;padding:0 10px;background:rgba(0,0,0,.45);border-top:1px solid #000;box-shadow:inset 0 1px 0 rgba(232,205,150,.08)">
+    <span style="width:8px;height:8px;border-radius:50%;background:#ffd100;box-shadow:0 0 5px #ffd100;animation:hcbbPulse 1.4s ease-in-out infinite"></span>
+    <span style="flex:1;font-size:12px;color:#ffd100">Searching â€” 03:41 Â· {{ poolCount }} in your bracket</span>
+    <span style="width:7px;height:7px;border-radius:50%;background:{{ chColor }};box-shadow:0 0 4px {{ chColor }};animation:{{ chAnim }}"></span>
+    <span style="font-size:11px;color:{{ chTextColor }}">{{ chLabel }}</span>
+  </div>
+</div>
+<div style="display:flex;gap:3px;padding-left:12px">
+  <span style="padding:4px 14px 5px;background:#171208;border:2px solid #33291a;border-top:none;font-size:12px;color:#9c927c">Find Group</span>
+  <span style="padding:4px 14px 5px;background:linear-gradient(#2c2214,#1a1410);border:2px solid #4a3c24;border-top:none;font-size:12px;font-weight:700;color:#ffd100;text-shadow:0 1px 1px #000">Who's Looking</span>
+  <span style="padding:4px 14px 5px;background:#171208;border:2px solid #33291a;border-top:none;font-size:12px;color:#9c927c">Options</span>
+</div>
+</div>
+<div class="dv-ocap">Reassurance tab: virtualized list (8 fixed row frames + FauxScrollFrame), sorted freshest first, your own listing pinned gold on top. Freshness dots age with heartbeats; row hover shows the full listing tooltip.</div>
+</div>
+
+<!-- ============ 1i Options ============ -->
+<div class="dv-opt" id="1i" data-screen-label="Options tab">
+<div class="dv-olabel"><a class="dv-oid" href="#1i">1i</a>Options</div>
+<div style="position:relative;padding-bottom:26px">
+<div style="position:relative;width:480px;height:420px;display:flex;flex-direction:column;background:linear-gradient(165deg,#261d12,#1a1410 55%,#131009);border:2px solid #4a3c24;box-shadow:inset 1px 1px 0 rgba(232,205,150,.16),inset -1px -1px 0 rgba(0,0,0,.62),0 0 0 1px #000,0 14px 34px rgba(0,0,0,.6)">
+  <div style="position:relative;flex:none;height:30px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#2e2314,#1d160d);border-bottom:1px solid #000;box-shadow:inset 0 1px 0 rgba(232,205,150,.12)">
+    <span style="font-family:Caudex,'Palatino Linotype',serif;font-weight:700;font-size:15px;color:#c8aa6e;letter-spacing:.5px;text-shadow:0 1px 2px #000">HCBB Dungeon Finder</span>
+    <span style="position:absolute;right:5px;top:5px;width:19px;height:19px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#3a2c1a,#241a0e);border:1px solid #000;box-shadow:inset 0 0 0 1px #6b5734;color:#c8aa6e;font-size:11px;font-weight:700">âœ•</span>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;gap:9px;padding:12px 14px 8px">
+    <span style="font-size:11px;font-weight:700;letter-spacing:1.3px;color:#c8aa6e;text-shadow:0 1px 1px #000">LANGUAGE</span>
+    <div style="width:240px;height:26px;display:flex;align-items:stretch;background:rgba(0,0,0,.45);border:1px solid #000;box-shadow:inset 0 0 0 1px #3c3020,inset 0 2px 5px rgba(0,0,0,.55)">
+      <span style="flex:1;display:flex;align-items:center;padding:0 9px;font-size:13px;color:#fff">Auto â€” English (client locale)</span>
+      <span style="width:22px;display:flex;align-items:center;justify-content:center;border-left:1px solid #000;box-shadow:inset 1px 0 0 #3c3020;color:#c8aa6e;font-size:9px">â–¼</span>
+    </div>
+    <span style="font-size:12px;color:#8f846c">English Â· FranÃ§ais Â· Deutsch Â· EspaÃ±ol Â· Italiano. Applies immediately.</span>
+    <span style="margin-top:4px;font-size:11px;font-weight:700;letter-spacing:1.3px;color:#c8aa6e;text-shadow:0 1px 1px #000">MATCHMAKING PROTOCOL</span>
+    <div style="display:flex;flex-direction:column;gap:3px;padding:9px 11px;background:rgba(0,0,0,.35);border:1px solid #000;box-shadow:inset 0 0 0 1px #3c3020">
+      <span style="font-size:12.5px;color:#cfc3a5">Listing heartbeat: <b style="color:#e8dcc0">every 20 s</b></span>
+      <span style="font-size:12.5px;color:#cfc3a5">Listing expiry: <b style="color:#e8dcc0">120 s</b> after the last heartbeat</span>
+      <span style="font-size:11.5px;color:#6f6552">Read-only â€” protocol constants shared by every client in the pool.</span>
+    </div>
+    <span style="margin-top:4px;font-size:11px;font-weight:700;letter-spacing:1.3px;color:#c8aa6e;text-shadow:0 1px 1px #000">GENERAL</span>
+    <div style="display:flex;align-items:center;gap:7px">
+      <span style="width:15px;height:15px;background:#0d0a06;border:1px solid #6b5a34;box-shadow:inset 1px 1px 2px rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;color:#ffce00;font-size:12px;font-weight:700">âœ“</span>
+      <span style="font-size:13px;color:#e8dcc0">Show minimap button</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:7px">
+      <span style="width:15px;height:15px;background:#0d0a06;border:1px solid #6b5a34;box-shadow:inset 1px 1px 2px rgba(0,0,0,.8);display:flex;align-items:center;justify-content:center;color:#ffce00;font-size:12px;font-weight:700">âœ“</span>
+      <span style="font-size:13px;color:#e8dcc0">Play a sound when a proposal arrives</span>
+    </div>
+    <span style="margin-top:auto;text-align:center;font-size:11px;color:#6f6552;padding-bottom:2px">HCBB Dungeon Finder 0.9.2 Â· bracket protocol v3 Â· WotLK 3.3.5a</span>
+  </div>
+  <div style="flex:none;height:24px;display:flex;align-items:center;gap:7px;padding:0 10px;background:rgba(0,0,0,.45);border-top:1px solid #000;box-shadow:inset 0 1px 0 rgba(232,205,150,.08)">
+    <span style="width:8px;height:8px;border-radius:50%;background:#6f6552"></span>
+    <span style="flex:1;font-size:12px;color:#b3a789">Idle â€” not listed. Pick a boss and search.</span>
+    <span style="width:7px;height:7px;border-radius:50%;background:{{ chColor }};box-shadow:0 0 4px {{ chColor }};animation:{{ chAnim }}"></span>
+    <span style="font-size:11px;color:{{ chTextColor }}">{{ chLabel }}</span>
+  </div>
+</div>
+<div style="display:flex;gap:3px;padding-left:12px">
+  <span style="padding:4px 14px 5px;background:#171208;border:2px solid #33291a;border-top:none;font-size:12px;color:#9c927c">Find Group</span>
+  <span style="padding:4px 14px 5px;background:#171208;border:2px solid #33291a;border-top:none;font-size:12px;color:#9c927c">Who's Looking</span>
+  <span style="padding:4px 14px 5px;background:linear-gradient(#2c2214,#1a1410);border:2px solid #4a3c24;border-top:none;font-size:12px;font-weight:700;color:#ffd100;text-shadow:0 1px 1px #000">Options</span>
+</div>
+</div>
+<div class="dv-ocap">Language re-reads every label from the locale table live (no reload). Heartbeat/expiry surfaced read-only so players trust the freshness dots in <a class="dv-oid" href="#1h">1h</a>. Settings in account-wide SavedVariables.</div>
+</div>
+
+<!-- ============ 1j Status strip states ============ -->
+<div class="dv-opt" id="1j" data-screen-label="Status strip â€” all states">
+<div class="dv-olabel"><a class="dv-oid" href="#1j">1j</a>Status strip â€” the line that never lies</div>
+<div style="display:flex;flex-direction:column;gap:11px;width:480px">
+  <div>
+    <div style="font-size:10.5px;letter-spacing:.8px;color:#6f6552;margin-bottom:3px">IDLE</div>
+    <div style="height:24px;display:flex;align-items:center;gap:7px;padding:0 10px;background:linear-gradient(#17110b,#100c07);border:1px solid #000;box-shadow:inset 0 0 0 1px #3c3020">
+      <span style="width:8px;height:8px;border-radius:50%;background:#6f6552"></span>
+      <span style="flex:1;font-size:12px;color:#b3a789">Idle â€” not listed. Pick a boss and search.</span>
+      <span style="width:7px;height:7px;border-radius:50%;background:#35d94a;box-shadow:0 0 4px #35d94a"></span>
+      <span style="font-size:11px;color:#8f846c">LFG channel</span>
+    </div>
+  </div>
+  <div>
+    <div style="font-size:10.5px;letter-spacing:.8px;color:#6f6552;margin-bottom:3px">SEARCHING</div>
+    <div style="height:24px;display:flex;align-items:center;gap:7px;padding:0 10px;background:linear-gradient(#17110b,#100c07);border:1px solid #000;box-shadow:inset 0 0 0 1px #3c3020">
+      <span style="width:8px;height:8px;border-radius:50%;background:#ffd100;box-shadow:0 0 5px #ffd100;animation:hcbbPulse 1.4s ease-in-out infinite"></span>
+      <span style="flex:1;font-size:12px;color:#ffd100">Searching â€” 03:41 Â· 7 in your bracket</span>
+      <span style="width:7px;height:7px;border-radius:50%;background:#35d94a;box-shadow:0 0 4px #35d94a"></span>
+      <span style="font-size:11px;color:#8f846c">LFG channel</span>
+    </div>
+  </div>
+  <div>
+    <div style="font-size:10.5px;letter-spacing:.8px;color:#6f6552;margin-bottom:3px">PROPOSAL PENDING</div>
+    <div style="height:24px;display:flex;align-items:center;gap:7px;padding:0 10px;background:linear-gradient(#17110b,#100c07);border:1px solid #000;box-shadow:inset 0 0 0 1px #3c3020">
+      <span style="width:8px;height:8px;border-radius:50%;background:#ff8c1a;box-shadow:0 0 5px #ff8c1a;animation:hcbbPulse 1s ease-in-out infinite"></span>
+      <span style="flex:1;font-size:12px;color:#ff8c1a">Proposal pending â€” respond within 22 s</span>
+      <span style="width:7px;height:7px;border-radius:50%;background:#35d94a;box-shadow:0 0 4px #35d94a"></span>
+      <span style="font-size:11px;color:#8f846c">LFG channel</span>
+    </div>
+  </div>
+  <div>
+    <div style="font-size:10.5px;letter-spacing:.8px;color:#6f6552;margin-bottom:3px">GROUP FORMING</div>
+    <div style="height:24px;display:flex;align-items:center;gap:7px;padding:0 10px;background:linear-gradient(#17110b,#100c07);border:1px solid #000;box-shadow:inset 0 0 0 1px #3c3020">
+      <span style="width:8px;height:8px;border-radius:50%;background:#35d94a;box-shadow:0 0 5px #35d94a;animation:hcbbPulse 1.4s ease-in-out infinite"></span>
+      <span style="flex:1;font-size:12px;color:#35d94a">Group forming â€” Thordak is inviting you</span>
+      <span style="width:7px;height:7px;border-radius:50%;background:#35d94a;box-shadow:0 0 4px #35d94a"></span>
+      <span style="font-size:11px;color:#8f846c">LFG channel</span>
+    </div>
+  </div>
+  <div>
+    <div style="font-size:10.5px;letter-spacing:.8px;color:#6f6552;margin-bottom:3px">IN GROUP</div>
+    <div style="height:24px;display:flex;align-items:center;gap:7px;padding:0 10px;background:linear-gradient(#17110b,#100c07);border:1px solid #000;box-shadow:inset 0 0 0 1px #3c3020">
+      <span style="width:8px;height:8px;border-radius:50%;background:#35d94a;box-shadow:0 0 4px #35d94a"></span>
+      <span style="flex:1;font-size:12px;color:#8fd99a">In group â€” Bloodmage Thalnos. Stay alive out there.</span>
+      <span style="width:7px;height:7px;border-radius:50%;background:#35d94a;box-shadow:0 0 4px #35d94a"></span>
+      <span style="font-size:11px;color:#8f846c">LFG channel</span>
+    </div>
+  </div>
+  <div>
+    <div style="font-size:10.5px;letter-spacing:.8px;color:#6f6552;margin-bottom:3px">CHANNEL LOST (ANY STATE)</div>
+    <div style="height:24px;display:flex;align-items:center;gap:7px;padding:0 10px;background:linear-gradient(#17110b,#100c07);border:1px solid #000;box-shadow:inset 0 0 0 1px #3c3020">
+      <span style="width:8px;height:8px;border-radius:50%;background:#ffd100;animation:hcbbPulse 1s ease-in-out infinite"></span>
+      <span style="flex:1;font-size:12px;color:#ffd100">Searching â€” paused while reconnecting</span>
+      <span style="width:7px;height:7px;border-radius:50%;background:#ffd100;box-shadow:0 0 4px #ffd100;animation:hcbbPulse 1s ease-in-out infinite"></span>
+      <span style="font-size:11px;color:#ffd100">reconnectingâ€¦</span>
+    </div>
+    <div style="margin-left:auto;margin-top:6px;width:250px;background:rgba(6,6,11,.97);border:1px solid #6f6f80;box-shadow:0 8px 20px rgba(0,0,0,.7);padding:8px 10px;display:flex;flex-direction:column;gap:4px">
+      <span style="font-size:13px;font-weight:700;color:#fff">Matchmaking channel</span>
+      <span style="font-size:12px;color:#ffd100">Reconnectingâ€¦</span>
+      <span style="font-size:11.5px;color:#9c927c;line-height:1.4">Your listing is paused and resumes automatically. Nothing is lost â€” no need to re-search.</span>
+    </div>
+  </div>
+</div>
+<div class="dv-ocap">Single writer: only the state machine sets this text â€” it can never disagree with reality. Right side is channel health; hovering it shows the tooltip. Yellow = listing paused + auto-resume.</div>
+</div>
+
+</div>
+
+<div class="dv-group"><span class="dv-glabel">SPEC â€” TRANSLATES 1:1 TO CREATEFRAME</span><div class="dv-gline"></div></div>
+<div class="dv-opts">
+
+<!-- ============ 1k Component spec ============ -->
+<div class="dv-opt" id="1k" data-screen-label="Component spec">
+<div class="dv-olabel"><a class="dv-oid" href="#1k">1k</a>Component spec</div>
+<div style="width:1252px;background:#14100b;border:1px solid #2e2517;box-shadow:0 10px 30px rgba(0,0,0,.5);padding:16px 20px 20px;display:flex;flex-direction:column;gap:16px">
+  <div style="font-size:12px;color:#c8aa6e;background:rgba(200,170,110,.07);border:1px solid #3c3020;padding:7px 11px;line-height:1.5">Localization: every string via <b>L[key]</b> (EN default Â· FR DE ES IT). Buttons &amp; tabs auto-size to text +30 px; labels may wrap to two lines; every layout verified at +35 % width (German). Lists are virtualized: fixed row frames + offset render, no per-frame relayout.</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 22px">
+    <div>
+      <div style="font-size:11.5px;font-weight:700;letter-spacing:1.2px;color:#c8aa6e;margin-bottom:5px">SHELL &amp; STATUS â€” ALL TABS</div>
+      <table style="width:100%;border-collapse:collapse">
+        <tr><th style="text-align:left;font-size:10.5px;color:#6f6552;letter-spacing:.7px;padding:3px 8px;border-bottom:1px solid #3c3020;width:16%">COMPONENT</th><th style="text-align:left;font-size:10.5px;color:#6f6552;letter-spacing:.7px;padding:3px 8px;border-bottom:1px solid #3c3020;width:20%">WIDGET</th><th style="text-align:left;font-size:10.5px;color:#6f6552;letter-spacing:.7px;padding:3px 8px;border-bottom:1px solid #3c3020;width:16%">L-KEY</th><th style="text-align:left;font-size:10.5px;color:#6f6552;letter-spacing:.7px;padding:3px 8px;border-bottom:1px solid #3c3020;width:13%">SIZE</th><th style="text-align:left;font-size:10.5px;color:#6f6552;letter-spacing:.7px;padding:3px 8px;border-bottom:1px solid #3c3020">BEHAVIOR</th></tr>
+        <tr><td style="font-size:12.5px;color:#e8dcc0;font-weight:700;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Main window</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Frame + SetBackdrop</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">TITLE</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">480Ã—420</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Drag by title bar Â· Esc closes (UISpecialFrames) Â· fits 1024Ã—768 Â· closing never cancels the search</td></tr>
+        <tr><td style="font-size:12.5px;color:#e8dcc0;font-weight:700;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Tabs Ã—3</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Bottom tab buttons</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">TAB_FIND / _POOL / _OPT</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">text+30 px</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Pane switch only â€” never interrupts search or proposal state</td></tr>
+        <tr><td style="font-size:12.5px;color:#e8dcc0;font-weight:700;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Status strip</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">FontString + dot texture</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">ST_IDLEâ€¦ST_GROUP</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">480Ã—24</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">One writer: state machine â†’ SetText. Timer substring updated 1/s</td></tr>
+        <tr><td style="font-size:12.5px;color:#e8dcc0;font-weight:700;padding:4px 8px;vertical-align:top">Channel dot</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;vertical-align:top">10 px texture + tooltip</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;vertical-align:top">CH_OK / CH_RECON</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;vertical-align:top">â€”</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;vertical-align:top">Green = joined Â· yellow pulse = rejoining (listing paused, auto-resume + rebroadcast)</td></tr>
+      </table>
+    </div>
+    <div>
+      <div style="font-size:11.5px;font-weight:700;letter-spacing:1.2px;color:#c8aa6e;margin-bottom:5px">REGISTRATION â€” FIND GROUP (<a class="dv-oid" href="#1a">1a</a> <a class="dv-oid" href="#1b">1b</a> <a class="dv-oid" href="#1c">1c</a>)</div>
+      <table style="width:100%;border-collapse:collapse">
+        <tr><th style="text-align:left;font-size:10.5px;color:#6f6552;letter-spacing:.7px;padding:3px 8px;border-bottom:1px solid #3c3020;width:16%">COMPONENT</th><th style="text-align:left;font-size:10.5px;color:#6f6552;letter-spacing:.7px;padding:3px 8px;border-bottom:1px solid #3c3020;width:20%">WIDGET</th><th style="text-align:left;font-size:10.5px;color:#6f6552;letter-spacing:.7px;padding:3px 8px;border-bottom:1px solid #3c3020;width:16%">L-KEY</th><th style="text-align:left;font-size:10.5px;color:#6f6552;letter-spacing:.7px;padding:3px 8px;border-bottom:1px solid #3c3020;width:13%">SIZE</th><th style="text-align:left;font-size:10.5px;color:#6f6552;letter-spacing:.7px;padding:3px 8px;border-bottom:1px solid #3c3020">BEHAVIOR</th></tr>
+        <tr><td style="font-size:12.5px;color:#e8dcc0;font-weight:700;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Boss picker</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Dropdown â†’ scroll menu (8 rows)</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">BOSS_LABEL, BOSS_REQ</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">312Ã—26</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">25 bosses, fixed order, wing headers. Ineligible: visible + disabled + tooltip "Requires level Xâ€“Y â€” you are Z". Cleared: âœ“. Default = first eligible uncleared</td></tr>
+        <tr><td style="font-size:12.5px;color:#e8dcc0;font-weight:700;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Role toggles</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">CheckButton Ã—4, icon+label</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">ROLE_TANKâ€¦ROLE_DPS</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">104Ã—52</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Multi-select. Zero selected â‡’ Search disabled + ERR_NO_ROLE inline red</td></tr>
+        <tr><td style="font-size:12.5px;color:#e8dcc0;font-weight:700;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Min size</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Radio Ã—3</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">MIN_3 / _4 / _5, MIN_HINT</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">â€”</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Default 5-only; hint always visible ("5 preferred; smaller widens match")</td></tr>
+        <tr><td style="font-size:12.5px;color:#e8dcc0;font-weight:700;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Lead opt-in</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">CheckButton</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">OPT_LEAD</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">â€”</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Sets leader-candidate flag; matcher prefers exactly one willing leader</td></tr>
+        <tr><td style="font-size:12.5px;color:#e8dcc0;font-weight:700;padding:4px 8px;vertical-align:top">Search / Cancel</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;vertical-align:top">Button (toggle)</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;vertical-align:top">BTN_SEARCH / BTN_CANCEL</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;vertical-align:top">â‰¥210Ã—28</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;vertical-align:top">While searching: all inputs SetEnabled(false), elapsed mm:ss ticks 1/s, pool count from heartbeats</td></tr>
+      </table>
+    </div>
+    <div>
+      <div style="font-size:11.5px;font-weight:700;letter-spacing:1.2px;color:#c8aa6e;margin-bottom:5px">MATCH PROPOSAL (<a class="dv-oid" href="#1d">1d</a>â€“<a class="dv-oid" href="#1g">1g</a>)</div>
+      <table style="width:100%;border-collapse:collapse">
+        <tr><th style="text-align:left;font-size:10.5px;color:#6f6552;letter-spacing:.7px;padding:3px 8px;border-bottom:1px solid #3c3020;width:16%">COMPONENT</th><th style="text-align:left;font-size:10.5px;color:#6f6552;letter-spacing:.7px;padding:3px 8px;border-bottom:1px solid #3c3020;width:20%">WIDGET</th><th style="text-align:left;font-size:10.5px;color:#6f6552;letter-spacing:.7px;padding:3px 8px;border-bottom:1px solid #3c3020;width:16%">L-KEY</th><th style="text-align:left;font-size:10.5px;color:#6f6552;letter-spacing:.7px;padding:3px 8px;border-bottom:1px solid #3c3020;width:13%">SIZE</th><th style="text-align:left;font-size:10.5px;color:#6f6552;letter-spacing:.7px;padding:3px 8px;border-bottom:1px solid #3c3020">BEHAVIOR</th></tr>
+        <tr><td style="font-size:12.5px;color:#e8dcc0;font-weight:700;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Popup frame</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Frame, DIALOG strata</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">PROP_TITLE</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">384Ã—~330</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">No close button, not draggable; optional sound on show; shown identically to all five members</td></tr>
+        <tr><td style="font-size:12.5px;color:#e8dcc0;font-weight:700;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">You-banner</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Icon + FontString</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">PROP_YOU_ROLE</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">356Ã—30</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Your assigned role, role-colored border â€” the most prominent element</td></tr>
+        <tr><td style="font-size:12.5px;color:#e8dcc0;font-weight:700;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Member rows Ã—5</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Fixed row frames</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">â€”</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">356Ã—26</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Crown = designated leader Â· name+level Â· role icon+label Â· status âœ“/âœ—/Â·Â·Â·. Own row gold background</td></tr>
+        <tr><td style="font-size:12.5px;color:#e8dcc0;font-weight:700;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Countdown</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">StatusBar 30â†’0 s</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">PROP_TIMER</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">356Ã—16</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Drains client-side; fill turns red &lt;10 s; 0 â‡’ auto-decline</td></tr>
+        <tr><td style="font-size:12.5px;color:#e8dcc0;font-weight:700;padding:4px 8px;vertical-align:top">Accept / Decline</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;vertical-align:top">Button Ã—2 â†’ result footer</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;vertical-align:top">BTN_ACCEPT / BTN_DECLINE, PROP_FORMING / _DECLINED / _EXPIRED</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;vertical-align:top">130Ã—26</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;vertical-align:top">Accept locks buttons ("waiting for others"). Decline/timeout â‡’ result footer swaps in place, auto-close 5 s, state â†’ Searching. Forming: invite not seen in 20 s â‡’ back to Searching + warn</td></tr>
+      </table>
+    </div>
+    <div>
+      <div style="font-size:11.5px;font-weight:700;letter-spacing:1.2px;color:#c8aa6e;margin-bottom:5px">POOL BROWSER (<a class="dv-oid" href="#1h">1h</a>) &amp; OPTIONS (<a class="dv-oid" href="#1i">1i</a>)</div>
+      <table style="width:100%;border-collapse:collapse">
+        <tr><th style="text-align:left;font-size:10.5px;color:#6f6552;letter-spacing:.7px;padding:3px 8px;border-bottom:1px solid #3c3020;width:16%">COMPONENT</th><th style="text-align:left;font-size:10.5px;color:#6f6552;letter-spacing:.7px;padding:3px 8px;border-bottom:1px solid #3c3020;width:20%">WIDGET</th><th style="text-align:left;font-size:10.5px;color:#6f6552;letter-spacing:.7px;padding:3px 8px;border-bottom:1px solid #3c3020;width:16%">L-KEY</th><th style="text-align:left;font-size:10.5px;color:#6f6552;letter-spacing:.7px;padding:3px 8px;border-bottom:1px solid #3c3020;width:13%">SIZE</th><th style="text-align:left;font-size:10.5px;color:#6f6552;letter-spacing:.7px;padding:3px 8px;border-bottom:1px solid #3c3020">BEHAVIOR</th></tr>
+        <tr><td style="font-size:12.5px;color:#e8dcc0;font-weight:700;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Dungeon filter</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Dropdown</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">FILTER_ALL + dungeon names</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">190Ã—26</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Client-side filter; keeps freshness sort</td></tr>
+        <tr><td style="font-size:12.5px;color:#e8dcc0;font-weight:700;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Listing rows</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">ScrollFrame + 8 row frames</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">POOL_EMPTY</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">452Ã—24</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Read-only. Sort freshness desc, own row pinned gold. Hover = full-listing tooltip. Empty: "Nobody in this bracket â€” list yourself to seed it"</td></tr>
+        <tr><td style="font-size:12.5px;color:#e8dcc0;font-weight:700;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Freshness dot</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">8 px texture</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">â€”</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">â€”</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Green &lt;60 s Â· yellow &lt;120 s Â· red = no heartbeat, about to expire</td></tr>
+        <tr><td style="font-size:12.5px;color:#e8dcc0;font-weight:700;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Language</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Dropdown</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">OPT_LANG</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">240Ã—26</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;border-bottom:1px solid rgba(60,48,32,.5);vertical-align:top">Auto + EN FR DE ES IT; applies instantly (all SetText via L[])</td></tr>
+        <tr><td style="font-size:12.5px;color:#e8dcc0;font-weight:700;padding:4px 8px;vertical-align:top">Protocol info Â· toggles</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;vertical-align:top">FontString Â· CheckButton Ã—2</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;vertical-align:top">OPT_HB_INFO, OPT_MM, OPT_SOUND</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;vertical-align:top">â€”</td><td style="font-size:12.5px;color:#cfc3a5;padding:4px 8px;vertical-align:top">Heartbeat 20 s / expiry 120 s read-only; minimap + sound toggles in account SavedVariables</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="dv-ocap" style="max-width:1252px">Every visual in this mockup is flat color + 2 px bevel + standard atlas glyphs â€” nothing requires custom textures. Role icons map to the game's standard role atlas; crown is the leader atlas icon.</div>
+</div>
+
+<!-- ============ 1l State flow ============ -->
+<div class="dv-opt" id="1l" data-screen-label="State flow diagram">
+<div class="dv-olabel"><a class="dv-oid" href="#1l">1l</a>Interaction flow</div>
+<div style="width:640px;background:#14100b;border:1px solid #2e2517;box-shadow:0 10px 30px rgba(0,0,0,.5);padding:18px 20px;display:flex;flex-direction:column;gap:14px">
+  <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
+    <span style="padding:6px 13px;border:1px solid #6b5a34;background:linear-gradient(#241b11,#17110b);font-size:12px;font-weight:700;letter-spacing:.6px;color:#b3a789;box-shadow:inset 0 0 0 1px rgba(0,0,0,.6)">IDLE</span>
+    <span style="display:flex;flex-direction:column;align-items:center"><span style="font-size:9.5px;color:#8f846c">search</span><span style="color:#c8aa6e;font-size:14px;line-height:.8">â†’</span></span>
+    <span style="padding:6px 13px;border:1px solid #6b5a34;background:linear-gradient(#241b11,#17110b);font-size:12px;font-weight:700;letter-spacing:.6px;color:#ffd100;box-shadow:inset 0 0 0 1px rgba(0,0,0,.6)">SEARCHING</span>
+    <span style="display:flex;flex-direction:column;align-items:center"><span style="font-size:9.5px;color:#8f846c">match found</span><span style="color:#c8aa6e;font-size:14px;line-height:.8">â†’</span></span>
+    <span style="padding:6px 13px;border:1px solid #6b5a34;background:linear-gradient(#241b11,#17110b);font-size:12px;font-weight:700;letter-spacing:.6px;color:#ff8c1a;box-shadow:inset 0 0 0 1px rgba(0,0,0,.6)">PROPOSAL Â· 30 s</span>
+    <span style="display:flex;flex-direction:column;align-items:center"><span style="font-size:9.5px;color:#8f846c">all 5 accept</span><span style="color:#c8aa6e;font-size:14px;line-height:.8">â†’</span></span>
+    <span style="padding:6px 13px;border:1px solid #6b5a34;background:linear-gradient(#241b11,#17110b);font-size:12px;font-weight:700;letter-spacing:.6px;color:#35d94a;box-shadow:inset 0 0 0 1px rgba(0,0,0,.6)">FORMING Â· â‰¤20 s</span>
+    <span style="display:flex;flex-direction:column;align-items:center"><span style="font-size:9.5px;color:#8f846c">party invite</span><span style="color:#c8aa6e;font-size:14px;line-height:.8">â†’</span></span>
+    <span style="padding:6px 13px;border:1px solid #35d94a;background:linear-gradient(#132313,#0d180d);font-size:12px;font-weight:700;letter-spacing:.6px;color:#35d94a;box-shadow:inset 0 0 0 1px rgba(0,0,0,.6)">IN GROUP</span>
+  </div>
+  <div style="height:1px;background:#2a2318"></div>
+  <div style="display:flex;flex-direction:column;gap:7px">
+    <div style="display:flex;gap:9px;font-size:12.5px;color:#cfc3a5;line-height:1.45"><span style="color:#ff4636;font-weight:700">âœ—</span><span><b style="color:#e8dcc0">PROPOSAL â†’ SEARCHING</b> â€” any decline or timeout. Automatic: listing survives, nobody re-fills the form. Non-responders drop from the pool.</span></div>
+    <div style="display:flex;gap:9px;font-size:12.5px;color:#cfc3a5;line-height:1.45"><span style="color:#ff4636;font-weight:700">âœ—</span><span><b style="color:#e8dcc0">FORMING â†’ SEARCHING</b> â€” party invite not received within 20 s (leader offline). Warned in the strip.</span></div>
+    <div style="display:flex;gap:9px;font-size:12.5px;color:#cfc3a5;line-height:1.45"><span style="color:#ffd100;font-weight:700">â¸</span><span><b style="color:#e8dcc0">ANY â†’ PAUSED</b> â€” matchmaking channel lost. Listing paused, yellow strip + tooltip, auto-resume with rebroadcast.</span></div>
+    <div style="display:flex;gap:9px;font-size:12.5px;color:#cfc3a5;line-height:1.45"><span style="color:#8f846c;font-weight:700">âœ—</span><span><b style="color:#e8dcc0">SEARCHING â†’ IDLE</b> â€” player cancels. <b style="color:#e8dcc0">IN GROUP â†’ IDLE</b> â€” group disbands or player leaves.</span></div>
+  </div>
+</div>
+<div class="dv-ocap">Five states, four failure edges â€” every failure lands in a safe state with the listing intact.</div>
+</div>
+
+<!-- ============ 1m Rationale ============ -->
+<div class="dv-opt" id="1m" data-screen-label="Rationale">
+<div class="dv-olabel"><a class="dv-oid" href="#1m">1m</a>Rationale â€” 5 lines</div>
+<div style="width:560px;background:#14100b;border:1px solid #2e2517;box-shadow:0 10px 30px rgba(0,0,0,.5);padding:18px 20px;display:flex;flex-direction:column;gap:9px">
+  <div style="display:flex;gap:10px;font-size:13px;color:#cfc3a5;line-height:1.5"><b style="color:#c8aa6e">1.</b><span><b style="color:#e8dcc0">Built for stressed players:</b> one primary action per state, and the status strip always answers "what happens next?"</span></div>
+  <div style="display:flex;gap:10px;font-size:13px;color:#cfc3a5;line-height:1.5"><b style="color:#c8aa6e">2.</b><span><b style="color:#e8dcc0">The proposal leads with YOUR role</b> and the leader's crown â€” role confusion is the deadliest error in hardcore.</span></div>
+  <div style="display:flex;gap:10px;font-size:13px;color:#cfc3a5;line-height:1.5"><b style="color:#c8aa6e">3.</b><span><b style="color:#e8dcc0">Zero dead ends:</b> decline, timeout and disconnect all auto-return to Searching with the listing intact.</span></div>
+  <div style="display:flex;gap:10px;font-size:13px;color:#cfc3a5;line-height:1.5"><b style="color:#c8aa6e">4.</b><span><b style="color:#e8dcc0">Trust before commitment:</b> pool tab, live bracket counts and freshness dots prove the system is alive.</span></div>
+  <div style="display:flex;gap:10px;font-size:13px;color:#cfc3a5;line-height:1.5"><b style="color:#c8aa6e">5.</b><span><b style="color:#e8dcc0">1:1 translatable:</b> flat colors, 2 px bevels, standard widgets and atlas icons; virtualized lists; DE-safe widths.</span></div>
+</div>
+<div class="dv-ocap">What was optimized: comprehension speed over density, honesty over cleverness.</div>
+</div>
+
+</div>
+
+<p class="dv-next">Try next: "German-string pass on <a class="dv-oid" href="#1a">1a</a>" Â· "empty-pool state for <a class="dv-oid" href="#1h">1h</a>" Â· "red &lt;10 s countdown variant of <a class="dv-oid" href="#1d">1d</a>" Â· "riff on the proposal layout".</p>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;yourAssignedRole&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;Healer&quot;, &quot;Tank&quot;, &quot;Support&quot;, &quot;DPS&quot;], &quot;default&quot;: &quot;Healer&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Proposal demo&quot; },
+  &quot;channelState&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;connected&quot;, &quot;reconnecting&quot;], &quot;default&quot;: &quot;connected&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Status demo&quot; },
+  &quot;poolCount&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 7, &quot;min&quot;: 0, &quot;max&quot;: 40, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Status demo&quot; }
+}">
+class Component extends DCLogic {
+  renderVals() {
+    const ROLES = {
+      Tank:    { color: '#7da2c4', label: 'TANK',    path: 'M8 1 L14 3.2 L14 7.6 C14 11.8 8 15 8 15 C8 15 2 11.8 2 7.6 L2 3.2 Z' },
+      Healer:  { color: '#58c458', label: 'HEALER',  path: 'M6.2 2 L9.8 2 L9.8 6.2 L14 6.2 L14 9.8 L9.8 9.8 L9.8 14 L6.2 14 L6.2 9.8 L2 9.8 L2 6.2 L6.2 6.2 Z' },
+      Support: { color: '#b48ad4', label: 'SUPPORT', path: 'M8 1 L9.8 6.2 L15 8 L9.8 9.8 L8 15 L6.2 9.8 L1 8 L6.2 6.2 Z' },
+      DPS:     { color: '#d45a4a', label: 'DPS',     path: 'M12.6 1.4 L14.6 3.4 L7 11 L8.6 12.6 L7.2 14 L5.4 12.2 L3 14.6 L1.4 13 L3.8 10.6 L2 8.8 L3.4 7.4 L5 9 Z' }
+    };
+    const ST = {
+      acc:  { char: 'âœ“', color: '#35d94a' },
+      wait: { char: 'â€¦', color: '#8f846c' },
+      dec:  { char: 'âœ—', color: '#ff4636' },
+      nr:   { char: 'âœ—', color: '#7a7264' },
+      you:  { char: 'â€”', color: '#ffd100' }
+    };
+    const youRole = this.props.yourAssignedRole ?? 'Healer';
+    const chOn = (this.props.channelState ?? 'connected') === 'connected';
+    const poolCount = this.props.poolCount ?? 7;
+
+    const base = [
+      { name: 'Thordak', lvl: 31, role: 'Tank', crown: true },
+      { name: 'Kaelis', lvl: 30, role: 'DPS' },
+      { name: 'Morwenna (you)', lvl: 29, role: youRole, you: true },
+      { name: 'Bramble', lvl: 32, role: 'DPS' },
+      { name: 'Vexatia', lvl: 33, role: 'Support' }
+    ];
+    const mk = (states) => base.map((b, i) => {
+      const r = ROLES[b.role];
+      const s = ST[states[i]];
+      return {
+        name: b.name, lvl: b.lvl,
+        crownOp: b.crown ? 1 : 0,
+        bg: b.you ? 'rgba(200,170,110,.12)' : 'transparent',
+        nameColor: b.you ? '#ffd100' : '#e8dcc0',
+        rolePath: r.path, roleColor: r.color, roleLabel: r.label,
+        statusChar: s.char, statusColor: s.color
+      };
+    });
+
+    const mkRoles = (list) => list.map((k) => ({ path: ROLES[k].path, color: ROLES[k].color }));
+    const G = '#35d94a', Y = '#ffd100', R = '#ff4636';
+    const poolRows = [
+      { name: 'Morwenna (you)', lvl: 29, roles: mkRoles(['Healer', 'DPS']), boss: 'SM:GY â€” Thalnos', min: '4+', crownOp: 1, dot: G, bg: 'rgba(200,170,110,.10)', nameColor: '#ffd100' },
+      { name: 'Thordak', lvl: 31, roles: mkRoles(['Tank']), boss: 'SM:GY â€” Thalnos', min: '5', crownOp: 1, dot: G, bg: 'transparent', nameColor: '#e8dcc0' },
+      { name: 'Kaelis', lvl: 30, roles: mkRoles(['DPS']), boss: 'SM:GY â€” Thalnos', min: '3+', crownOp: 0, dot: G, bg: 'transparent', nameColor: '#e8dcc0' },
+      { name: 'Bramble', lvl: 32, roles: mkRoles(['DPS', 'Support']), boss: 'SM:GY â€” Thalnos', min: '4+', crownOp: 0, dot: Y, bg: 'transparent', nameColor: '#e8dcc0' },
+      { name: 'Vexatia', lvl: 33, roles: mkRoles(['Support', 'Healer']), boss: 'SM:LIB â€” Doan', min: '5', crownOp: 1, dot: Y, bg: 'transparent', nameColor: '#e8dcc0' },
+      { name: 'Junker', lvl: 27, roles: mkRoles(['Tank', 'DPS']), boss: 'RFK â€” Charlga', min: '3+', crownOp: 0, dot: G, bg: 'transparent', nameColor: '#e8dcc0' },
+      { name: 'Selwyn', lvl: 28, roles: mkRoles(['Healer']), boss: "BFD â€” Aku'mai", min: '4+', crownOp: 0, dot: R, bg: 'transparent', nameColor: '#e8dcc0' },
+      { name: 'Orsun', lvl: 34, roles: mkRoles(['DPS']), boss: 'SM:LIB â€” Doan', min: '5', crownOp: 0, dot: Y, bg: 'transparent', nameColor: '#e8dcc0' }
+    ];
+
+    return {
+      yourRoleName: ROLES[youRole].label,
+      yourRoleColor: ROLES[youRole].color,
+      yourRolePath: ROLES[youRole].path,
+      membersPending: mk(['acc', 'acc', 'you', 'wait', 'wait']),
+      membersAccepted: mk(['acc', 'acc', 'acc', 'acc', 'acc']),
+      membersDeclined: mk(['acc', 'acc', 'acc', 'dec', 'wait']),
+      membersTimeout: mk(['acc', 'acc', 'acc', 'nr', 'nr']),
+      poolRows,
+      poolCount,
+      chColor: chOn ? '#35d94a' : '#ffd100',
+      chLabel: chOn ? 'LFG channel' : 'reconnectingâ€¦',
+      chTextColor: chOn ? '#8f846c' : '#ffd100',
+      chAnim: chOn ? 'none' : 'hcbbPulse 1.2s ease-in-out infinite'
+    };
+  }
+}
+</script>
+</body>
+</html>

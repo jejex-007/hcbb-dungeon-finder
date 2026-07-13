@@ -1,0 +1,87 @@
+-- Spanish. Missing keys fall back to enUS. File is UTF-8.
+local _, NS = ...
+NS.locales = NS.locales or {}
+
+NS.locales.esES = {
+    TITLE = "HCBB Dungeon Finder",
+    TAB_FIND = "Buscar grupo",
+    TAB_POOL = "¿Quién busca?",
+    TAB_OPT = "Opciones",
+
+    BOSS_LABEL = "Jefe objetivo",
+    BOSS_REQ = "Requiere nivel %d–%d — tienes %d",
+    BOSS_CLEARED = "Derrotado",
+    BOSS_TOGGLE_HINT = "Mayús-clic: marcar derrotado / pendiente",
+
+    ROLES_LABEL = "Tus roles",
+    ROLES_HINT = "Elige cada rol que sepas jugar de verdad — al menos uno obligatorio.",
+    ROLE_TANK = "Tanque",
+    ROLE_HEAL = "Sanador",
+    ROLE_SUPPORT = "Apoyo",
+    ROLE_DPS = "DPS",
+    ERR_NO_ROLE = "Selecciona al menos un rol",
+
+    MIN_LABEL = "Tamaño mínimo del grupo",
+    MIN_3 = "3+",
+    MIN_4 = "4+",
+    MIN_5 = "Solo 5",
+    MIN_HINT = "Los grupos de 5 siempre tienen prioridad; tamaños menores amplían tus opciones.",
+
+    OPT_LEAD = "Estoy dispuesto a liderar el grupo",
+    BTN_SEARCH = "Buscar",
+    BTN_CANCEL = "Cancelar búsqueda",
+    SEARCH_ELAPSED = "Buscando — %s",
+    POOL_COUNT = "%d jugadores buscan en tu rango",
+
+    PROP_TITLE = "¡Grupo encontrado!",
+    PROP_YOU_ROLE = "Tu rol asignado:",
+    BTN_ACCEPT = "Aceptar",
+    BTN_DECLINE = "Rechazar",
+    BTN_OKAY = "Aceptar",
+    PROP_TIMER = "%d s para responder",
+    PROP_OF = "de",
+    PROP_ALL_IN = "todos aceptaron — formando grupo",
+    PROP_CANCELLED = "Propuesta cancelada",
+    PROP_WAIT = "Aceptado — esperando a los demás…",
+    PROP_FORMING = "¡Todos han aceptado — atento a la invitación de grupo!",
+    PROP_DECLINED = "Un jugador rechazó — cubriendo la plaza.",
+    PROP_EXPIRED = "Propuesta caducada — de vuelta a la búsqueda.",
+    LEADER = "Líder",
+
+    FILTER_ALL = "Todas las mazmorras",
+    POOL_EMPTY = "Nadie en este rango — apúntate y da el primer paso.",
+    BROWSER_CLICK_HINT = "Clic derecho para opciones",
+    BROWSER_INVITE = "Invitar al grupo",
+    BROWSER_SUGGEST = "Sugerir al líder del grupo",
+    BROWSER_WHISPER = "Susurrar",
+    BROWSER_CANCEL = "Cancelar",
+    SUGGEST_MSG = "Invitemos a %s para %s",
+    SUGGEST_POPUP = "%s sugiere invitar a %s para %s. ¿Invitar ahora?",
+
+    OPT_LANG = "Idioma",
+    LANG_AUTO = "Auto (cliente del juego)",
+    OPT_MM = "Mostrar botón del minimapa",
+    OPT_SOUND = "Reproducir sonido al proponer grupo",
+    OPT_HB_INFO = "Señal cada %d s · los anuncios caducan tras %d s",
+
+    CH_OK = "Conectado al canal de emparejamiento",
+    CH_RECON = "Reconectando al canal de emparejamiento…",
+    CH_LABEL = "Canal LFG",
+    CH_RECON_SHORT = "reconectando…",
+    ST_SEARCH_FULL = "Buscando — %s · %d en tu rango",
+
+    ST_NOT_ENROLLED = "Este personaje no está inscrito en el desafío Hardcore Boss Blitz",
+    NOT_ENROLLED_HINT = "Solo los participantes inscritos pueden buscar grupo. Habla con el Maestro de pruebas en tu zona inicial (nivel 1) para unirte al Boss Blitz.",
+    ALREADY_GROUPED_HINT = "Ya estás en un grupo — abandónalo para buscar uno nuevo.",
+
+    ST_IDLE = "Inactivo",
+    ST_SEARCH = "Buscando — %s",
+    ST_PROPOSAL = "Propuesta pendiente — responde a la ventana",
+    ST_FORMING = "Grupo en formación — atento a la invitación",
+    ST_GROUP = "En grupo — ¡buena suerte!",
+    ST_PAUSED = "En pausa — reconectando al canal…",
+
+    MSG_BOSS_CLEARED = "%s marcado como derrotado.",
+    MSG_NEWER_PROTO = "Hay una versión más reciente de HCBB Dungeon Finder — considera actualizar.",
+    MSG_USAGE = "/hcbb — ventana · /hcbb demo · /hcbb debug · /hcbb pool",
+}

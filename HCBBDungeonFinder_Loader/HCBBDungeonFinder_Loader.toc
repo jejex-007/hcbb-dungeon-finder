@@ -1,0 +1,7 @@
+## Interface: 30300
+## Title: HCBB Dungeon Finder |cff888888(loader)|r
+## Notes: Loads HCBB Dungeon Finder only on Hardcore Boss Blitz characters.
+## Author: KySeEtH
+## Version: 0.1.0
+
+Loader.lua

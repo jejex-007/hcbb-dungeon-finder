@@ -1,0 +1,23 @@
+{
+    "runtime.version": "LuaJIT",
+    "diagnostics.disable": ["deprecated"],
+    "diagnostics.globals": [
+        "CreateFrame", "UIParent", "Minimap", "GameTooltip", "UISpecialFrames",
+        "NUM_CHAT_WINDOWS", "StaticPopup_Show", "StaticPopupDialogs", "CANCEL",
+        "FauxScrollFrame_Update", "FauxScrollFrame_GetOffset",
+        "FauxScrollFrame_OnVerticalScroll",
+        "UIDropDownMenu_Initialize", "UIDropDownMenu_CreateInfo",
+        "UIDropDownMenu_AddButton", "ToggleDropDownMenu", "EasyMenu", "FriendsFrame_ShowDropdown",
+        "ChatFrame_RemoveChannel", "ChatFrame_AddMessageEventFilter",
+        "ChatFrame_SendTell", "GetNumRaidMembers", "IsPartyLeader", "IsRaidLeader",
+        "GetTime", "GetLocale", "GetAddOnMetadata", "GetChannelName",
+        "JoinPermanentChannel", "LeaveChannelByName", "SendChatMessage",
+        "UnitName", "UnitLevel", "UnitClass", "UnitBuff", "UnitDebuff", "RAID_CLASS_COLORS", "GetNumPartyMembers", "InviteUnit",
+        "IsShiftKeyDown", "GetCursorPosition", "PlaySound",
+        "LoadAddOn", "IsAddOnLoaded", "EnableAddOn",
+        "LibStub", "HCBB", "HCBB_DB",
+        "tinsert", "tremove", "strsplit", "format", "wipe",
+        "describe", "it"
+    ],
+    "workspace.ignoreDir": ["HCBBDungeonFinder/libs", "docs"]
+}
