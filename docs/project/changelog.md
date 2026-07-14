@@ -1,5 +1,37 @@
 # Changelog — HCBB Dungeon Finder
 
+## 2026-07-14 — Per-game-mode role model (Warcraft Reborn, M6.2)
+- HCBB runs in two modes on separate realms whose names embed the mode, so
+  `GetRealmName()` (matched against `Data.WR_REALM_TAG`) sets `NS.gameMode` at
+  init. Roles are declared per mode in `Data.MODE_ROLES`: **Conquest of Azeroth**
+  keeps the Support role, **Warcraft Reborn** (9 base classes) drops it. The
+  Registration role cards are built from the mode's set and re-space to fill the
+  same width (fill formula reproduces the 4-card layout exactly). The demo
+  mirrors the mode (base classes, no Support). Nothing downstream changed — the
+  matcher already treats Support as optional; class colors were mode-agnostic.
+- Detection settled after in-game testing: the realm name is the full string
+  (e.g. `Bronzebeard - Warcraft Reborn`), so an exact-key lookup missed —
+  switched to a case-insensitive substring match on the mode tag.
+- Docs: BR header + R3 + R7, NFR-C6, README, architecture. luacheck 0/0,
+  tests 33/0, CI green.
+
+## 2026-07-14 — Version-mismatch update notice (NFR-C5, M6.1)
+- A peer HELLO advertising a strictly newer release version now triggers a
+  single per-session "update available" notice. Added `Codec.isNewer` (pure,
+  numeric semver compare, so 0.1.10 > 0.1.9) wired into `Comm:OnChannel` via the
+  existing once-per-session sink. Distinct from the proto-major drop (same proto
+  still interoperates). 4 Codec regression tests.
+
+## 2026-07-14 — UI polish (checkbox labels, proposal class tooltip)
+- Checkbox labels are now clickable (shared `UI.Check` hit area, gated on the
+  box being enabled) — lead opt-in and options toggles alike.
+- The proposal popup shows a class tooltip on member hover, reusing the
+  browser's mechanism (class resolved from the local pool, or `UnitClass` for
+  self, since the P wire doesn't carry it).
+- Demo fidelity: a demo group formation now ends a live search (no real party
+  fires `OnParty`), so the demo mirrors leaving the queue; and the demo's fake
+  proposal/pool honor the active mode (no Support member in Warcraft Reborn).
+
 ## 2026-07-14 — Rename broadcast channel (collision hardening)
 - Renamed the hidden broadcast channel `HCBBLFG` → `HCBBDungeonFinder`
   (`Data.CONST.CHANNEL`) so it can't accidentally collide with a
