@@ -3,8 +3,11 @@
 Canonical functional rules. If the code contradicts this file, the code is
 wrong. Rule IDs (R1, R2…) are stable — never renumber, only append.
 
-Game mode reference: [Hardcore Boss Blitz ruleset](https://ascension.gg/en/news/hardcore-community-challenge-boss-blitz/531)
-(WoW Ascension, Conquest of Azeroth, realm Bronzebeard).
+Game mode reference: [Hardcore Boss Blitz ruleset](https://ascension.gg/en/news/hardcore-community-challenge-boss-blitz/531).
+HCBB runs in two WoW Ascension game modes, each on its own realm(s):
+**Conquest of Azeroth** (21 custom classes, includes the Support role) and
+**Warcraft Reborn** (9 base WoW Classic classes, no Support role). One addon
+build adapts to the active mode — see R3, R7 and NFR-C6.
 
 ## 1. Purpose
 
@@ -26,7 +29,9 @@ happens between addon clients over chat-based messaging.
   configuration (not in the UI), so the community can retune per season.
 - **R3 — Roles.** The player declares one or more roles they can fill:
   **Tank, Healer, Support, DPS**. At least one role is required. Roles are
-  declared, never inferred (CoA classes don't map to roles).
+  declared, never inferred (CoA classes don't map to roles). **Support exists
+  only in Conquest of Azeroth**; in Warcraft Reborn the choices are Tank,
+  Healer, DPS (the role set is data-driven per mode — see NFR-C6).
 - **R4 — Minimum group size.** The player picks the smallest group size they
   accept: **3+, 4+ or 5 only**. A match at size N requires every member's
   minimum ≤ N.
@@ -42,7 +47,9 @@ happens between addon clients over chat-based messaging.
 - **R7 — Mandatory composition.** A formed group always contains exactly
   **1 Tank** and **1 Healer**, **at most 1 Support**, and **DPS for every
   remaining slot**. Valid sizes: 3 (T/H/D), 4 (T/H/D/D or T/H/S/D),
-  5 (T/H/D/D/D or T/H/S/D/D).
+  5 (T/H/D/D/D or T/H/S/D/D). In Warcraft Reborn (no Support role, R3) the
+  feasible shapes reduce to T/H/D, T/H/D/D and T/H/D/D/D — the matcher already
+  treats Support as optional, so nothing else changes.
 - **R8 — Size priority.** The matcher always prefers the largest feasible
   group: 5 if possible, then 4, then 3. A smaller match is only proposed when
   no larger one is feasible with the current pool (see R14 for the timing

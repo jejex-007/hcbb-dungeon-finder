@@ -77,6 +77,13 @@ function addon:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("HCBB_DB", defaults, true)
     NS.SetLanguage(self.db.global.lang)
 
+    -- Game mode (M6.2) is the source of truth for mode-specific behaviour. The
+    -- realm name embeds the mode (e.g. "Bronzebeard - Warcraft Reborn"), so
+    -- match the WR tag as a case-insensitive substring; default to CoA.
+    NS.realm = GetRealmName() or ""
+    NS.gameMode = NS.realm:lower():find(NS.Data.WR_REALM_TAG:lower(), 1, true)
+        and NS.Data.MODE.WR or NS.Data.MODE.COA
+
     self:RegisterChatCommand("hcbb", "OnSlash")
 end
 
@@ -202,8 +209,16 @@ function addon:Demo()
     end
     local b = NS.Data.BOSSES[bossId]
     local names = { "Aldric", "Berylla", "Corvin", "Dathne", "Ewina", "Falrik" }
-    local roleSets = { 1, 2, 4, 8, 8, 9 }
-    local classes = { "wa", "su", "sa", "ra", "ma", "dh" }
+    -- Demo listings mirror the active mode (M6.2): CoA shows custom classes and
+    -- a Support; Warcraft Reborn shows base classes and no Support role.
+    local roleSets, classes
+    if NS.gameMode == NS.Data.MODE.COA then
+        roleSets = { 1, 2, 4, 8, 8, 9 }
+        classes = { "wa", "su", "sa", "ra", "ma", "dh" }
+    else
+        roleSets = { 1, 2, 8, 8, 8, 9 }
+        classes = { "wa", "pa", "hu", "ro", "ma", "dr" }
+    end
     for i, name in ipairs(names) do
         NS.Pool:OnHello(name, {
             seq = i, bossId = bossId,
@@ -215,13 +230,15 @@ function addon:Demo()
     self:Print(("demo: seeded %d listings for %s"):format(#names, b.boss))
     self:ScheduleTimer(function()
         local me = UnitName("player")
+        -- Warcraft Reborn has no Support role, so the flex slot is a DPS there.
+        local flexRole = (NS.gameMode == NS.Data.MODE.COA) and 4 or 8
         addon:SendMessage("HCBB_PROPOSAL_SHOW", {
             demo = true, matchId = "Aldric-1", bossId = bossId, size = 5,
             yourRole = 8, leader = "Aldric", iAmLeader = false,
             members = {
                 { name = "Aldric",  role = 1, level = level, lead = 1 },
                 { name = "Berylla", role = 2, level = level, lead = 0 },
-                { name = "Corvin",  role = 4, level = level, lead = 0 },
+                { name = "Corvin",  role = flexRole, level = level, lead = 0 },
                 { name = me,        role = 8, level = level, lead = 0 },
                 { name = "Ewina",   role = 8, level = level, lead = 0 },
             },

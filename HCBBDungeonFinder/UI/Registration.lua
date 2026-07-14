@@ -179,9 +179,9 @@ end
 
 -- --------------------------------------------------------------- cards --
 
-local function makeRoleCard(role, x)
+local function makeRoleCard(role, x, w)
     local card = CreateFrame("Button", nil, pane)
-    card:SetSize(110, 52)
+    card:SetSize(w, 52)
     card:SetPoint("TOPLEFT", x, -78)
     card:SetBackdrop({ bgFile = WHITE, edgeFile = WHITE, edgeSize = 1 })
     card.icon = UI.RoleIcon(card, role, 18)
@@ -273,12 +273,17 @@ function UI.CreateRegistration(parent)
     rolesHeader = UI.Label(pane, "small", UI.COLOR.gold)
     rolesHeader:SetPoint("TOPLEFT", 4, -62)
 
-    local x = 2
-    for _, role in ipairs(NS.Data.ROLE_ORDER) do
-        local card = makeRoleCard(role, x)
+    -- Role cards for the active mode (M6.2): the role set is data-driven per
+    -- game mode, so Warcraft Reborn simply has no Support card. The cards
+    -- re-space over the same width — the fill formula reproduces the 4-card
+    -- layout exactly (110 px, step 117) and widens for 3 cards (149 px).
+    local shown = NS.Data.MODE_ROLES[NS.gameMode] or NS.Data.ROLE_ORDER
+    local SPAN, GAP = 461, 7
+    local cardW = (SPAN - (#shown - 1) * GAP) / #shown
+    for i, role in ipairs(shown) do
+        local card = makeRoleCard(role, 2 + (i - 1) * (cardW + GAP), cardW)
         roleCards[role] = card
         tinsert(widgets, card)
-        x = x + 117
     end
 
     hintRoles = UI.Label(pane, "small", UI.COLOR.muted)

@@ -25,7 +25,7 @@ read_globals = {
     "ChatFrame_RemoveChannel", "ChatFrame_AddMessageEventFilter",
     "ChatFrame_SendTell",
     -- API
-    "GetTime", "GetLocale", "GetAddOnMetadata", "GetChannelName",
+    "GetTime", "GetLocale", "GetRealmName", "GetAddOnMetadata", "GetChannelName",
     "JoinPermanentChannel", "LeaveChannelByName", "SendChatMessage",
     "UnitName", "UnitLevel", "UnitClass", "UnitBuff", "UnitDebuff",
     "GetNumPartyMembers", "GetNumRaidMembers", "IsPartyLeader", "IsRaidLeader",

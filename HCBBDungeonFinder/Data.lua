@@ -28,6 +28,24 @@ Data.CONST = {
 Data.ROLE = { TANK = 1, HEAL = 2, SUPPORT = 4, DPS = 8 }
 Data.ROLE_ORDER = { 1, 2, 4, 8 }
 
+-- Game modes have different class/role systems and live on separate realms
+-- whose names EMBED the mode, e.g. "Bronzebeard - Warcraft Reborn" and
+-- "Vol'jin - Conquest of Azeroth" (confirmed in-game). Conquest of Azeroth
+-- has the 21 custom classes and the Support role; Warcraft Reborn has the 9
+-- base classes and NO Support role. We detect WR by the mode tag as a
+-- case-insensitive substring of the realm name; anything else defaults to
+-- CoA, the superset — so an unknown realm keeps the full feature set (M6.2).
+Data.WR_REALM_TAG = "Warcraft Reborn"
+Data.MODE = { COA = "CoA", WR = "WR" }
+
+-- Roles offered per mode (M6.2). The mode is the source of truth; the Support
+-- role simply isn't part of the Warcraft Reborn set. Add a mode here to give
+-- it its own role set — no special-casing in the UI.
+Data.MODE_ROLES = {
+    [Data.MODE.COA] = { 1, 2, 4, 8 }, -- Tank, Heal, Support, DPS
+    [Data.MODE.WR]  = { 1, 2, 8 },    -- Tank, Heal, DPS (no Support)
+}
+
 -- CoA classes: token <-> 2-letter wire abbreviation, display name, color.
 -- Abbreviations/colors mirror the community LootCollector addon so we stay
 -- consistent with the ecosystem. UnitClass("player") returns these tokens.

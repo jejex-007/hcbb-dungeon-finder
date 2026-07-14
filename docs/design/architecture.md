@@ -180,9 +180,25 @@ Notable behaviours:
   pool (NFR-P4); names are class-colored (class carried on HELLO). Right-
   click a listing to open the game's native player menu (Invite / Suggest
   Invite / Whisper), with a custom menu + SUGGEST message as fallback (R24).
+  Hovering a row shows a class tooltip; the proposal popup reuses the same
+  tooltip, resolving each member's class from the local pool (the P message
+  doesn't carry it) or `UnitClass` for the player themself.
+- Checkbox labels are clickable (a transparent hit area over the label
+  forwards to the box, gated on the box being enabled) — a shared `UI.Check`
+  behaviour, so it applies to the lead opt-in and the options toggles alike.
 - The Ascension client honors `SetVertexColor` but not `SetGradientAlpha`,
   so panels/buttons use flat vertex-color tints; status marks (✓/✗) use
   ready-check textures since the game font lacks those glyphs.
+- Per-game-mode role model (M6.2): the game mode is the source of truth. The
+  two HCBB modes are separate realms whose names embed the mode (e.g.
+  `Bronzebeard - Warcraft Reborn`), so `GetRealmName()` — matched against the
+  `Data.WR_REALM_TAG` substring at init — sets `NS.gameMode` (`CoA`/`WR`,
+  default CoA). Roles are declared per mode in `Data.MODE_ROLES`, so Warcraft
+  Reborn just has no Support entry; Registration builds cards from that set and
+  they re-space to fill the same width (the fill formula reproduces the 4-card
+  spacing exactly). Nothing downstream changes: the matcher already treats
+  Support as optional (≤1), so a Support-less pool forms T/H/D groups, and no
+  Support bit is ever broadcast.
 
 ## 9. Key decisions & alternatives considered
 

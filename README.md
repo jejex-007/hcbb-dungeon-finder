@@ -15,6 +15,9 @@ through a hidden chat channel and invisible addon whispers.
   (25 bosses), with level-bracket gating and cleared-boss tracking.
 - **Role-based matching** — Tank / Healer / Support / DPS (declare one or
   more): groups always form as 1 tank, 1 healer, at most 1 support, rest DPS.
+- **Works in both game modes** — Conquest of Azeroth (21 custom classes, with
+  the Support role) and Warcraft Reborn (9 base classes, no Support). The addon
+  detects the mode automatically and shows the right roles and class colors.
 - **Challenge-legal groups**: members within 3 levels of each other,
   5-player groups preferred (3+/4+ opt-in per player).
 - **Consent-first flow**: every member confirms a found group in a 30 s
@@ -27,6 +30,8 @@ through a hidden chat channel and invisible addon whispers.
 - **Stays out of the way**: the window auto-closes when you enter combat
   (your search keeps running), and Search is disabled while you're grouped.
 - **Localized**: English (default), Français, Deutsch, Español, Italiano.
+- **Update-aware**: if it sees a peer running a newer version, it tells you
+  once (per session) so you can update — older clients still interoperate.
 - Lightweight: event-driven, virtualized lists, one 30 s heartbeat while
   searching.
 

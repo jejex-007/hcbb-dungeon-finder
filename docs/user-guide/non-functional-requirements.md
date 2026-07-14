@@ -20,7 +20,16 @@ Environment ground truth: `docs/design/ascension-addon-environment.md`.
   libraries loaded via LibStub with proper minor-version negotiation.
 - **NFR-C5.** Must behave sanely when peers run different addon versions:
   every message carries a protocol version; newer-major messages are ignored;
-  a newer-version notice may be shown to the user once per session.
+  a newer-version notice may be shown to the user once per session. The notice
+  also fires (once per session) when a peer advertises a strictly newer release
+  version in its HELLO, even on the same protocol major.
+- **NFR-C6.** A single addon build serves both game modes (Conquest of Azeroth,
+  Warcraft Reborn). The mode is detected once at load from `GetRealmName()`
+  (realm names embed the mode; matched against `Data.WR_REALM_TAG`) and drives
+  the data-driven per-mode role set (`Data.MODE_ROLES`) — Warcraft Reborn has
+  no Support role. An unrecognised realm defaults to CoA (the superset). Class
+  colours are already mode-agnostic (`RAID_CLASS_COLORS` for base classes, the
+  custom table for CoA).
 
 ## NFR-S — Safety & security
 

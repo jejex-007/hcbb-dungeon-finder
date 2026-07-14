@@ -53,18 +53,22 @@ Effort scale (owner+Claude pair velocity): S < 1h · M 1–2h · L 3–5h · XL 
   update-generic in all 5 locales. Distinct from the proto-major drop (same
   proto still interoperates). 4 Codec regression tests (incl. 0.1.10 > 0.1.9).
   In-game 2-version validation pending (part of M5 smoke test).
-- [ ] **Per-game-mode class/role model** (CoA vs Warcraft Reborn): HCBB runs in
-  two game modes with different class systems —
-  - **Conquest of Azeroth (CoA)**: the 21 custom classes, **with** the Support
-    role.
-  - **Warcraft Reborn**: the 9 base WoW Classic classes, **no** Support role.
-
-  The same client build must adapt to the active mode: (a) show the correct
-  class set + colors; (b) drop the Support role entirely in Warcraft Reborn
-  across registration (role cards), the matcher composition rule (≤1 support →
-  tank/heal/DPS only), and the browser. Data-driven in `Data.lua`; mode
-  detection mechanism TBD (`GetRealmName()` vs probing the local class token
-  set). Cross-mode matching is moot (players are isolated per mode). (M)
+- [x] **Per-game-mode class/role model** (CoA vs Warcraft Reborn) — done
+  2026-07-14 (actual ~0.5h). Mode detection settled: the two modes are
+  **separate realms** whose names embed the mode, so `GetRealmName()`
+  distinguishes them (confirmed in-game: `Vol'jin - Conquest of Azeroth`,
+  `Bronzebeard - Warcraft Reborn`). WR is detected by the `Data.WR_REALM_TAG`
+  substring (`"Warcraft Reborn"`), default = CoA (any realm without the tag
+  keeps the full set). Core sets `NS.gameMode` once at init; roles are declared
+  per mode in `Data.MODE_ROLES` (mode is the source of truth, not a Support
+  flag). In WR the Support card is simply absent from the mode's role set and
+  the 3 remaining cards re-space to fill the same width (fill formula
+  reproduces the 4-card layout exactly). Class
+  set/colors were already mode-agnostic (`GetClassColor` uses
+  `RAID_CLASS_COLORS` for base classes, custom table for CoA; class is auto-
+  read, never picked). Matcher/wire needed no change — Support is already
+  optional (≤1), a Support-less pool forms T/H/D (existing matcher test).
+  In-game validation on Bronzebeard pending (part of M5 smoke test).
 
 ## Open questions
 - ~~Exact Boss Blitz marker~~ — RESOLVED 2026-07-13: permanent **debuff**
