@@ -1,5 +1,14 @@
 # Changelog — HCBB Dungeon Finder
 
+## 2026-07-14 — Update notice as an accent banner in the status strip
+- The version-mismatch notice was chat-only (easy to miss). It now also turns
+  the window's status strip into an accent banner (dark-amber fill, gold text)
+  while an update is pending — persistent for the session, the state dot still
+  shows live state. `NoticeNewerVersion` sets `NS.updateAvailable` + fires
+  `HCBB_UPDATE_AVAILABLE`; `UpdateStatus` gives it priority. New `ST_UPDATE`
+  locale key in all five languages. Validated in-game (0.0.9 client seeing a
+  0.1.0 peer). Refreshed `download/HCBBDungeonFinder-latest.zip`.
+
 ## 2026-07-14 — Pre-release v0.1.0-beta
 - Published the first GitHub Release: **v0.1.0-beta** (`--prerelease`), with the
   packaged zip as an asset, so testers can install from the Releases page while
