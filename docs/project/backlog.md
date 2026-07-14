@@ -41,8 +41,13 @@ Effort scale (owner+Claude pair velocity): S < 1h · M 1–2h · L 3–5h · XL 
 - [x] In-game load test on Ascension — done 2026-07-14 (iterated extensively:
   UI fidelity, class colors, native menu, combat/group behaviours, bracket fix)
 - [x] `docs/project/smoke-test.md` checklist written — done 2026-07-14
-- [ ] Full 2-client match run on Ascension (the checklist end-to-end) (S)
-- [ ] v0.1.0 tag, GitHub release zip (scripts/package.ps1), announce (S)
+- [ ] Full 2-client match run on Ascension (the checklist end-to-end) (S) —
+  **gates promotion to stable**
+- [x] Pre-release **v0.1.0-beta** published 2026-07-14 (GitHub Release, zip
+  asset, `--prerelease`) so testers can grab it while the smoke test is pending.
+  Also `download/HCBBDungeonFinder-latest.zip` for non-Git players.
+- [ ] Promote to stable **v0.1.0** tag + release after the 2-client smoke test,
+  then announce (S)
 
 ## M6 — Post-v0.1.0 enhancements (M–L)
 - [x] **Version negotiation + mismatch notice** (NFR-C5) — done 2026-07-14

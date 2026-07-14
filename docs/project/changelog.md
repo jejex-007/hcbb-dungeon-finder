@@ -1,5 +1,13 @@
 # Changelog — HCBB Dungeon Finder
 
+## 2026-07-14 — Pre-release v0.1.0-beta
+- Published the first GitHub Release: **v0.1.0-beta** (`--prerelease`), with the
+  packaged zip as an asset, so testers can install from the Releases page while
+  the full 2-client smoke test is still pending. The `.toc` version stays
+  `0.1.0` (the wire `ver` field requires strict `X.Y.Z`; only the Git tag
+  carries `-beta`). NFR-C1 re-checked: Interface 30300, luacheck green.
+  Promotion to stable v0.1.0 gated on the smoke test.
+
 ## 2026-07-14 — One-click download for players without Git
 - Added `download/HCBBDungeonFinder-latest.zip` (both addon folders) plus a
   direct download link in the README install section, so players who don't use
