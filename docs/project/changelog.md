@@ -1,5 +1,18 @@
 # Changelog — HCBB Dungeon Finder
 
+## 2026-07-14 — Rename broadcast channel (collision hardening)
+- Renamed the hidden broadcast channel `HCBBLFG` → `HCBBDungeonFinder`
+  (`Data.CONST.CHANNEL`) so it can't accidentally collide with a
+  community-created chat channel of the same generic name. Purely collision
+  hardening, not security — the name is public in the repo; peer trust stays
+  in NFR-S validation. The channel is resolved by name everywhere, so no
+  numbering assumptions change. Decided before v0.1.0 while there are no users
+  (renaming after release would fragment the community). README + architecture
+  + the backlog open question updated. luacheck 0/0, tests 29/0, CI green.
+- Also groomed the backlog: added M6 (post-v0.1.0 enhancements) — version
+  negotiation + mismatch notice (NFR-C5), and a per-game-mode class/role model
+  (CoA 21 classes with Support vs Warcraft Reborn 9 base classes, no Support).
+
 ## 2026-07-14 — Harden diagnostic slash commands
 - Removed `/hcbb debug`: its live "print every message" mode could flood the
   chat and lag the client under heavy channel traffic. Debug is now a silent
