@@ -35,13 +35,16 @@ through a hidden chat channel and invisible addon whispers.
 - Lightweight: event-driven, virtualized lists, one 30 s heartbeat while
   searching.
 
-## Install
+## Install (no Git account needed)
 
-1. Download the latest release zip.
-2. Extract **both** folders — `HCBBDungeonFinder` and
-   `HCBBDungeonFinder_Loader` — into
-   `<WoW Ascension>\resources\client\Interface\AddOns\`.
-3. `/hcbb` in-game (or the minimap button) opens the window.
+1. **Download the addon (one click):**
+   **[⬇ HCBBDungeonFinder-latest.zip](https://github.com/jejex-007/hcbb-dungeon-finder/raw/main/download/HCBBDungeonFinder-latest.zip)**
+2. Extract the zip. You get **two** folders: `HCBBDungeonFinder` and
+   `HCBBDungeonFinder_Loader`.
+3. Copy **both** folders into your AddOns folder:
+   `<WoW Ascension>\resources\client\Interface\AddOns\`
+4. Restart WoW (or type `/reload` if it's already running).
+5. `/hcbb` in-game (or the minimap button) opens the window.
 
 The addon only activates on characters enrolled in the Boss Blitz challenge
 (it detects the "Hardcore - Boss Blitz" mode debuff). On any other character

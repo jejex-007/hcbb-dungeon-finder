@@ -6,6 +6,8 @@
 # Build artifacts
 *.zip
 dist/
+# ...except the ready-to-use download bundle for players without Git
+!download/*.zip
 
 # OS noise
 Thumbs.db
