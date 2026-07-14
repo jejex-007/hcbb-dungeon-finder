@@ -1,5 +1,14 @@
 # Changelog — HCBB Dungeon Finder
 
+## 2026-07-14 — One-click download for players without Git
+- Added `download/HCBBDungeonFinder-latest.zip` (both addon folders) plus a
+  direct download link in the README install section, so players who don't use
+  Git can install without cloning. `scripts/package.ps1` now builds the zip via
+  .NET `ZipArchive` with explicit forward-slash entry names — Windows PowerShell
+  5.1's `Compress-Archive`/`ZipFile` write backslash separators that 7-Zip and
+  WinRAR mishandle — and refreshes this bundle on every run. `.gitignore` keeps
+  `*.zip` out except this one. Regenerate before pushing addon code changes.
+
 ## 2026-07-14 — Per-game-mode role model (Warcraft Reborn, M6.2)
 - HCBB runs in two modes on separate realms whose names embed the mode, so
   `GetRealmName()` (matched against `Data.WR_REALM_TAG`) sets `NS.gameMode` at
