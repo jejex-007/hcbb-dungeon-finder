@@ -55,7 +55,10 @@ local versionNoticed = false
 function NS.NoticeNewerVersion()
     if versionNoticed then return end
     versionNoticed = true
+    NS.updateAvailable = true
     addon:Print(NS.L["MSG_NEWER_PROTO"])
+    -- Surface an accent banner in the window's status strip too (not just chat).
+    if addon.SendMessage then addon:SendMessage("HCBB_UPDATE_AVAILABLE") end
 end
 
 -- ------------------------------------------------------------ database ---

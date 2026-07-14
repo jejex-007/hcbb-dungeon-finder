@@ -71,6 +71,7 @@ NS.locales.esES = {
     ST_SEARCH_FULL = "Buscando — %s · %d en tu rango",
 
     ST_NOT_ENROLLED = "Este personaje no está inscrito en el desafío Hardcore Boss Blitz",
+    ST_UPDATE = "Actualización disponible \226\128\148 actualiza el addon",
     NOT_ENROLLED_HINT = "Solo los participantes inscritos pueden buscar grupo. Habla con el Maestro de pruebas en tu zona inicial (nivel 1) para unirte al Boss Blitz.",
     ALREADY_GROUPED_HINT = "Ya estás en un grupo — abandónalo para buscar uno nuevo.",
 

@@ -71,6 +71,7 @@ NS.locales.deDE = {
     ST_SEARCH_FULL = "Suche — %s · %d in eurem Bereich",
 
     ST_NOT_ENROLLED = "Dieser Charakter ist nicht für die Hardcore-Boss-Blitz-Herausforderung angemeldet",
+    ST_UPDATE = "Update verfügbar \226\128\148 bitte aktualisiere das Addon",
     NOT_ENROLLED_HINT = "Nur angemeldete Teilnehmer können suchen. Sprecht mit dem Prüfungsmeister in eurem Startgebiet (Stufe 1), um dem Boss Blitz beizutreten.",
     ALREADY_GROUPED_HINT = "Ihr seid bereits in einer Gruppe — verlasst sie, um eine neue zu suchen.",
 

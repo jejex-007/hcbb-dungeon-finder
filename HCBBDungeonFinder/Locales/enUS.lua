@@ -71,6 +71,7 @@ NS.locales.enUS = {
     ST_SEARCH_FULL = "Searching — %s · %d in your bracket",
 
     ST_NOT_ENROLLED = "This character is not enrolled in the Hardcore Boss Blitz challenge",
+    ST_UPDATE = "Update available \226\128\148 please update the addon",
     NOT_ENROLLED_HINT = "Only enrolled challengers can search. Speak to the Trial Master in your starting zone (level 1) to join the Boss Blitz.",
     ALREADY_GROUPED_HINT = "You're already in a group — leave it to search for a new one.",
 

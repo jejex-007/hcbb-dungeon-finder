@@ -57,6 +57,7 @@ UI.GRAD = {
     tabOn  = { { 0.173, 0.133, 0.078 }, { 0.102, 0.078, 0.047 } }, -- #2c2214 -> #1a1410
     gold   = { { 1.00, 0.851, 0.302 }, { 0.725, 0.478, 0.063 } },  -- countdown
     greenB = { { 0.290, 0.871, 0.388 }, { 0.094, 0.478, 0.173 } },
+    update = { { 0.42, 0.31, 0.10 }, { 0.26, 0.19, 0.06 } },        -- accent banner (update available)
 }
 
 local BORDER_FILE = "Interface\\Tooltips\\UI-Tooltip-Border"
@@ -364,6 +365,7 @@ function UI.Init()
 
     -- Status strip (design 1j): state dot + text, channel dot + label.
     local strip = UI.Panel(f, UI.GRAD.strip)
+    f.strip = strip
     strip:SetPoint("BOTTOMLEFT", 6, 6)
     strip:SetPoint("BOTTOMRIGHT", -6, 6)
     strip:SetHeight(24)
@@ -447,6 +449,7 @@ function UI.Init()
     NS.addon:RegisterMessage("HCBB_CHANNEL_DOWN", function() UI.UpdateStatus() end)
     NS.addon:RegisterMessage("HCBB_ELIGIBILITY_CHANGED", function() UI.UpdateStatus() end)
     NS.addon:RegisterMessage("HCBB_GROUP_CHANGED", function() UI.UpdateStatus() end)
+    NS.addon:RegisterMessage("HCBB_UPDATE_AVAILABLE", function() UI.UpdateStatus() end)
     NS.addon:RegisterMessage("HCBB_LOCALE_CHANGED", function() UI.OnLocaleChanged() end)
 
     -- Suggest-invite prompt (R24): only the client that can invite pops it.
@@ -528,9 +531,14 @@ function UI.UpdateStatus(tickOnly)
         ensureTicker(NS.eligible and state == "SEARCHING")
     end
 
+    -- An available update takes over the strip as an accent banner (NFR-C5).
+    -- It's persistent for the session; the state dot still shows live state.
+    local banner = NS.eligible and NS.updateAvailable
     local text, color
     if not NS.eligible then
         text, color = L["ST_NOT_ENROLLED"], UI.COLOR.red
+    elseif banner then
+        text, color = L["ST_UPDATE"], UI.COLOR.yellow
     elseif state == "SEARCHING" then
         local elapsed, count = NS.Session:GetSearchInfo()
         text = L["ST_SEARCH_FULL"]:format(UI.FormatClock(elapsed or 0), count or 0)
@@ -541,6 +549,9 @@ function UI.UpdateStatus(tickOnly)
     end
     f.status:SetText(text)
     f.status:SetTextColor(color[1], color[2], color[3])
+    if f.strip and f.strip.fill then
+        UI.Recolor(f.strip.fill, banner and UI.GRAD.update or UI.GRAD.strip)
+    end
 
     if UI.OnStateForPanes and not tickOnly then UI.OnStateForPanes(state) end
 end
