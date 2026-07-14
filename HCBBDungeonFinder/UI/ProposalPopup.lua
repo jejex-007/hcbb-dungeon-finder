@@ -91,6 +91,18 @@ local function onShowProposal(_, proposal)
         local m = proposal.members[i]
         if m then
             row.memberName = m.name
+            row.memberLevel = m.level
+            -- Class isn't on the P wire; resolve it like the browser does —
+            -- from the local pool (peers) or UnitClass (self) — for the tooltip.
+            local cls = m.class
+            if not cls then
+                if m.name == me then
+                    cls = NS.Data.CLASS_ABBREV[select(2, UnitClass("player"))]
+                elseif NS.Pool.entries[m.name] then
+                    cls = NS.Pool.entries[m.name].class
+                end
+            end
+            row.memberClass = cls
             row.crown[m.name == proposal.leader and "Show" or "Hide"](row.crown)
             row.name:SetText(("%s |cff9c927c%d|r"):format(m.name, m.level))
             row.name:SetTextColor(unpack(m.name == me and UI.COLOR.yellow or UI.COLOR.textHi))
@@ -164,6 +176,12 @@ local function onAccept()
     if current.demo then
         NS.addon:ScheduleTimer(function()
             NS.addon:SendMessage("HCBB_PROPOSAL_UPDATE", "forming")
+            -- End-to-end demo: a formed group takes you out of the queue. There
+            -- is no real party to fire OnParty, so end any live search here so
+            -- the demo faithfully reflects the real outcome.
+            if NS.Session.state == "SEARCHING" or NS.Session.state == "PAUSED" then
+                NS.Session:Cancel()
+            end
         end, 2)
     else
         NS.Session:Accept()
@@ -246,6 +264,23 @@ function UI.CreateProposal()
         row.roleText:SetPoint("LEFT", 194, 0)
         row.status = UI.Label(row)
         row.status:SetPoint("RIGHT", -10, 0)
+
+        -- Class tooltip on hover, same mechanism as the "Who's Looking" browser.
+        row:EnableMouse(true)
+        row:SetScript("OnEnter", function(self)
+            if not self.memberName then return end
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            GameTooltip:SetText(self.memberName, 1, 1, 1)
+            local className, classColor = UI.ClassInfo(self.memberClass)
+            if className then
+                GameTooltip:AddLine(("Level %d %s"):format(self.memberLevel or 0, className),
+                    classColor and classColor[1] or 0.8,
+                    classColor and classColor[2] or 0.8,
+                    classColor and classColor[3] or 0.8)
+            end
+            GameTooltip:Show()
+        end)
+        row:SetScript("OnLeave", function() GameTooltip:Hide() end)
         memberRows[i] = row
     end
 
