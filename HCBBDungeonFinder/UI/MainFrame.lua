@@ -194,6 +194,16 @@ function UI.Check(parent, template)
     c:SetSize(20, 20)
     c.label = UI.Label(c)
     c.label:SetPoint("LEFT", c, "RIGHT", 3, 0)
+    -- Clicking the label toggles the box too (expected UX). Transparent hit
+    -- area over the label forwards to the box, but only while the box itself
+    -- accepts input, so a disabled panel stays disabled.
+    local hit = CreateFrame("Button", nil, c)
+    hit:SetPoint("TOPLEFT", c.label, "TOPLEFT", 0, 2)
+    hit:SetPoint("BOTTOMRIGHT", c.label, "BOTTOMRIGHT", 0, -2)
+    hit:SetScript("OnClick", function()
+        if c:IsMouseEnabled() and c:IsEnabled() == 1 then c:Click() end
+    end)
+    c.labelHit = hit
     return c
 end
 
