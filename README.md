@@ -55,7 +55,7 @@ matched must run the addon, so share it with your bracket buddies.
 ## How matching works (short version)
 
 Searching players broadcast a tiny presence message on a hidden custom chat
-channel (`HCBBLFG`) every 30 s. Every client mirrors that pool locally and
+channel (`HCBBDungeonFinder`) every 30 s. Every client mirrors that pool locally and
 runs the same deterministic matcher; the player who would lead the group
 (tank > healer > support > DPS among leader volunteers, else the tank)
 proposes it to the others over addon whispers. Everyone accepts → the leader

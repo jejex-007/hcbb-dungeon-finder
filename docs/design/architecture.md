@@ -24,7 +24,7 @@ done with reservations + acknowledgements over whispers.
 │   │  ▲                                                      │
 └───┼──┼──────────────────────────────────────────────────────┘
     ▼  │
- hidden chat channel  "HCBBLFG"  (broadcast: presence)
+ hidden chat channel  "HCBBDungeonFinder"  (broadcast: presence)
  addon whispers       prefix "HCBB" (unicast: negotiation)
 ```
 
@@ -69,7 +69,7 @@ Two paths, mirroring the proven LootCollector pattern:
 
 | Path | Mechanism | Used for |
 |---|---|---|
-| **Broadcast** | Hidden custom chat channel `HCBBLFG`: `JoinPermanentChannel` at login (+ rejoin timer), `ChatFrame_RemoveChannel` on all frames, send via `SendChatMessage(payload, "CHANNEL", nil, id)`, receive via `CHAT_MSG_CHANNEL` filtered on channel name | HELLO / BYE presence (small, loss-tolerant), heartbeat 30 s / expiry 120 s |
+| **Broadcast** | Hidden custom chat channel `HCBBDungeonFinder`: `JoinPermanentChannel` at login (+ rejoin timer), `ChatFrame_RemoveChannel` on all frames, send via `SendChatMessage(payload, "CHANNEL", nil, id)`, receive via `CHAT_MSG_CHANNEL` filtered on channel name | HELLO / BYE presence (small, loss-tolerant), heartbeat 30 s / expiry 120 s |
 | **Unicast** | AceComm `SendCommMessage(prefix="HCBB", …, "WHISPER", target)` — invisible to chat, throttled, chunked | PROPOSE / ACK / NACK / CONFIRM / ABORT (reliable-ish, targeted) |
 | **Group** | AceComm `SendCommMessage(prefix="HCBB", …, "PARTY"/"RAID")` | SUGGEST (suggest-invite fallback, R24) |
 

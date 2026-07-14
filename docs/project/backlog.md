@@ -71,7 +71,11 @@ Effort scale (owner+Claude pair velocity): S < 1h · M 1–2h · L 3–5h · XL 
   (spellId primary, name fallback).
 - Exact default brackets per boss: current rule `[unlock−4, unlock]` — validate
   in-game against real Blitz population, retune in `Data.lua`.
-- Channel name `HCBBLFG`: check in-game for collisions with existing community
-  channels before freezing the constant.
+- ~~Channel name collision~~ — RESOLVED 2026-07-14: renamed the broadcast
+  channel to `HCBBDungeonFinder` (unique enough to avoid accidental collision
+  with a community-created channel). Obscurity is not security — the name is
+  public in the repo; peer trust stays in NFR-S validation. Still worth a
+  quick in-game check that the 10-channel join limit isn't hit on a
+  channel-heavy character.
 - Support role: confirm how CoA players identify "Support" builds in practice
   (pure declaration assumed).

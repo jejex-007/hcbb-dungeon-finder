@@ -8,7 +8,7 @@ NS.Data = Data
 
 Data.CONST = {
     PROTO            = 1,          -- wire protocol major version
-    CHANNEL          = "HCBBLFG",  -- hidden broadcast channel
+    CHANNEL          = "HCBBDungeonFinder",  -- hidden broadcast channel (unique name avoids collisions)
     COMM_PREFIX      = "HCBB",     -- SendAddonMessage prefix
     HEARTBEAT        = 30,         -- s between HELLO rebroadcasts (R17)
     EXPIRY           = 120,        -- s without heartbeat before eviction (R17)
