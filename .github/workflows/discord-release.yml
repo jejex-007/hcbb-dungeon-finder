@@ -1,0 +1,51 @@
+name: Announce release on Discord
+
+# Posts a rich embed (title + release notes + link) to the community Discord
+# whenever a release is published. Replaces GitHub's native /github webhook,
+# which only shows a bare "New release published" line with no description.
+# The Discord webhook URL is stored as the DISCORD_WEBHOOK_URL repo secret.
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  announce:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post release to Discord
+        env:
+          WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RELEASE_NAME: ${{ github.event.release.name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
+          RELEASE_BODY: ${{ github.event.release.body }}
+        run: |
+          if [ -z "$WEBHOOK_URL" ]; then
+            echo "DISCORD_WEBHOOK_URL secret is not set; skipping."
+            exit 0
+          fi
+          title="${RELEASE_NAME:-$RELEASE_TAG}"
+          body="${RELEASE_BODY:-A new version is available.}"
+          # Untrusted content flows through env vars + jq --arg (never inlined
+          # into the shell or JSON), so it cannot break the payload or inject.
+          payload=$(jq -n \
+            --arg title "$title" \
+            --arg url "$RELEASE_URL" \
+            --arg body "$body" \
+            '{
+               username: "HCBB Dungeon Finder",
+               embeds: [ {
+                 title: $title,
+                 url: $url,
+                 description: (if ($body | length) > 4000
+                              then (($body | .[0:4000]) + "\n...")
+                              else $body end),
+                 color: 13150830
+               } ]
+             }')
+          curl -sf -X POST -H "Content-Type: application/json" \
+            -d "$payload" "$WEBHOOK_URL"
