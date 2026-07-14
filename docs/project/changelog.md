@@ -1,5 +1,23 @@
 # Changelog — HCBB Dungeon Finder
 
+## 2026-07-14 — In-game Discord links + auto release announcements
+- Options tab gained a **Community & support** section with two buttons:
+  **Join our Discord** and **Report a Bug** (which points users at the
+  `#bug-report` channel). Both open a shared copyable-link popup
+  (`UI.CopyPopup`, a `StaticPopup` with a pre-selected edit box) — the client
+  has no in-game browser and rejects clickable URLs, so the link sits ready for
+  a one-keystroke Ctrl+C. URLs live in `Data.LINKS`. Five new locale keys
+  (`OPT_COMMUNITY`, `OPT_DISCORD`, `OPT_REPORT_BUG`, `DISCORD_POPUP`,
+  `REPORT_POPUP`) in all five languages; `OKAY` whitelisted (luacheck + luarc);
+  README **Community & support** section; architecture.md note; download bundle
+  refreshed. Copyable-popup mechanism validated in-game.
+- **GitHub → Discord release announcements**: new
+  `.github/workflows/discord-release.yml` posts a rich embed (title + release
+  notes + link, gold accent) to `#announcements` on every published release,
+  via the `DISCORD_WEBHOOK_URL` repo secret. Replaces GitHub's native `/github`
+  webhook (a bare one-liner with no description). Verified end-to-end with a
+  throwaway pre-release; the native webhook was removed to avoid duplicates.
+
 ## 2026-07-14 — Update notice as an accent banner in the status strip
 - The version-mismatch notice was chat-only (easy to miss). It now also turns
   the window's status strip into an accent banner (dark-amber fill, gold text)

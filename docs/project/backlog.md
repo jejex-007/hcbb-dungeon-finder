@@ -74,6 +74,18 @@ Effort scale (owner+Claude pair velocity): S < 1h · M 1–2h · L 3–5h · XL 
   read, never picked). Matcher/wire needed no change — Support is already
   optional (≤1), a Support-less pool forms T/H/D (existing matcher test).
   In-game validation on Bronzebeard pending (part of M5 smoke test).
+- [x] **In-game community links** (Join our Discord + Report a Bug) — done
+  2026-07-14 (actual ~0.5h). Shared copyable-link popup (`UI.CopyPopup`, a
+  `StaticPopup` with a pre-selected edit box, since the client has no browser
+  and rejects clickable URLs); Discord invite in `Data.LINKS`; Report a Bug
+  directs users to `#bug-report`; 5 locale keys; `OKAY` whitelisted. Copyable
+  popup validated in-game.
+- [x] **Auto release announcements to Discord** — done 2026-07-14 (actual
+  ~0.5h). `.github/workflows/discord-release.yml` posts a rich embed (title +
+  release notes + link) to `#announcements` on every published release, via the
+  `DISCORD_WEBHOOK_URL` repo secret; replaced GitHub's native `/github` webhook.
+  Verified end-to-end with a throwaway pre-release. Discord server set up
+  (`#announcements` read-only + pinned message, `#bug-report`).
 
 ## Open questions
 - ~~Exact Boss Blitz marker~~ — RESOLVED 2026-07-13: permanent **debuff**
