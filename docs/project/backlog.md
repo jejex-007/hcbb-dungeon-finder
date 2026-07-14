@@ -44,6 +44,27 @@ Effort scale (owner+Claude pair velocity): S < 1h · M 1–2h · L 3–5h · XL 
 - [ ] Full 2-client match run on Ascension (the checklist end-to-end) (S)
 - [ ] v0.1.0 tag, GitHub release zip (scripts/package.ps1), announce (S)
 
+## M6 — Post-v0.1.0 enhancements (M–L)
+- [ ] **Version negotiation + mismatch notice** (NFR-C5): carry the addon
+  *release* version (distinct from the wire protocol tag `HCBB<n>`) in comm
+  messages so a client can detect peers running a different version and show a
+  one-time, localized "an updated version is available" notice. Wire: add an
+  optional trailing version field to HELLO (backward-compatible, same pattern
+  as the class field — no protocol bump); compare on receive; surface at most
+  once per session. Codec test for the new field. (S–M)
+- [ ] **Per-game-mode class/role model** (CoA vs Warcraft Reborn): HCBB runs in
+  two game modes with different class systems —
+  - **Conquest of Azeroth (CoA)**: the 21 custom classes, **with** the Support
+    role.
+  - **Warcraft Reborn**: the 9 base WoW Classic classes, **no** Support role.
+
+  The same client build must adapt to the active mode: (a) show the correct
+  class set + colors; (b) drop the Support role entirely in Warcraft Reborn
+  across registration (role cards), the matcher composition rule (≤1 support →
+  tank/heal/DPS only), and the browser. Data-driven in `Data.lua`; mode
+  detection mechanism TBD (`GetRealmName()` vs probing the local class token
+  set). Cross-mode matching is moot (players are isolated per mode). (M)
+
 ## Open questions
 - ~~Exact Boss Blitz marker~~ — RESOLVED 2026-07-13: permanent **debuff**
   "Hardcore - Boss Blitz", **spellId 93131**. Pinned in `Data.CHALLENGE_AURAS`
