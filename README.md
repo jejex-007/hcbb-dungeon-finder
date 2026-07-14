@@ -71,6 +71,14 @@ invites. Anyone declines or times out → everyone else returns to searching
 automatically. Full protocol and design docs live in
 [docs/design/architecture.md](docs/design/architecture.md).
 
+## Community & support
+
+Join the **[HCBB Dungeon Finder Discord](https://discord.gg/AHpHCd65eQ)** for
+announcements, to find groups out-of-game, and to report bugs (`#bug-report`).
+The same links are one click away in-game under the **Options** tab
+(*Join our Discord* / *Report a Bug*) — the addon shows them in a copyable box
+since the game client has no in-game browser.
+
 ## Development
 
 - WotLK 3.3.5a API (Interface 30300), Lua 5.1, Ace3 (embedded).

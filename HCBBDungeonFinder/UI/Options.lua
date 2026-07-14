@@ -14,6 +14,7 @@ local LANGS = {
 }
 
 local pane, langBtn, langLabel, mmCheck, soundCheck, hbInfo, verText
+local communityLabel, discordBtn, reportBtn
 
 local function langText(code)
     for _, lang in ipairs(LANGS) do
@@ -67,6 +68,21 @@ function UI.CreateOptions(parent)
     hbInfo = UI.Label(pane, "small", UI.COLOR.muted)
     hbInfo:SetPoint("TOPLEFT", 8, -140)
 
+    communityLabel = UI.Label(pane, "small", UI.COLOR.gold)
+    communityLabel:SetPoint("TOPLEFT", 6, -172)
+
+    discordBtn = UI.Button(pane, 150, 24)
+    discordBtn:SetPoint("TOPLEFT", 4, -188)
+    discordBtn:SetScript("OnClick", function()
+        UI.CopyPopup(L["DISCORD_POPUP"], NS.Data.LINKS.discord)
+    end)
+
+    reportBtn = UI.Button(pane, 150, 24)
+    reportBtn:SetPoint("LEFT", discordBtn, "RIGHT", 8, 0)
+    reportBtn:SetScript("OnClick", function()
+        UI.CopyPopup(L["REPORT_POPUP"], NS.Data.LINKS.discord)
+    end)
+
     verText = UI.Label(pane, "small", UI.COLOR.muted)
     verText:SetPoint("BOTTOMLEFT", 8, 6)
 
@@ -77,6 +93,9 @@ function UI.CreateOptions(parent)
         soundCheck.label:SetText(L["OPT_SOUND"])
         hbInfo:SetText(L["OPT_HB_INFO"]:format(NS.Data.CONST.HEARTBEAT,
                                                NS.Data.CONST.EXPIRY))
+        communityLabel:SetText(L["OPT_COMMUNITY"])
+        discordBtn:SetText(L["OPT_DISCORD"])
+        reportBtn:SetText(L["OPT_REPORT_BUG"])
         verText:SetText(("%s v%s \194\183 proto %d"):format(L["TITLE"],
                         NS.VERSION, NS.Codec.PROTO))
     end

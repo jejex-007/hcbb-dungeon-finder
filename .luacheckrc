@@ -17,7 +17,7 @@ exclude_files = {
 read_globals = {
     -- frames & UI
     "CreateFrame", "UIParent", "Minimap", "GameTooltip",
-    "NUM_CHAT_WINDOWS", "StaticPopup_Show", "CANCEL",
+    "NUM_CHAT_WINDOWS", "StaticPopup_Show", "CANCEL", "OKAY",
     "FauxScrollFrame_Update", "FauxScrollFrame_GetOffset",
     "FauxScrollFrame_OnVerticalScroll",
     "UIDropDownMenu_Initialize", "UIDropDownMenu_CreateInfo",

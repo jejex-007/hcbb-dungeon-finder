@@ -64,6 +64,12 @@ NS.locales.deDE = {
     OPT_SOUND = "Ton bei Gruppenvorschlag abspielen",
     OPT_HB_INFO = "Signal alle %d s · Einträge verfallen nach %d s",
 
+    OPT_COMMUNITY = "Community & Support",
+    OPT_DISCORD = "Discord beitreten",
+    OPT_REPORT_BUG = "Fehler melden",
+    DISCORD_POPUP = "Kopiere diesen Link (Strg+C) und öffne ihn im Browser, um dem Discord beizutreten:",
+    REPORT_POPUP = "Fehler gefunden? Melde ihn im Kanal #bug-report auf unserem Discord. Kopiere den Einladungslink (Strg+C):",
+
     CH_OK = "Mit dem Suchkanal verbunden",
     CH_RECON = "Verbinde erneut mit dem Suchkanal…",
     CH_LABEL = "LFG-Kanal",

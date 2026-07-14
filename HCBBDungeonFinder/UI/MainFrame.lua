@@ -283,6 +283,13 @@ function UI.CanInvite()
     return true
 end
 
+-- Copyable-link popup: this client has no in-game browser and rejects
+-- clickable URLs, so we drop the link into a pre-selected edit box for a
+-- one-keystroke Ctrl+C. `header` explains what the link is for.
+function UI.CopyPopup(header, url)
+    StaticPopup_Show("HCBB_COPY_LINK", header, nil, { url = url })
+end
+
 UI.refreshers = {}
 function UI.OnLocaleChanged()
     for _, fn in ipairs(UI.refreshers) do fn() end
@@ -469,6 +476,26 @@ function UI.Init()
             L["SUGGEST_POPUP"]:format(from, target, boss and boss.boss or "?"),
             nil, { target = target })
     end)
+
+    -- Copyable community links (Discord, bug report). No clickable URLs on
+    -- this client, so the link sits pre-selected in an edit box for Ctrl+C.
+    StaticPopupDialogs["HCBB_COPY_LINK"] = {
+        text = "%s",
+        button1 = OKAY,
+        hasEditBox = true,
+        editBoxWidth = 260,
+        OnShow = function(self)
+            local eb = _G[self:GetName() .. "EditBox"]
+            if eb then
+                eb:SetText((self.data and self.data.url) or "")
+                eb:HighlightText()
+                eb:SetFocus()
+            end
+        end,
+        EditBoxOnEnterPressed = function(self) self:GetParent():Hide() end,
+        EditBoxOnEscapePressed = function(self) self:GetParent():Hide() end,
+        timeout = 0, whileDead = 1, hideOnEscape = 1, preferredIndex = 3,
+    }
 
     -- Auto-close the window when combat starts (hiding never cancels the
     -- search — that lives in Session state, not window visibility).

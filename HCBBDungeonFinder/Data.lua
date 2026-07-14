@@ -25,6 +25,13 @@ Data.CONST = {
     DECLINE_COOLDOWN = 120,        -- s a decliner is excluded from rematching
 }
 
+-- Community links surfaced in the Options tab. Ascension has no in-game
+-- browser and rejects clickable URLs, so the UI shows them pre-selected in a
+-- copyable edit box (UI.CopyPopup) rather than opening them.
+Data.LINKS = {
+    discord = "https://discord.gg/AHpHCd65eQ",
+}
+
 Data.ROLE = { TANK = 1, HEAL = 2, SUPPORT = 4, DPS = 8 }
 Data.ROLE_ORDER = { 1, 2, 4, 8 }
 

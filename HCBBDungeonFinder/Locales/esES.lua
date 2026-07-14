@@ -64,6 +64,12 @@ NS.locales.esES = {
     OPT_SOUND = "Reproducir sonido al proponer grupo",
     OPT_HB_INFO = "Señal cada %d s · los anuncios caducan tras %d s",
 
+    OPT_COMMUNITY = "Comunidad y soporte",
+    OPT_DISCORD = "Únete a nuestro Discord",
+    OPT_REPORT_BUG = "Reportar un error",
+    DISCORD_POPUP = "Copia este enlace (Ctrl+C) y ábrelo en tu navegador para unirte a nuestro Discord:",
+    REPORT_POPUP = "¿Encontraste un error? Repórtalo en el canal #bug-report de nuestro Discord. Copia el enlace de invitación (Ctrl+C):",
+
     CH_OK = "Conectado al canal de emparejamiento",
     CH_RECON = "Reconectando al canal de emparejamiento…",
     CH_LABEL = "Canal LFG",

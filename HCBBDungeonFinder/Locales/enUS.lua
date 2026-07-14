@@ -64,6 +64,12 @@ NS.locales.enUS = {
     OPT_SOUND = "Play sound on group proposal",
     OPT_HB_INFO = "Heartbeat every %d s · listings expire after %d s",
 
+    OPT_COMMUNITY = "Community & support",
+    OPT_DISCORD = "Join our Discord",
+    OPT_REPORT_BUG = "Report a Bug",
+    DISCORD_POPUP = "Copy this link (Ctrl+C) and open it in your browser to join our Discord:",
+    REPORT_POPUP = "Found a bug? Post it in the #bug-report channel on our Discord. Copy the invite link (Ctrl+C):",
+
     CH_OK = "Connected to the matchmaking channel",
     CH_RECON = "Reconnecting to the matchmaking channel…",
     CH_LABEL = "LFG channel",

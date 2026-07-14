@@ -187,6 +187,12 @@ Notable behaviours:
 - Checkbox labels are clickable (a transparent hit area over the label
   forwards to the box, gated on the box being enabled) — a shared `UI.Check`
   behaviour, so it applies to the lead opt-in and the options toggles alike.
+- Community links (Discord invite, Report a Bug) live under the Options tab.
+  The client has no in-game browser and rejects clickable URLs, so each button
+  opens a shared `UI.CopyPopup` (a `StaticPopup` with a pre-selected edit box)
+  for a one-keystroke Ctrl+C. URLs are declared once in `Data.LINKS`; both
+  buttons point at the Discord invite (Report a Bug directs the user to the
+  `#bug-report` channel). GitHub Issues stays the maintainer-side tracker.
 - The Ascension client honors `SetVertexColor` but not `SetGradientAlpha`,
   so panels/buttons use flat vertex-color tints; status marks (✓/✗) use
   ready-check textures since the game font lacks those glyphs.

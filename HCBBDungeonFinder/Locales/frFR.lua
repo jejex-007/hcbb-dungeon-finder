@@ -63,6 +63,12 @@ NS.locales.frFR = {
     OPT_SOUND = "Jouer un son à la proposition de groupe",
     OPT_HB_INFO = "Signal toutes les %d s · les annonces expirent après %d s",
 
+    OPT_COMMUNITY = "Communauté et support",
+    OPT_DISCORD = "Rejoindre le Discord",
+    OPT_REPORT_BUG = "Signaler un bug",
+    DISCORD_POPUP = "Copiez ce lien (Ctrl+C) et ouvrez-le dans votre navigateur pour rejoindre le Discord :",
+    REPORT_POPUP = "Un bug ? Signalez-le dans le canal #bug-report du Discord. Copiez le lien d'invitation (Ctrl+C) :",
+
     CH_OK = "Connecté au canal de recherche",
     CH_RECON = "Reconnexion au canal de recherche…",
     CH_LABEL = "Canal LFG",
