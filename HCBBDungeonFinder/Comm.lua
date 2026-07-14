@@ -131,6 +131,9 @@ function Comm:OnChannel(_, msg, sender, _, _, _, _, _, _, chanName)
     NS.Debug("RX chan", sender, msg)
     if not MSG_TO_POOL[t.type] then return end -- negotiation never on channel
     if t.type == "H" then
+        -- Same protocol major (Codec accepted it), but a peer on a newer
+        -- release nudges us to update — once per session (NFR-C5).
+        if NS.Codec.isNewer(t.ver, NS.VERSION) then NS.NoticeNewerVersion() end
         NS.Pool:OnHello(sender, t)
     else
         NS.Pool:OnBye(sender)

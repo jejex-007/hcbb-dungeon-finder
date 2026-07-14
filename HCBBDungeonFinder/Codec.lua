@@ -231,4 +231,21 @@ function Codec.decode(s)
     return t
 end
 
+-- Numeric semver comparison (pure, testable). Returns true iff release `a`
+-- is strictly newer than release `b`. Both must be well-formed "X.Y.Z";
+-- anything else returns false so a garbage version never nags the user.
+-- Numeric per component, so 0.1.10 is newer than 0.1.9 (a string compare
+-- would get that wrong).
+function Codec.isNewer(a, b)
+    if type(a) ~= "string" or type(b) ~= "string" then return false end
+    local a1, a2, a3 = a:match("^(%d+)%.(%d+)%.(%d+)$")
+    local b1, b2, b3 = b:match("^(%d+)%.(%d+)%.(%d+)$")
+    if not (a1 and b1) then return false end
+    a1, a2, a3 = tonumber(a1), tonumber(a2), tonumber(a3)
+    b1, b2, b3 = tonumber(b1), tonumber(b2), tonumber(b3)
+    if a1 ~= b1 then return a1 > b1 end
+    if a2 ~= b2 then return a2 > b2 end
+    return a3 > b3
+end
+
 return Codec

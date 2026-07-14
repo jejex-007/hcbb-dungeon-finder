@@ -45,13 +45,14 @@ Effort scale (owner+Claude pair velocity): S < 1h · M 1–2h · L 3–5h · XL 
 - [ ] v0.1.0 tag, GitHub release zip (scripts/package.ps1), announce (S)
 
 ## M6 — Post-v0.1.0 enhancements (M–L)
-- [ ] **Version negotiation + mismatch notice** (NFR-C5): carry the addon
-  *release* version (distinct from the wire protocol tag `HCBB<n>`) in comm
-  messages so a client can detect peers running a different version and show a
-  one-time, localized "an updated version is available" notice. Wire: add an
-  optional trailing version field to HELLO (backward-compatible, same pattern
-  as the class field — no protocol bump); compare on receive; surface at most
-  once per session. Codec test for the new field. (S–M)
+- [x] **Version negotiation + mismatch notice** (NFR-C5) — done 2026-07-14
+  (actual ~0.5h). The `ver` field already rode in every HELLO; added
+  `Codec.isNewer` (pure, numeric semver compare) and wired `Comm:OnChannel`
+  to fire the existing once-per-session `NoticeNewerVersion` when a peer's
+  release is strictly newer than ours. Message `MSG_NEWER_PROTO` is already
+  update-generic in all 5 locales. Distinct from the proto-major drop (same
+  proto still interoperates). 4 Codec regression tests (incl. 0.1.10 > 0.1.9).
+  In-game 2-version validation pending (part of M5 smoke test).
 - [ ] **Per-game-mode class/role model** (CoA vs Warcraft Reborn): HCBB runs in
   two game modes with different class systems —
   - **Conquest of Azeroth (CoA)**: the 21 custom classes, **with** the Support

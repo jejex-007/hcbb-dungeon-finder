@@ -97,8 +97,11 @@ SUGGEST(party/raid)     HCBB1:S:<target>:<bossId>    -- suggest-invite (R24)
 ```
 
 - `bossId`: index in the Data table (locale-independent, R22).
-- `roles`: bitmask T=1 H=2 S=4 D=8. `lead`: 0/1. `ver`: addon version for
-  the update notice.
+- `roles`: bitmask T=1 H=2 S=4 D=8. `lead`: 0/1. `ver`: addon release version
+  (semver). A received HELLO whose `ver` is a strictly newer release than ours
+  (`Codec.isNewer`, numeric per component) triggers a single "update available"
+  notice per session (NFR-C5) — distinct from the unknown-proto-major drop
+  above: same proto still interoperates fully, the notice is just a nudge.
 - `class`: optional trailing 2-letter CoA class abbreviation (e.g. `sa` =
   Bloodmage). Backward-compatible extension of HELLO — the decoder accepts 9
   or 10 fields, so no wire-version bump (older/newer clients interoperate;
