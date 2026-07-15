@@ -27,6 +27,10 @@ through a hidden chat channel and invisible addon whispers.
 - **Who's Looking browser**: class-colored names, freshness dots, dungeon
   filter; right-click a listing for the native player menu (Invite / Suggest
   Invite / Whisper / Target).
+- **Who's Playing**: see every enrolled player currently online with the addon
+  — class, level and professions (with rank), so you can find the community
+  (and that blacksmith) without anyone having to be searching for a group.
+  Right-click for the same native menu. You can opt out in Options.
 - **Stays out of the way**: the window auto-closes when you enter combat
   (your search keeps running), and Search is disabled while you're grouped.
 - **Localized**: English (default), Français, Deutsch, Español, Italiano.

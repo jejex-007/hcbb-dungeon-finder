@@ -69,6 +69,55 @@ describe("Codec.encode", function()
         assert.equal("refill", x.reason)
     end)
 
+    it("round-trips PRESENCE with professions", function()
+        local wire = Codec.encode({ type = "W", seq = 12, level = 60,
+                                    ver = "0.1.0", class = "wa",
+                                    profs = { { ab = "bs", rank = 147 },
+                                              { ab = "mi", rank = 133 } } })
+        assert.equal("HCBB1:W:12:60:0.1.0:wa:bs147,mi133", wire)
+        local back = Codec.decode(wire)
+        assert.equal("W", back.type)
+        assert.equal(12, back.seq)
+        assert.equal(60, back.level)
+        assert.equal("0.1.0", back.ver)
+        assert.equal("wa", back.class)
+        assert.equal(2, #back.profs)
+        assert.equal("bs", back.profs[1].ab)
+        assert.equal(147, back.profs[1].rank)
+        assert.equal(133, back.profs[2].rank)
+    end)
+
+    it("round-trips PRESENCE with no professions", function()
+        local wire = Codec.encode({ type = "W", seq = 1, level = 20,
+                                    ver = "0.1.0", class = "pr", profs = {} })
+        assert.equal("HCBB1:W:1:20:0.1.0:pr:", wire)
+        local back = Codec.decode(wire)
+        assert.equal("W", back.type)
+        assert.equal(0, #back.profs) -- valid state, not a decode failure
+    end)
+
+    it("carries the release version on PRESENCE (update notice, NFR-C5)", function()
+        -- Every online client pings, so W is the reliable update vector.
+        local back = Codec.decode("HCBB1:W:1:20:0.2.0:pr:")
+        assert.equal("0.2.0", back.ver)
+        assert.truthy(Codec.isNewer(back.ver, "0.1.0"))
+        assert.falsy(Codec.decode("HCBB1:W:1:20:0.2:pr:"))     -- malformed ver
+        assert.falsy(Codec.decode("HCBB1:W:1:20:beta:pr:"))
+    end)
+
+    it("rejects malformed PRESENCE professions", function()
+        assert.falsy(Codec.decode("HCBB1:W:1:20:0.1.0:pr:bs"))        -- no rank
+        assert.falsy(Codec.decode("HCBB1:W:1:20:0.1.0:pr:b1"))        -- bad abbrev
+        assert.falsy(Codec.decode("HCBB1:W:1:20:0.1.0:pr:BS147"))     -- uppercase
+        assert.falsy(Codec.decode("HCBB1:W:1:20:0.1.0:pr:bs147,bs20")) -- duplicate
+        assert.falsy(Codec.decode("HCBB1:W:1:20:0.1.0:pr:bs1,mi1,al1")) -- > 2 primaries
+        assert.falsy(Codec.decode("HCBB1:W:1:20:0.1.0:pr:bs0"))       -- rank 0
+        assert.falsy(Codec.encode({ type = "W", seq = 1, level = 20, ver = "0.1.0",
+                                    class = "pr", profs = { { ab = "bs", rank = 1000 } } }))
+        assert.falsy(Codec.encode({ type = "W", seq = 1, level = 20, ver = "0.1.0",
+                                    class = "toolong", profs = {} }))
+    end)
+
     it("round-trips SUGGEST", function()
         local wire = Codec.encode({ type = "S", target = "Corvin", bossId = 3 })
         assert.equal("HCBB1:S:Corvin:3", wire)

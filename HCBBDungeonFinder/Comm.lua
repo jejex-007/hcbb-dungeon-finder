@@ -6,7 +6,7 @@ local _, NS = ...
 local Comm = { channelId = 0, healthy = false, joinTries = 0 }
 NS.Comm = Comm
 
-local MSG_TO_POOL = { H = true, B = true }
+local MSG_TO_POOL = { H = true, B = true, W = true }
 local MSG_TO_SESSION = { P = true, A = true, N = true, C = true, X = true, S = true }
 
 function Comm:Init(addon)
@@ -57,6 +57,7 @@ function Comm:Leave()
         self.addon:SendMessage("HCBB_CHANNEL_DOWN")
     end
     NS.Pool:Wipe()
+    NS.Presence:Wipe() -- off the channel: we can no longer vouch for anyone
 end
 
 function Comm:HideFromChat()
@@ -85,13 +86,21 @@ function Comm:CheckHealth()
     end
 end
 
--- Presence broadcast (H/B). Loss-tolerant: false return just means "not
+-- Presence broadcast (H/B/W). Loss-tolerant: false return just means "not
 -- joined yet"; the heartbeat will carry the state on the next tick.
+-- Routed through ChatThrottleLib at BULK as NFR-P2 requires: with every online
+-- client now sending a presence ping, channel volume scales with population,
+-- and an unthrottled SendChatMessage risks the server's anti-spam disconnect.
 function Comm:Broadcast(tbl)
     if not self.healthy or self.channelId == 0 then return false end
     local payload = NS.Codec.encode(tbl)
     if not payload then return false end
-    SendChatMessage(payload, "CHANNEL", nil, self.channelId)
+    if ChatThrottleLib then
+        ChatThrottleLib:SendChatMessage("BULK", self.prefix, payload,
+                                        "CHANNEL", nil, self.channelId)
+    else
+        SendChatMessage(payload, "CHANNEL", nil, self.channelId)
+    end
     NS.Debug("TX chan", payload)
     return true
 end
@@ -130,13 +139,19 @@ function Comm:OnChannel(_, msg, sender, _, _, _, _, _, _, chanName)
     end
     NS.Debug("RX chan", sender, msg)
     if not MSG_TO_POOL[t.type] then return end -- negotiation never on channel
+    -- Same protocol major (Codec accepted it), but a peer on a newer release
+    -- nudges us to update — once per session (NFR-C5). Both HELLO and the
+    -- presence ping carry `ver`; the ping is the reliable vector, since every
+    -- online client sends it while HELLO only goes out during a search.
+    if t.ver and NS.Codec.isNewer(t.ver, NS.VERSION) then
+        NS.NoticeNewerVersion()
+    end
     if t.type == "H" then
-        -- Same protocol major (Codec accepted it), but a peer on a newer
-        -- release nudges us to update — once per session (NFR-C5).
-        if NS.Codec.isNewer(t.ver, NS.VERSION) then NS.NoticeNewerVersion() end
         NS.Pool:OnHello(sender, t)
+    elseif t.type == "W" then
+        NS.Presence:OnPing(sender, t)
     else
-        NS.Pool:OnBye(sender)
+        NS.Pool:OnBye(sender) -- "stopped searching", never "went offline"
     end
 end
 

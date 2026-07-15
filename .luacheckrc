@@ -30,11 +30,12 @@ read_globals = {
     "UnitName", "UnitLevel", "UnitClass", "UnitBuff", "UnitDebuff",
     "GetNumPartyMembers", "GetNumRaidMembers", "IsPartyLeader", "IsRaidLeader",
     "InviteUnit", "RAID_CLASS_COLORS",
+    "GetNumSkillLines", "GetSkillLineInfo", "ExpandSkillHeader",
     "IsShiftKeyDown", "GetCursorPosition", "PlaySound",
     -- addon loading (loader)
     "LoadAddOn", "IsAddOnLoaded", "EnableAddOn",
     -- libraries & wow lua aliases
-    "LibStub", "tinsert", "tremove", "strsplit", "wipe",
+    "LibStub", "ChatThrottleLib", "tinsert", "tremove", "strsplit", "wipe",
 }
 
 globals = {

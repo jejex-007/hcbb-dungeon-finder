@@ -14,7 +14,7 @@ local LANGS = {
 }
 
 local pane, langBtn, langLabel, mmCheck, soundCheck, hbInfo, verText
-local communityLabel, discordBtn, reportBtn
+local communityLabel, discordBtn, reportBtn, presenceCheck
 
 local function langText(code)
     for _, lang in ipairs(LANGS) do
@@ -65,14 +65,23 @@ function UI.CreateOptions(parent)
         NS.addon.db.global.sound = self:GetChecked() and true or false
     end)
 
+    -- Checked = visible, so the stored flag is inverted (hidePresence).
+    -- Presence:SetHidden owns the side effects: drop ourselves from our own
+    -- list at once when hiding, re-announce at once when unhiding.
+    presenceCheck = UI.Check(pane)
+    presenceCheck:SetPoint("TOPLEFT", 6, -130) -- keep the 30 px checkbox rhythm
+    presenceCheck:SetScript("OnClick", function(self)
+        NS.Presence:SetHidden(not self:GetChecked())
+    end)
+
     hbInfo = UI.Label(pane, "small", UI.COLOR.muted)
-    hbInfo:SetPoint("TOPLEFT", 8, -140)
+    hbInfo:SetPoint("TOPLEFT", 8, -162)
 
     communityLabel = UI.Label(pane, "small", UI.COLOR.gold)
-    communityLabel:SetPoint("TOPLEFT", 6, -172)
+    communityLabel:SetPoint("TOPLEFT", 6, -190)
 
     discordBtn = UI.Button(pane, 150, 24)
-    discordBtn:SetPoint("TOPLEFT", 4, -188)
+    discordBtn:SetPoint("TOPLEFT", 4, -206)
     discordBtn:SetScript("OnClick", function()
         UI.CopyPopup(L["DISCORD_POPUP"], NS.Data.LINKS.discord)
     end)
@@ -91,6 +100,7 @@ function UI.CreateOptions(parent)
         langBtn:SetText(langText(NS.addon.db.global.lang))
         mmCheck.label:SetText(L["OPT_MM"])
         soundCheck.label:SetText(L["OPT_SOUND"])
+        presenceCheck.label:SetText(L["OPT_PRESENCE"])
         hbInfo:SetText(L["OPT_HB_INFO"]:format(NS.Data.CONST.HEARTBEAT,
                                                NS.Data.CONST.EXPIRY))
         communityLabel:SetText(L["OPT_COMMUNITY"])
@@ -104,6 +114,7 @@ function UI.CreateOptions(parent)
     pane:SetScript("OnShow", function()
         mmCheck:SetChecked(not NS.addon.db.global.minimap.hide)
         soundCheck:SetChecked(NS.addon.db.global.sound and true or false)
+        presenceCheck:SetChecked(not NS.addon.db.global.hidePresence)
         refreshTexts()
     end)
 

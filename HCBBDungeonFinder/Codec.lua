@@ -11,6 +11,13 @@
 --   HCBB1:N:<matchId>:<reason>
 --   HCBB1:C:<matchId>
 --   HCBB1:X:<matchId>:<reason>
+--   HCBB1:W:<seq>:<level>:<ver>:<class>:<ab><rank>,...  (presence/Who's Playing)
+--
+-- W is additive on purpose: it ships under the SAME protocol major, because
+-- Codec.decode reports an unknown *type* separately from an unknown *major*
+-- and Comm drops it silently. A 0.1.x client therefore ignores W without
+-- crashing or firing the update notice, whereas bumping to HCBB2 would make
+-- it reject every message including HELLO. Never bump the major to add a type.
 
 local Codec = { PROTO = 1 }
 
@@ -23,6 +30,8 @@ local MAX_PAYLOAD = 240
 local REASONS = { busy = true, changed = true, declined = true,
                   refill = true, timeout = true, cancel = true }
 local VALID_ROLE = { [1] = true, [2] = true, [4] = true, [8] = true }
+-- Wire ceiling for W: a character has at most two primary professions.
+local MAX_PROFS = 2
 
 -- WoW character names: no spaces or punctuation we use as separators.
 -- UTF-8 accented bytes are > 0x7F and pass the negated class.
@@ -52,6 +61,26 @@ local function encodeMembers(members)
         parts[i] = m.name .. "," .. m.role .. "," .. m.level
     end
     return table.concat(parts, ";")
+end
+
+-- "<ab><rank>" pairs, comma-separated; "" when the character has none (a
+-- perfectly normal state, not an error). Rank is the raw skill value: the
+-- Ascension caps differ from WotLK (150/225 vs 450), so we never interpret it.
+local function encodeProfs(profs)
+    if profs == nil then return "" end
+    if type(profs) ~= "table" or #profs > MAX_PROFS then return nil end
+    local parts, seen = {}, {}
+    for i = 1, #profs do
+        local p = profs[i]
+        if not (type(p) == "table" and type(p.ab) == "string"
+                and p.ab:match("^%l%l$") and isInt(p.rank, 1, 999)
+                and not seen[p.ab]) then
+            return nil
+        end
+        seen[p.ab] = true
+        parts[i] = p.ab .. p.rank
+    end
+    return table.concat(parts, ",")
 end
 
 local encoders = {
@@ -103,6 +132,21 @@ local encoders = {
                 and REASONS[t.reason]) then return nil end
         return HEADER .. ":X:" .. t.matchId .. ":" .. t.reason
     end,
+    W = function(t) -- presence ping (Who's Playing). Name comes from the
+                    -- channel sender (NFR-S2), never from the payload.
+                    -- Carries `ver` on purpose: every online client pings, so
+                    -- this is a far better update-notice vector than HELLO,
+                    -- which only goes out while someone is searching (NFR-C5).
+        if not (isInt(t.seq, 0, 65535) and isInt(t.level, 1, 99)
+                and type(t.ver) == "string" and t.ver:match(VER_PAT)
+                and type(t.class) == "string" and t.class:match("^%l%l$")) then
+            return nil
+        end
+        local profs = encodeProfs(t.profs)
+        if not profs then return nil end
+        return table.concat({ HEADER, "W", t.seq, t.level, t.ver, t.class,
+                              profs }, ":")
+    end,
     S = function(t) -- suggest invite (over PARTY/RAID)
         if not (checkName(t.target) and isInt(t.bossId, 1, 99)) then return nil end
         return HEADER .. ":S:" .. t.target .. ":" .. t.bossId
@@ -147,6 +191,23 @@ local function decodeMembers(s, size)
         members[i] = { name = name, role = role, level = level }
     end
     return members
+end
+
+local function decodeProfs(s)
+    if s == "" then return {} end -- no professions is valid, not a failure
+    local rows = split(s, ",")
+    if #rows > MAX_PROFS then return nil end
+    local profs, seen = {}, {}
+    for i = 1, #rows do
+        local ab, rank = rows[i]:match("^(%l%l)(%d+)$")
+        rank = tonumber(rank)
+        if not (ab and rank and isInt(rank, 1, 999) and not seen[ab]) then
+            return nil
+        end
+        seen[ab] = true
+        profs[i] = { ab = ab, rank = rank }
+    end
+    return profs
 end
 
 local decoders = {
@@ -205,6 +266,20 @@ local decoders = {
     X = function(f)
         if not (#f == 4 and f[3]:match(MATCHID_PAT) and REASONS[f[4]]) then return nil end
         return { type = "X", matchId = f[3], reason = f[4] }
+    end,
+    W = function(f)
+        if #f ~= 7 then return nil end
+        local t = { type = "W", seq = tonumber(f[3]), level = tonumber(f[4]),
+                    ver = f[5], class = f[6] }
+        if not (t.seq and isInt(t.seq, 0, 65535)
+                and t.level and isInt(t.level, 1, 99)
+                and t.ver:match(VER_PAT)
+                and t.class:match("^%l%l$")) then
+            return nil
+        end
+        t.profs = decodeProfs(f[7])
+        if not t.profs then return nil end
+        return t
     end,
     S = function(f)
         if #f ~= 4 then return nil end

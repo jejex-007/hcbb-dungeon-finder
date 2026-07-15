@@ -425,7 +425,7 @@ function UI.Init()
 
     -- Bottom tabs (flow layout — widths follow text, no overlap in any locale)
     f.tabs, f.panes = {}, {}
-    local tabKeys = { "TAB_FIND", "TAB_POOL", "TAB_OPT" }
+    local tabKeys = { "TAB_FIND", "TAB_POOL", "TAB_PLAYING", "TAB_OPT" }
     for i, key in ipairs(tabKeys) do
         local tab = UI.Button(f, 10, 24)
         tab.key = key
@@ -456,7 +456,8 @@ function UI.Init()
 
     if UI.CreateRegistration then f.panes[1] = UI.CreateRegistration(f.content) end
     if UI.CreateBrowser then f.panes[2] = UI.CreateBrowser(f.content) end
-    if UI.CreateOptions then f.panes[3] = UI.CreateOptions(f.content) end
+    if UI.CreatePlaying then f.panes[3] = UI.CreatePlaying(f.content) end
+    if UI.CreateOptions then f.panes[4] = UI.CreateOptions(f.content) end
     if UI.CreateProposal then UI.CreateProposal() end
     if UI.CreateMinimap then UI.CreateMinimap() end
 

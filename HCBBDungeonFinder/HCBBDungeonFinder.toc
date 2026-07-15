@@ -2,7 +2,7 @@
 ## Title: HCBB Dungeon Finder
 ## Notes: Decentralized group finder for the Hardcore Boss Blitz challenge.
 ## Author: KySeEtH
-## Version: 0.1.0
+## Version: 0.2.0
 ## LoadOnDemand: 1
 ## SavedVariables: HCBB_DB
 ## X-Website: https://github.com/jejex-007/hcbb-dungeon-finder
@@ -26,6 +26,7 @@ Locales\itIT.lua
 Data.lua
 Codec.lua
 Pool.lua
+Presence.lua
 Matcher.lua
 Comm.lua
 Session.lua
@@ -34,6 +35,7 @@ Core.lua
 UI\MainFrame.lua
 UI\Registration.lua
 UI\Browser.lua
+UI\Playing.lua
 UI\ProposalPopup.lua
 UI\Options.lua
 UI\Minimap.lua

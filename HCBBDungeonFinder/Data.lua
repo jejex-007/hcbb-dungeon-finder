@@ -23,6 +23,15 @@ Data.CONST = {
     MAX_LEVEL_SPAN   = 3,          -- challenge rule (R9)
     CHANNEL_JOIN_DELAY = 8,        -- s after login before joining the channel
     DECLINE_COOLDOWN = 120,        -- s a decliner is excluded from rematching
+    -- Who's Playing presence. Unlike HELLO (sent only while searching), every
+    -- online client pings, so the interval is deliberately 4x the heartbeat:
+    -- NFR-P2 allows 1 msg/30 s per client and this stays well under it while
+    -- the channel-wide volume scales with the whole online population.
+    PRESENCE_PING    = 120,        -- s between presence pings
+    PRESENCE_JITTER  = 30,         -- s of random spread, so a server restart
+                                   -- doesn't make every client ping in lockstep
+    PRESENCE_EXPIRY  = 300,        -- s without a ping before we treat as offline
+    PRESENCE_CAP     = 200,        -- max presence entries kept (NFR-P6)
 }
 
 -- Community links surfaced in the Options tab. Ascension has no in-game
@@ -31,6 +40,30 @@ Data.CONST = {
 Data.LINKS = {
     discord = "https://discord.gg/AHpHCd65eQ",
 }
+
+-- The two primary professions, shown in the Who's Playing tab (R25). Keyed by
+-- the enUS skill-line name: the client runs enUS, the same assumption the
+-- cleared-boss tracking already makes with byBossName. Two-letter wire
+-- abbreviations keep channel payloads ASCII (NFR-C3) and short (NFR-C2); the
+-- display name is localized from the `PROF_<ab>` locale key (R22/NFR-L2), so
+-- the wire stays locale-independent.
+--
+-- This table IS the filter, which is why Ascension's custom Woodcutting and
+-- Woodworking are deliberately absent: they are abandonable and cost a slot
+-- like a primary (verified in-game 2026-07-15 on both realms — the client
+-- files them under "Secondary Skills"), so `isAbandonable` alone would let
+-- them through. Collection also checks `isAbandonable`, which is what drops
+-- Cooking, Fishing, First Aid, Riding, class/weapon skills and languages for
+-- free. Both game modes are identical here, so there is deliberately no
+-- per-mode table. Unknown skill lines are ignored, never guessed (NFR-S2).
+Data.PROF_ABBREV = {
+    ["Alchemy"] = "al", ["Blacksmithing"] = "bs", ["Enchanting"] = "en",
+    ["Engineering"] = "eg", ["Herbalism"] = "hb", ["Inscription"] = "in",
+    ["Jewelcrafting"] = "jc", ["Leatherworking"] = "lw", ["Mining"] = "mi",
+    ["Skinning"] = "sk", ["Tailoring"] = "ta",
+}
+
+Data.MAX_PROFS = 2
 
 Data.ROLE = { TANK = 1, HEAL = 2, SUPPORT = 4, DPS = 8 }
 Data.ROLE_ORDER = { 1, 2, 4, 8 }

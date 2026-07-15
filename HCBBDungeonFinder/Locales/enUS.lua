@@ -7,7 +7,27 @@ NS.locales.enUS = {
     TITLE = "HCBB Dungeon Finder",
     TAB_FIND = "Find Group",
     TAB_POOL = "Who's Looking",
+    TAB_PLAYING = "Who's Playing",
     TAB_OPT = "Options",
+
+    PLAYING_COUNT = "%d players online with the addon",
+    PLAYING_EMPTY = "Nobody else online yet — they'll show up here as they log in.",
+    PLAYING_INIT = "Initializing — announcing you on the channel…",
+    PLAYING_NO_PROFS = "No professions",
+
+    -- Primary professions (R25). The wire carries the 2-letter abbreviation
+    -- only (R22); these are the display names.
+    PROF_al = "Alchemy",
+    PROF_bs = "Blacksmithing",
+    PROF_en = "Enchanting",
+    PROF_eg = "Engineering",
+    PROF_hb = "Herbalism",
+    PROF_in = "Inscription",
+    PROF_jc = "Jewelcrafting",
+    PROF_lw = "Leatherworking",
+    PROF_mi = "Mining",
+    PROF_sk = "Skinning",
+    PROF_ta = "Tailoring",
 
     BOSS_LABEL = "Target boss",
     BOSS_REQ = "Requires level %d–%d — you are %d",
@@ -62,6 +82,7 @@ NS.locales.enUS = {
     LANG_AUTO = "Auto (game client)",
     OPT_MM = "Show minimap button",
     OPT_SOUND = "Play sound on group proposal",
+    OPT_PRESENCE = "Show me in Who's Playing",
     OPT_HB_INFO = "Heartbeat every %d s · listings expire after %d s",
 
     OPT_COMMUNITY = "Community & support",

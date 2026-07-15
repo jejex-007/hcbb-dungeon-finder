@@ -31,6 +31,27 @@ some steps are solo.
   locks both buttons, footer swaps to "group forming".
 - [ ] Enter combat → window auto-closes; reopen with `/hcbb`, search intact.
 
+## Who's Playing (R25)
+- [ ] Tab lists **yourself** within ~1 min of login (your own ping loops back
+  through the channel), with class colour, level, class and professions+rank.
+- [ ] Professions match your skill sheet: **only the two primaries** — not
+  Woodcutting / Woodworking (abandonable but excluded by the table), and not
+  Cooking / Fishing / First Aid / Riding (excluded by `isAbandonable`).
+- [ ] Switch language in Options → profession names follow (they are locale
+  keys, not the enUS skill-line names).
+- [ ] Right after login the tab says "Initializing", not "nobody online", and
+  swaps to the real state once the first ping goes out.
+- [ ] Hover → tooltip with the full profession list; right-click another
+  player → native menu; right-click yourself → nothing.
+- [ ] Options → uncheck "Show me in Who's Playing" → you vanish from your own
+  list **at once**, and stop being broadcast; you still see everyone else.
+  Re-check → you reappear immediately (not after the next 120 s ping). Peers
+  only drop you at the 300 s TTL — a sent ping can't be recalled.
+- [ ] Two clients: B appears in A's tab within ~2 min without either searching.
+- [ ] **Back-compat (critical)**: a **0.1.0** client must ignore `W` silently —
+  no Lua error, and **no "update available" notice** (unknown *type* is not
+  unknown *major*). Run one old client alongside a new one to confirm.
+
 ## Matchmaking (two clients A + B, same bracket)
 - [ ] Both search the same boss; each sees the other in Who's Looking within
   a heartbeat (~30 s), freshness dot green.

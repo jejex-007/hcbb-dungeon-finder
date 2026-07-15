@@ -69,6 +69,7 @@ local defaults = {
         sound = true,
         minimap = { hide = false, angle = 220 },
         brackets = {}, -- per-boss {min,max} overrides (R2)
+        hidePresence = false, -- opt out of broadcasting presence (Who's Playing)
     },
     char = {
         prefs = { bossId = nil, roles = 0, minSize = 5, lead = false },
@@ -93,7 +94,9 @@ end
 function addon:OnEnable()
     NS.Comm:Init(self)
     NS.Session:Init(self)
+    NS.Presence:Init(self)
     self:ScheduleRepeatingTimer(function() NS.Pool:Sweep() end, 15)
+    self:ScheduleRepeatingTimer(function() NS.Presence:Sweep() end, 30)
     self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "OnCombatLog")
     self:RegisterEvent("PLAYER_ENTERING_WORLD", function()
         addon:UpdateEligibility()
@@ -222,14 +225,31 @@ function addon:Demo()
         roleSets = { 1, 2, 8, 8, 8, 9 }
         classes = { "wa", "pa", "hu", "ro", "ma", "dr" }
     end
+    -- Fake professions for the Who's Playing tab (R25); the last one has none,
+    -- so the "no professions" path gets exercised too.
+    local profSets = {
+        { { ab = "bs", rank = 147 }, { ab = "mi", rank = 133 } },
+        { { ab = "en", rank = 129 }, { ab = "ta", rank = 117 } },
+        { { ab = "al", rank = 210 }, { ab = "hb", rank = 225 } },
+        { { ab = "lw", rank = 95 }, { ab = "sk", rank = 130 } },
+        { { ab = "jc", rank = 180 } },
+        {},
+    }
     for i, name in ipairs(names) do
+        local lvl = math.max(b.min, math.min(b.max, level - (i % 3) + 1))
         NS.Pool:OnHello(name, {
-            seq = i, bossId = bossId,
-            level = math.max(b.min, math.min(b.max, level - (i % 3) + 1)),
+            seq = i, bossId = bossId, level = lvl,
             roles = roleSets[i], minSize = 3 + (i % 3), lead = i % 2,
             ver = NS.VERSION, class = classes[i],
         })
+        -- Presence is a separate store fed by its own ping, so the demo has to
+        -- seed it explicitly — being in the pool never implies being online.
+        NS.Presence:OnPing(name, {
+            seq = i, level = lvl, ver = NS.VERSION, class = classes[i],
+            profs = profSets[i],
+        })
     end
+    NS.Presence.ready = true -- demo answers the "have we pinged yet?" question
     self:Print(("demo: seeded %d listings for %s"):format(#names, b.boss))
     self:ScheduleTimer(function()
         local me = UnitName("player")

@@ -6,7 +6,25 @@ NS.locales.frFR = {
     TITLE = "HCBB Dungeon Finder",
     TAB_FIND = "Chercher un groupe",
     TAB_POOL = "Qui cherche ?",
+    TAB_PLAYING = "Qui joue ?",
     TAB_OPT = "Options",
+
+    PLAYING_COUNT = "%d joueurs en ligne avec l'addon",
+    PLAYING_EMPTY = "Personne d'autre en ligne — ils apparaîtront ici en se connectant.",
+    PLAYING_INIT = "Initialisation — annonce sur le canal…",
+    PLAYING_NO_PROFS = "Aucun métier",
+
+    PROF_al = "Alchimie",
+    PROF_bs = "Forge",
+    PROF_en = "Enchantement",
+    PROF_eg = "Ingénierie",
+    PROF_hb = "Herboristerie",
+    PROF_in = "Calligraphie",
+    PROF_jc = "Joaillerie",
+    PROF_lw = "Travail du cuir",
+    PROF_mi = "Minage",
+    PROF_sk = "Dépeçage",
+    PROF_ta = "Couture",
 
     BOSS_LABEL = "Boss visé",
     BOSS_REQ = "Requiert niveau %d–%d — vous êtes %d",
@@ -61,6 +79,7 @@ NS.locales.frFR = {
     LANG_AUTO = "Auto (client du jeu)",
     OPT_MM = "Afficher le bouton minicarte",
     OPT_SOUND = "Jouer un son à la proposition de groupe",
+    OPT_PRESENCE = "M'afficher dans « Qui joue ? »",
     OPT_HB_INFO = "Signal toutes les %d s · les annonces expirent après %d s",
 
     OPT_COMMUNITY = "Communauté et support",

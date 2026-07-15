@@ -40,8 +40,14 @@ Environment ground truth: `docs/design/ascension-addon-environment.md`.
   range-check every field before use; drop silently on failure (no error
   spam an attacker can trigger). Sender identity is taken from the chat
   event's `sender` argument (server-authenticated), never from the payload.
-- **NFR-S3.** No personal data beyond character name, level, and declared
-  preferences ever leaves the client.
+- **NFR-S3.** No personal data beyond **character name, level, class,
+  professions (with rank), and declared preferences** ever leaves the client.
+  Every one of those is already publicly inspectable in-game by any player,
+  which is the boundary: nothing is broadcast that a `/who` or a right-click
+  inspect would not reveal. Never account-level, cross-character, or real-world
+  data. Amended 2026-07-15 for Who's Playing (R25); class had been broadcast
+  since the browser's class colours without the rule being updated — that gap
+  is now closed.
 - **NFR-S4.** The broadcast channel is public by nature; assume hostile
   readers and writers. The addon must remain stable under malformed,
   flooding, or impersonating traffic (rate-limit per sender, dedupe).
@@ -54,9 +60,11 @@ Environment ground truth: `docs/design/ascension-addon-environment.md`.
   `libs/VERSIONS.md`. Localization is a hand-rolled proxy in `Core.lua`
   (not AceLocale) — see NFR-L1.
 - **NFR-A2.** Strict module boundaries: `Codec` (pure Lua, no WoW API),
-  `Matcher` (pure Lua, no WoW API), `Comm`, `Pool`, `Session`, `UI`,
-  `Data`, `Locale`. Pure modules must run under standalone Lua 5.1 for
-  testing.
+  `Matcher` (pure Lua, no WoW API), `Comm`, `Pool`, `Presence`, `Session`,
+  `UI`, `Data`, `Locale`. Pure modules must run under standalone Lua 5.1 for
+  testing. `Pool` and `Presence` are deliberately separate stores: searchers
+  (short TTL, HELLO/BYE-driven) and online players (long TTL, ping-driven)
+  have different lifecycles and must not be conflated (R25).
 - **NFR-A3.** All game data (boss table, brackets, timings, channel name,
   prefix) lives in `Data.lua` as declarative tables — zero literals in logic.
 - **NFR-A4.** Main UI is hand-built frames (not AceGUI) for performance and
@@ -69,7 +77,11 @@ Environment ground truth: `docs/design/ascension-addon-environment.md`.
 - **NFR-P2.** Broadcast budget: ≤ 1 channel message per heartbeat interval
   (30 s) per client, plus event-driven messages (register/cancel/propose)
   throttled through ChatThrottleLib (`BULK` for heartbeats, `NORMAL` for
-  negotiation, `ALERT` for invite confirmations).
+  negotiation, `ALERT` for invite confirmations). The presence ping (R25) is
+  the one broadcast every online client sends regardless of state, so
+  channel-wide volume scales with the whole population, not just searchers:
+  it runs at 120 s (4x under the per-client budget) with a random jitter so a
+  server restart doesn't put every client in lockstep.
 - **NFR-P3.** No table/closure allocation in hot paths (CHAT_MSG handlers):
   reuse scratch tables, precompile patterns, avoid string concat chains
   (use `table.concat`).

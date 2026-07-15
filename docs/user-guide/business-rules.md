@@ -122,6 +122,28 @@ happens between addon clients over chat-based messaging.
   group leader** (posts a suggestion to party/raid chat), plus **Whisper**.
   All actions are user-initiated on click; nothing is automated (R19). The
   player's own listing is not actionable.
+- **R25 — Who's Playing.** A dedicated tab lists every enrolled player
+  currently **online with the addon**, so the community can find each other
+  outside of a group search. Each row shows **name, class, level and the
+  character's professions with their rank**. Right-click opens the same native
+  player menu as the browser (R24); nothing is automated (R19).
+  - Presence is a **periodic ping**, independent of the search: a player shows
+    up here simply by being online, not by looking for a group. Going offline
+    is detected by expiry, never announced — a BYE means "stopped searching",
+    not "logged off".
+  - **Only the two primary professions** are shown. Ascension's custom
+    Woodcutting/Woodworking are excluded even though they cost a slot and are
+    abandonable exactly like a primary — as are Cooking, Fishing, First Aid and
+    Riding. Identical in both game modes, so there is no per-mode profession
+    set (contrast R3/R7 for roles).
+  - Profession names are **localized for display**; the wire carries only a
+    locale-independent abbreviation (R22).
+  - **Opt-out**: a player may hide themselves from this tab (Options). They
+    still see everyone else — the opt-out only stops their own broadcast. It
+    takes effect **immediately on their own list**; peers, who already hold the
+    last ping, drop them at expiry (a ping cannot be recalled). Re-enabling
+    re-announces at once rather than waiting for the next interval.
+  - Presence data never outlives the session and is never persisted (NFR-D2).
 
 ## 7. Blitz progression data (defaults, season 2026-06)
 

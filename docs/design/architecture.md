@@ -50,13 +50,14 @@ HCBBDungeonFinder/              # ## LoadOnDemand: 1 — never loads without the
 ├── Core.lua                       # AceAddon bootstrap, slash cmds, wiring
 ├── Data.lua                       # boss/bracket table §7 BR, timings, names
 ├── Codec.lua                      # pure Lua: encode/decode wire messages
-├── Pool.lua                       # presence replica, TTL, caps, dedupe
+├── Pool.lua                       # searcher replica, TTL, caps, dedupe
+├── Presence.lua                   # online replica (R25), ping out, TTL
 ├── Matcher.lua                    # pure Lua: deterministic matching
 ├── Session.lua                    # proposal/negotiation state machine
 ├── Comm.lua                       # channel join/hide, transport, routing
 └── UI/
     ├── MainFrame.lua      # shell, tabs, status strip, shared widget factory
-    ├── Registration.lua  Browser.lua  ProposalPopup.lua
+    ├── Registration.lua  Browser.lua  Playing.lua  ProposalPopup.lua
     └── Options.lua  Minimap.lua
 ```
 
@@ -69,7 +70,7 @@ Two paths, mirroring the proven LootCollector pattern:
 
 | Path | Mechanism | Used for |
 |---|---|---|
-| **Broadcast** | Hidden custom chat channel `HCBBDungeonFinder`: `JoinPermanentChannel` at login (+ rejoin timer), `ChatFrame_RemoveChannel` on all frames, send via `SendChatMessage(payload, "CHANNEL", nil, id)`, receive via `CHAT_MSG_CHANNEL` filtered on channel name | HELLO / BYE presence (small, loss-tolerant), heartbeat 30 s / expiry 120 s |
+| **Broadcast** | Hidden custom chat channel `HCBBDungeonFinder`: `JoinPermanentChannel` at login (+ rejoin timer), `ChatFrame_RemoveChannel` on all frames, send through `ChatThrottleLib` at `BULK` (NFR-P2 — with every online client pinging, unthrottled sends risk the server's anti-spam disconnect), receive via `CHAT_MSG_CHANNEL` filtered on channel name | HELLO / BYE search presence (heartbeat 30 s / expiry 120 s) and `W` online presence (ping 120 s / expiry 300 s, R25) — small, loss-tolerant |
 | **Unicast** | AceComm `SendCommMessage(prefix="HCBB", …, "WHISPER", target)` — invisible to chat, throttled, chunked | PROPOSE / ACK / NACK / CONFIRM / ABORT (reliable-ish, targeted) |
 | **Group** | AceComm `SendCommMessage(prefix="HCBB", …, "PARTY"/"RAID")` | SUGGEST (suggest-invite fallback, R24) |
 
@@ -94,6 +95,7 @@ NACK   (whisper)        HCBB1:N:<matchId>:<reason>   -- busy|changed|declined
 CONFIRM(whisper)        HCBB1:C:<matchId>            -- invites incoming
 ABORT  (whisper)        HCBB1:X:<matchId>:<reason>   -- refill|timeout|cancel|…
 SUGGEST(party/raid)     HCBB1:S:<target>:<bossId>    -- suggest-invite (R24)
+PRESENCE                HCBB1:W:<seq>:<level>:<ver>:<class>:<ab><rank>,…  -- R25
 ```
 
 - `bossId`: index in the Data table (locale-independent, R22).
@@ -112,13 +114,45 @@ SUGGEST(party/raid)     HCBB1:S:<target>:<bossId>    -- suggest-invite (R24)
 - HELLO doubles as heartbeat and as update (fields replace the previous
   listing for that sender). BYE removes it. Heartbeat 30 s, expiry 120 s
   (R17).
+- **PRESENCE (`W`, R25)** — sent by every online client every 120 s (+ jitter),
+  independent of any search, started on the first `CHANNEL_UP` (a ping fired
+  before the join is dropped and the player would wait a whole interval to
+  appear). `<ab><rank>` pairs are the two primary professions: 2-letter ASCII
+  abbreviations from `Data.PROF_ABBREV` (NFR-C3 forbids localized names on the
+  channel) plus the raw skill value; empty when the character has none. The
+  display name comes from the `PROF_<ab>` locale key (R22/NFR-L2) — the client
+  is enUS, so `GetSpellInfo` would return English whatever the addon language.
+  Collected off the skill sheet: 3.3.5 has no `GetProfessions()`, so we filter
+  on `isAbandonable` (locale-independent, unlike the "Professions" header) and
+  then on membership in `PROF_ABBREV`. Both filters are needed: abandonability
+  alone would also match Ascension's custom Woodcutting/Woodworking, which the
+  client files under "Secondary Skills" but which cost a slot like a primary
+  (verified in-game 2026-07-15 on both realms) — the table is what excludes
+  them.
+  - **`W` is additive under the same protocol major, by design.** `Codec.decode`
+    reports an unknown *type* (`"unknown type"`) distinctly from an unknown
+    *major* (`"version"`), and `Comm` drops the former silently — so a 0.1.x
+    client ignores `W` without crashing or firing the update notice. Bumping to
+    `HCBB2` would instead make it reject *every* message, HELLO included.
+    **Adding a message type must never bump the major.**
+  - `W` carries `ver` deliberately: every online client pings, whereas HELLO
+    only goes out while searching, so `W` is the reliable vector for the
+    update notice (NFR-C5) rather than an opportunistic one.
 
-## 5. Pool
+## 5. Pool & Presence
 
-`Pool[senderName] = {bossId, level, roles, minSize, lead, lastSeen, reservedBy}`.
-Eviction: TTL expiry (R17), cap 200 with oldest-first eviction (NFR-P6),
-per-sender rate limiting and dedupe by `seq` (NFR-S4). Emits local events
-(`HCBB_POOL_CHANGED`) consumed by Matcher scheduling and the Browser tab.
+Two stores, deliberately separate (NFR-A2) — same shape, different lifecycles:
+
+`Pool[senderName] = {bossId, level, roles, minSize, lead, lastSeen, reservedBy}`
+— who is **searching**. Fed by HELLO/BYE. TTL expiry 120 s (R17), cap 200
+oldest-first (NFR-P6), per-sender rate limiting and dedupe by `seq` (NFR-S4).
+Emits `HCBB_POOL_CHANGED`, consumed by Matcher scheduling and the Browser tab.
+
+`Presence[senderName] = {level, class, ver, profs, lastSeen}` — who is
+**online** (R25). Fed by `W` only, TTL 300 s, cap 200, same rate-limit/dedupe.
+Emits `HCBB_PRESENCE_CHANGED` for the Who's Playing tab. A BYE must never touch
+it: "stopped searching" is not "logged off" — going offline is detected by TTL
+alone, since a client cannot reliably announce its own disconnect.
 
 ## 6. Matcher (pure, deterministic)
 
@@ -206,6 +240,28 @@ Notable behaviours:
   spacing exactly). Nothing downstream changes: the matcher already treats
   Support as optional (≤1), so a Support-less pool forms T/H/D groups, and no
   Support bit is ever broadcast.
+
+### Event targets: one listener per module (mandatory)
+
+`CallbackHandler` stores **one callback per (message, object)** —
+`events[eventname][self] = func`, the library's own comment reads *"that one
+member may have been overwritten"*. So two modules calling
+`NS.addon:RegisterMessage("SAME_MESSAGE", …)` do **not** both get called: the
+later registration **silently replaces** the earlier one. No error, no warning
+— the losing module simply becomes dead code.
+
+This bit us hard (found 2026-07-15 while wiring R25): `Session` was losing
+`HCBB_POOL_CHANGED` to the Browser and `HCBB_CHANNEL_UP/DOWN` to MainFrame, and
+`ProposalPopup` was losing `HCBB_STATE_CHANGED`. Reactive matching was dead —
+only the 91 s/181 s grace timers still fired, so a peer arriving after 181 s
+could never be matched, and a PAUSED search never resumed. It went unnoticed
+because the solo demo doesn't use those paths and no two-client run had
+happened yet.
+
+**Rule: a module never subscribes through `NS.addon`.** Non-UI modules embed
+AceEvent on themselves (`LibStub("AceEvent-3.0"):Embed(Session)`); UI modules
+take a private target from `UI.Listener()`. `SendMessage` is unaffected —
+firing is fine on any object; only *registration* collides.
 
 ## 9. Key decisions & alternatives considered
 

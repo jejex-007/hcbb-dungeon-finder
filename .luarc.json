@@ -14,8 +14,9 @@
         "JoinPermanentChannel", "LeaveChannelByName", "SendChatMessage",
         "UnitName", "UnitLevel", "UnitClass", "UnitBuff", "UnitDebuff", "RAID_CLASS_COLORS", "GetNumPartyMembers", "InviteUnit",
         "IsShiftKeyDown", "GetCursorPosition", "PlaySound",
+        "GetNumSkillLines", "GetSkillLineInfo", "ExpandSkillHeader",
         "LoadAddOn", "IsAddOnLoaded", "EnableAddOn",
-        "LibStub", "HCBB", "HCBB_DB",
+        "LibStub", "ChatThrottleLib", "HCBB", "HCBB_DB",
         "tinsert", "tremove", "strsplit", "format", "wipe",
         "describe", "it"
     ],
