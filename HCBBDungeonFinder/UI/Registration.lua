@@ -138,6 +138,12 @@ local function rolesMask()
     return mask
 end
 
+-- The role error shares the hint's anchor, so exactly one may be visible.
+local function setRoleError(on)
+    errText[on and "Show" or "Hide"](errText)
+    hintRoles[on and "Hide" or "Show"](hintRoles)
+end
+
 local function validate()
     if not NS.eligible then return end
     local ok = rolesMask() > 0 and prefs().bossId ~= nil
@@ -145,7 +151,7 @@ local function validate()
     if NS.Session.state == "IDLE" then
         if ok then searchBtn:Enable() else searchBtn:Disable() end
     end
-    errText[rolesMask() == 0 and "Show" or "Hide"](errText)
+    setRoleError(rolesMask() == 0)
 end
 
 local function setInputsEnabled(on)
@@ -288,6 +294,8 @@ function UI.CreateRegistration(parent)
 
     hintRoles = UI.Label(pane, "small", UI.COLOR.muted)
     hintRoles:SetPoint("TOPLEFT", 4, -134)
+    -- Deliberately the hint's anchor: there is no room for both lines above
+    -- MIN_LABEL, so the error replaces the hint (setRoleError owns the swap).
     errText = UI.Label(pane, "small", UI.COLOR.red)
     errText:SetPoint("TOPLEFT", 4, -134)
     errText:Hide()
@@ -384,7 +392,7 @@ function UI.CreateRegistration(parent)
             searchBtn:SetText(L["BTN_SEARCH"])
             infoText:SetText(L["NOT_ENROLLED_HINT"])
             infoText:SetTextColor(unpack(UI.COLOR.red))
-            errText:Hide()
+            setRoleError(false)
             return
         end
         infoText:SetTextColor(unpack(UI.COLOR.muted))
@@ -393,7 +401,7 @@ function UI.CreateRegistration(parent)
             searchBtn:Disable()
             searchBtn:SetText(L["BTN_SEARCH"])
             infoText:SetText(L["ALREADY_GROUPED_HINT"])
-            errText:Hide()
+            setRoleError(false)
             return
         end
         local idle = state == "IDLE"

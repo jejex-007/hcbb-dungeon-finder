@@ -17,6 +17,12 @@ some steps are solo.
 ## UI (solo, `/hcbb demo`)
 - [ ] Window renders correctly: gradient panels, gold title, role icons,
   red Search button, tabs aligned (try a longer locale via Options).
+- [ ] **Regression (first user report, 2026-07-15)**: with **no role selected**,
+  the red "Select at least one role" error shows and the grey roles hint is
+  **gone** — they share one anchor, so any overlap is the bug. Tick a role: the
+  error disappears and the hint comes back. Re-check in both game modes (the
+  report came from Warcraft Reborn, but the anchor is mode-independent) and on
+  a non-enrolled / already-grouped character (both paths hide the error).
 - [ ] Window opens above WeakAuras; close button clickable; Esc closes.
 - [ ] Boss picker: ineligible bosses disabled with tooltip; cleared bosses
   show a green check (not a "?"); default is first eligible uncleared.
