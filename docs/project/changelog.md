@@ -1,5 +1,40 @@
 # Changelog — HCBB Dungeon Finder
 
+## 2026-07-16 — Discord `#tutorial` + R25 validated in the wild
+
+No code shipped. Two things worth recording anyway.
+
+- **User guide published** in Discord `#tutorial` (7 messages, read-only
+  channel, pinned): install and the full-restart caveat, listing yourself,
+  how matching actually decides, both player lists, every option, and
+  troubleshooting. Built around 5 screenshots taken with `/hcbb demo`, each
+  captioned as demo data — the lists show 8 fake players and a healthy pool,
+  which would otherwise read as a population claim we can't back.
+- **Writing it audited the code.** Two corrections landed in the copy: the
+  right-click menu is the **game's native player menu**
+  (`FriendsFrame_ShowDropdown`), not the custom Invite/Suggest/Whisper menu —
+  `Browser.showUnitMenu` is only the fallback, so documenting it as the main
+  path would have described dead code. And the **freshness dots were
+  undocumented**: the maintainer had to ask what the coloured square meant,
+  which is as strong a signal as a user report. They now have a section, with
+  the thresholds that differ per tab (60/120 s on the 30 s heartbeat, 120/240 s
+  on the 120 s ping).
+- **R25 confirmed with real players** on Bronzebeard — the first time any of
+  this ran between distant clients. Beta players appeared in Who's Playing;
+  one was whispered and answered; another was watched through the whole
+  lifecycle: green → red → evicted at the TTL. That proves channel
+  join/broadcast/receive, the `W` type, the sweep timer, and — as a side
+  effect — that `Presence` receives its `HCBB_CHANNEL_UP`, so the AceEvent fix
+  holds for at least one module. **Matchmaking remains unproven**; it is now
+  the only thing between us and a stable tag. Who's Playing doubles as the
+  recruiting tool for that test: everyone listed there is online, on 0.2.0
+  (0.1.x never pings), and whisperable.
+- Known cosmetic gap, not fixed: `FRESH_YELLOW` == `EXPIRY` (120 s) in
+  `Data.lua`, so the red dot is practically unreachable in Who's Looking —
+  entries are evicted exactly when they would turn red. R17 only specifies
+  green and yellow, so the code is compliant; Who's Playing is unaffected
+  (240 s red vs 300 s TTL, and the red state was observed in the wild).
+
 ## 2026-07-15 — Who's Playing tab (R25) + pre-release v0.2.0
 - New **Who's Playing** tab: every enrolled player currently online with the
   addon — name, class, level, and the two primary professions with rank —

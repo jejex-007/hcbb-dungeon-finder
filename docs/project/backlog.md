@@ -11,7 +11,11 @@ Effort scale (owner+Claude pair velocity): S < 1h · M 1–2h · L 3–5h · XL 
 - [x] Create the public GitHub repo (`jejex-007/hcbb-dungeon-finder`) + first
   push, CI green — done 2026-07-14 (identity audit clean: KySeEtH/noreply)
 - [ ] In-game smoke test with 2 accounts: custom channel join/hide/send/receive,
-  AceComm whisper, InviteUnit popup (S) — **gates the release**
+  AceComm whisper, InviteUnit popup (S) — **gates the release**. Partly done
+  2026-07-16: **channel join/send/receive proved between distant clients** by
+  real beta players showing up in Who's Playing (see the smoke-test validation
+  log) — no second account was needed. AceComm whisper and the InviteUnit popup
+  still need the matchmaking path.
 
 ## M1 — Skeleton & data — done 2026-07-13 (actual ~0.5h)
 - [x] Embedded pinned libs (copied from proven Ascension addons) + VERSIONS.md;
@@ -42,7 +46,12 @@ Effort scale (owner+Claude pair velocity): S < 1h · M 1–2h · L 3–5h · XL 
   UI fidelity, class colors, native menu, combat/group behaviours, bracket fix)
 - [x] `docs/project/smoke-test.md` checklist written — done 2026-07-14
 - [ ] Full 2-client match run on Ascension (the checklist end-to-end) (S) —
-  **gates promotion to stable**
+  **gates promotion to stable**. Narrowed 2026-07-16: the comm half is proved
+  in the wild (presence pings, TTL, sweep); what remains is strictly the
+  matchmaking path — two players registered on the **same boss, same bracket,
+  at the same time** → proposal → invite → party. Who's Playing now doubles as
+  the recruiting tool for it: the peers listed there are online, on 0.2.0, and
+  whisperable (one answered on 2026-07-16).
 - [x] Pre-release **v0.1.0-beta** published 2026-07-14 (GitHub Release, zip
   asset, `--prerelease`) so testers can grab it while the smoke test is pending.
   Also `download/HCBBDungeonFinder-latest.zip` for non-Git players.
@@ -127,6 +136,15 @@ announcement (forums + community Discords). Reports land in `#bug-report`.
   wired into the not-enrolled / already-grouped early returns). Affected both
   modes since the start, not WR-specific. Not unit-testable (UI layout, no WoW
   API in CI) — regression pinned in `docs/project/smoke-test.md`.
+
+- [ ] **Red freshness dot unreachable in Who's Looking** (cosmetic, S) — found
+  2026-07-16 while documenting the dots for the Discord tutorial.
+  `FRESH_YELLOW` == `EXPIRY` == 120 s in `Data.lua`, so a listing is evicted at
+  the exact moment it would turn red; the state only exists between two sweeps.
+  R17 specifies green and yellow only, so the code is compliant — either drop
+  the yellow threshold to ~90 s to give red a real window, or accept red as
+  purely transitional and say so in `Data.lua`. Who's Playing is unaffected
+  (240 s red vs 300 s TTL; red observed in the wild).
 
 ## Open questions
 - ~~Exact Boss Blitz marker~~ — RESOLVED 2026-07-13: permanent **debuff**

@@ -5,6 +5,25 @@ touching Comm or UI needs this (busted + luacheck don't exercise the WoW API).
 Two accounts (A, B) both enrolled in the Boss Blitz challenge are ideal;
 some steps are solo.
 
+## Validation log
+
+The checklist below stays unticked on purpose — it is a template re-run at
+every release. Record here what was actually observed, and when.
+
+- **2026-07-16 — Presence (R25) confirmed in the wild.** Real beta players
+  appeared in Who's Playing on Bronzebeard, so channel join, broadcast, receive
+  and decode of the `W` type all work between distant clients — no second
+  account needed to prove it. One player was watched through the full
+  lifecycle: online, then logged off, went red, then dropped at the TTL, which
+  also proves the sweep timer runs. Two corollaries: everyone visible in that
+  tab is necessarily on 0.2.0 (0.1.x never pings, making the tab a rough
+  adoption counter), and `Presence` demonstrably received its
+  `HCBB_CHANNEL_UP` — so the AceEvent fix holds for at least one module.
+- **Still unproven: matchmaking.** Nothing under the "Matchmaking" heading has
+  been exercised with two real clients. That section alone gates the stable
+  tag, and it is the only path that exercises `Session:OnPoolChanged` — the
+  subscription that was dead before 0.2.0.
+
 ## Load & gate (R23)
 - [ ] Both `HCBBDungeonFinder` and `HCBBDungeonFinder_Loader` present in the
   AddOns list; loader enabled.
@@ -48,6 +67,9 @@ some steps are solo.
   Re-check → you reappear immediately (not after the next 120 s ping). Peers
   only drop you at the 300 s TTL — a sent ping can't be recalled.
 - [ ] Two clients: B appears in A's tab within ~2 min without either searching.
+- [ ] B logs off → the dot goes yellow (~4 min), then red, then the line
+  **disappears** at the 300 s TTL. A red line that never clears means the
+  sweep timer is dead and the list will silently fill with ghosts.
 - [ ] **Back-compat (critical)**: a **0.1.0** client must ignore `W` silently —
   no Lua error, and **no "update available" notice** (unknown *type* is not
   unknown *major*). Run one old client alongside a new one to confirm.
