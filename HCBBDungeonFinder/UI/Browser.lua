@@ -245,7 +245,8 @@ function UI.CreateBrowser(parent)
 
     -- Pool events arrive in bursts; one repaint per second is plenty.
     local pending
-    NS.addon:RegisterMessage("HCBB_POOL_CHANGED", function()
+    local listener = UI.Listener() -- own target: see UI.Listener
+    listener:RegisterMessage("HCBB_POOL_CHANGED", function()
         if pending or not pane:IsShown() then return end
         pending = NS.addon:ScheduleTimer(function()
             pending = nil

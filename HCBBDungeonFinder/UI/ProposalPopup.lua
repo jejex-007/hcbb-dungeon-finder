@@ -332,9 +332,10 @@ function UI.CreateProposal()
     tinsert(UI.refreshers, refreshTexts)
     refreshTexts()
 
-    NS.addon:RegisterMessage("HCBB_PROPOSAL_SHOW", onShowProposal)
-    NS.addon:RegisterMessage("HCBB_PROPOSAL_UPDATE", onUpdateProposal)
-    NS.addon:RegisterMessage("HCBB_PROPOSAL_MEMBER", function(_, name, status)
+    local listener = UI.Listener() -- own target: see UI.Listener
+    listener:RegisterMessage("HCBB_PROPOSAL_SHOW", onShowProposal)
+    listener:RegisterMessage("HCBB_PROPOSAL_UPDATE", onUpdateProposal)
+    listener:RegisterMessage("HCBB_PROPOSAL_MEMBER", function(_, name, status)
         if popup:IsShown() then
             setMemberStatus(name, status)
             if current then
@@ -342,7 +343,7 @@ function UI.CreateProposal()
             end
         end
     end)
-    NS.addon:RegisterMessage("HCBB_STATE_CHANGED", function(_, state)
+    listener:RegisterMessage("HCBB_STATE_CHANGED", function(_, state)
         if state == "INGROUP" and popup:IsShown() then popup:Hide() end
     end)
 end

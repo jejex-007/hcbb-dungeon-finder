@@ -295,6 +295,17 @@ function UI.OnLocaleChanged()
     for _, fn in ipairs(UI.refreshers) do fn() end
 end
 
+-- A private AceEvent target, one per module. CallbackHandler keeps a SINGLE
+-- callback per (message, object) — `events[eventname][self] = func` — so two
+-- modules subscribing to the same message through the shared `addon` object
+-- silently overwrite each other, with no error to notice. Every module must
+-- own its listener; never call NS.addon:RegisterMessage from a module.
+function UI.Listener()
+    local t = {}
+    LibStub("AceEvent-3.0"):Embed(t)
+    return t
+end
+
 -- ----------------------------------------------------------- main frame --
 
 -- state -> { dot color, text color, pulse }
@@ -451,13 +462,14 @@ function UI.Init()
 
     f:SetScript("OnShow", function(self) self:Raise() end)
 
-    NS.addon:RegisterMessage("HCBB_STATE_CHANGED", function() UI.UpdateStatus() end)
-    NS.addon:RegisterMessage("HCBB_CHANNEL_UP", function() UI.UpdateStatus() end)
-    NS.addon:RegisterMessage("HCBB_CHANNEL_DOWN", function() UI.UpdateStatus() end)
-    NS.addon:RegisterMessage("HCBB_ELIGIBILITY_CHANGED", function() UI.UpdateStatus() end)
-    NS.addon:RegisterMessage("HCBB_GROUP_CHANGED", function() UI.UpdateStatus() end)
-    NS.addon:RegisterMessage("HCBB_UPDATE_AVAILABLE", function() UI.UpdateStatus() end)
-    NS.addon:RegisterMessage("HCBB_LOCALE_CHANGED", function() UI.OnLocaleChanged() end)
+    local listener = UI.Listener()
+    listener:RegisterMessage("HCBB_STATE_CHANGED", function() UI.UpdateStatus() end)
+    listener:RegisterMessage("HCBB_CHANNEL_UP", function() UI.UpdateStatus() end)
+    listener:RegisterMessage("HCBB_CHANNEL_DOWN", function() UI.UpdateStatus() end)
+    listener:RegisterMessage("HCBB_ELIGIBILITY_CHANGED", function() UI.UpdateStatus() end)
+    listener:RegisterMessage("HCBB_GROUP_CHANGED", function() UI.UpdateStatus() end)
+    listener:RegisterMessage("HCBB_UPDATE_AVAILABLE", function() UI.UpdateStatus() end)
+    listener:RegisterMessage("HCBB_LOCALE_CHANGED", function() UI.OnLocaleChanged() end)
 
     -- Suggest-invite prompt (R24): only the client that can invite pops it.
     StaticPopupDialogs["HCBB_SUGGEST_INVITE"] = {
@@ -469,7 +481,7 @@ function UI.Init()
         end,
         timeout = 30, whileDead = 1, hideOnEscape = 1, preferredIndex = 3,
     }
-    NS.addon:RegisterMessage("HCBB_SUGGESTION", function(_, from, target, bossId)
+    listener:RegisterMessage("HCBB_SUGGESTION", function(_, from, target, bossId)
         if not UI.CanInvite() or target == UnitName("player") then return end
         local boss = NS.Data.BOSSES[bossId]
         StaticPopup_Show("HCBB_SUGGEST_INVITE",

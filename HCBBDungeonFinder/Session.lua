@@ -7,6 +7,15 @@ local _, NS = ...
 local Session = { state = "IDLE", seq = 0 }
 NS.Session = Session
 
+-- Own AceEvent target, and it is NOT optional: CallbackHandler keeps a single
+-- callback per (message, object) — `events[eventname][self] = func` — so any
+-- module subscribing through the shared `addon` object silently overwrites the
+-- previous subscriber, with no error. Session used to lose HCBB_POOL_CHANGED
+-- to the Browser and HCBB_CHANNEL_UP/DOWN to MainFrame, which killed reactive
+-- matching (only the 91 s/181 s grace timers still fired) and left a PAUSED
+-- search unable to resume. Subscribe on ourselves, never on `addon`.
+LibStub("AceEvent-3.0"):Embed(Session)
+
 local function C() return NS.Data.CONST end
 local function now() return NS.now() end
 
@@ -15,9 +24,9 @@ function Session:Init(addon)
     self.me = UnitName("player")
     self.blocked = {} -- name -> unblock time (decliner cooldown)
 
-    addon:RegisterMessage("HCBB_POOL_CHANGED", function() Session:OnPoolChanged() end)
-    addon:RegisterMessage("HCBB_CHANNEL_UP", function() Session:OnChannelUp() end)
-    addon:RegisterMessage("HCBB_CHANNEL_DOWN", function() Session:OnChannelDown() end)
+    Session:RegisterMessage("HCBB_POOL_CHANGED", function() Session:OnPoolChanged() end)
+    Session:RegisterMessage("HCBB_CHANNEL_UP", function() Session:OnChannelUp() end)
+    Session:RegisterMessage("HCBB_CHANNEL_DOWN", function() Session:OnChannelDown() end)
     addon:RegisterEvent("PARTY_MEMBERS_CHANGED", function() Session:OnParty() end)
     addon:RegisterEvent("PARTY_INVITE_REQUEST", function(_, sender) Session:OnInviteSeen(sender) end)
 end

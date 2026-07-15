@@ -380,8 +380,9 @@ function UI.CreateRegistration(parent)
         UI.OnStateForPanes(NS.Session.state)
     end)
 
-    NS.addon:RegisterMessage("HCBB_POOL_CHANGED", updateInfo)
-    NS.addon:RegisterMessage("HCBB_CLEARED_CHANGED", function()
+    local listener = UI.Listener() -- own target: see UI.Listener (shared object = lost callbacks)
+    listener:RegisterMessage("HCBB_POOL_CHANGED", updateInfo)
+    listener:RegisterMessage("HCBB_CLEARED_CHANGED", function()
         if pane:IsShown() then menuRowUpdate() updatePicker() end
     end)
 
