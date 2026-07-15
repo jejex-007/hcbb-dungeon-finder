@@ -1,5 +1,71 @@
 # Changelog — HCBB Dungeon Finder
 
+## 2026-07-15 — Who's Playing tab (R25) + pre-release v0.2.0
+- New **Who's Playing** tab: every enrolled player currently online with the
+  addon — name, class, level, and the two primary professions with rank —
+  independent of any search. Right-click reuses the browser's native player
+  menu. The point, now that the challenge is over: the population is thin
+  enough that "is anyone even playing?" matters more than matchmaking itself.
+- Wire: new **PRESENCE `W`** type, **additive under the same protocol major**.
+  `Codec.decode` reports an unknown *type* separately from an unknown *major*
+  and `Comm` drops the former silently, so a 0.1.x client ignores `W` without
+  crashing or firing a false update notice. Bumping to `HCBB2` would instead
+  make it reject *every* message, HELLO included — **adding a type must never
+  bump the major**. `W` carries `ver` on purpose: every online client pings,
+  whereas HELLO only goes out while searching, so the update notice (NFR-C5)
+  becomes reliable instead of opportunistic — for 0.2.0+ peers only, since
+  0.1.0 ignores `W` by design.
+- Professions are read off the skill sheet (3.3.5 has no `GetProfessions()`),
+  filtered on `isAbandonable` **and** on membership in `Data.PROF_ABBREV`.
+  Both filters are needed: abandonability alone also matches Ascension's custom
+  Woodcutting/Woodworking, filed under "Secondary Skills" yet costing a slot
+  like a primary (verified in-game on both realms via a throwaway
+  `/hcbb skills` dump, since removed). Names localized from `PROF_*` keys; the
+  wire only carries `bs147`.
+- `Presence` is its own store, separate from `Pool`: searchers (short TTL,
+  HELLO/BYE) and online players (long TTL, ping) have different lifecycles. A
+  BYE never touches it — "stopped searching" is not "logged off"; offline is
+  TTL-detected, as a client can't reliably announce its own disconnect.
+- Ping at 120 s + jitter, started on the first `CHANNEL_UP` (a ping fired
+  before the channel join is dropped, and the player would then wait a full
+  interval to appear). `Comm:Broadcast` now goes through **ChatThrottleLib at
+  BULK** as NFR-P2 already required — with every online client pinging, volume
+  scales with population and unthrottled sends risk an anti-spam disconnect.
+- Opt-out in Options: removes you from your own list immediately; peers drop
+  you at TTL (a sent ping can't be recalled). Re-enabling re-announces at once.
+- **Version bumped to 0.2.0** — the wire `ver` comes from `GetAddOnMetadata`,
+  so without the bump every client would still advertise 0.1.0 and no update
+  notice would ever fire. Published as **pre-release v0.2.0**; the GitHub →
+  Discord workflow announced it automatically (its first real use).
+- Docs: R25, NFR-S3 (amended for class + professions), NFR-A2, NFR-P2,
+  architecture §3/§4/§5, README, smoke-test. 4 new Codec tests (37 total).
+- Known gap: the update notice barely reaches 0.1.0 clients (they only listen
+  on HELLO, i.e. only while someone actively searches), so forum + Discord did
+  the announcing this time.
+
+## 2026-07-15 — Fix: modules silently overwriting each other's event subscriptions
+- `CallbackHandler` stores **one callback per (message, object)** —
+  `events[eventname][self] = func`; its own source comments "that one member
+  may have been overwritten". Every module subscribed through the shared
+  `NS.addon` object, so the last registration silently replaced the others.
+  No error, no warning — the losing module simply became dead code.
+- Three subscriptions were dead: **`Session:OnPoolChanged`** lost
+  `HCBB_POOL_CHANGED` to the Browser, which **killed reactive matching** (only
+  the 91 s/181 s grace timers still fired, so a peer arriving after 181 s could
+  never be matched at all); **`Session:OnChannelUp/Down`** lost to MainFrame, so
+  a search paused by a channel drop never resumed; **`ProposalPopup`** lost
+  `HCBB_STATE_CHANGED`.
+- It hid because the solo demo never exercises those paths and no two-client
+  run had ever happened — there was nobody else online. Surfaced only because
+  the R25 ping (registered the same way) never fired.
+- Every module now owns its AceEvent target: `Session`/`Presence` embed it on
+  themselves, UI modules take one from the new `UI.Listener()`. Firing
+  (`SendMessage`) was never affected — only registration collides. Documented
+  in architecture §8 and in project memory.
+- **Not observable solo**: reactive matching and PAUSED resume need two
+  clients, so this is reasoned from the library source, not yet verified
+  in-game — which is why v0.2.0 ships as a pre-release.
+
 ## 2026-07-15 — Fix: roles hint and error text overlapped (first user report)
 - The grey roles hint and the red "Select at least one role" error deliberately
   share a single anchor (there is no room for both lines above `MIN_LABEL`), so

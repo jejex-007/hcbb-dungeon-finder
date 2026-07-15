@@ -46,6 +46,10 @@ Effort scale (owner+Claude pair velocity): S < 1h · M 1–2h · L 3–5h · XL 
 - [x] Pre-release **v0.1.0-beta** published 2026-07-14 (GitHub Release, zip
   asset, `--prerelease`) so testers can grab it while the smoke test is pending.
   Also `download/HCBBDungeonFinder-latest.zip` for non-Git players.
+- [x] Pre-release **v0.2.0** published 2026-07-15 (Who's Playing + the event
+  fix), announced automatically in Discord `#announcements` by the release
+  workflow, plus a forum follow-up. Still a pre-release: the event fix cannot
+  be verified solo.
 - [ ] Promote to stable **v0.1.0** tag + release after the 2-client smoke test,
   then announce (S)
 
@@ -87,11 +91,34 @@ Effort scale (owner+Claude pair velocity): S < 1h · M 1–2h · L 3–5h · XL 
   Verified end-to-end with a throwaway pre-release. Discord server set up
   (`#announcements` read-only + pinned message, `#bug-report`).
 
+- [x] **Who's Playing tab** (R25) — done 2026-07-15 (est. L, actual ~1.5h).
+  Online-presence list (name, class, level, 2 primary professions + rank),
+  independent of any search. New wire type `W`, additive under the same
+  protocol major (adding a type must never bump the major — a `HCBB2` bump
+  would make 0.1.x reject even HELLO). `W` carries `ver`, making the update
+  notice reliable from 0.2.0 onwards. Own `Presence` store (separate
+  lifecycle from `Pool`), ping 120 s + jitter on first `CHANNEL_UP`,
+  ChatThrottleLib BULK, opt-out in Options. Professions via `isAbandonable` +
+  `PROF_ABBREV` (both filters needed; Ascension's Woodcutting/Woodworking are
+  abandonable but excluded), localized via `PROF_*` keys. Shipped in
+  **pre-release v0.2.0** (`.toc` bumped — without it `ver` stays 0.1.0 and no
+  notice fires).
+
 ## M7 — Post-beta user reports (rolling)
 
 Bugs and requests from real users, starting with the 2026-07-15 beta
 announcement (forums + community Discords). Reports land in `#bug-report`.
 
+- [x] **Event subscriptions silently overwritten (critical)** — found
+  2026-07-15 while wiring R25, fixed same day (actual ~0.4h). `CallbackHandler`
+  keeps one callback per (message, object), so modules sharing `NS.addon`
+  overwrote each other with no error. `Session:OnPoolChanged` was dead →
+  **reactive matching was broken** (only 91 s/181 s timers fired; nothing at
+  all past 181 s); `Session:OnChannelUp/Down` dead → PAUSED never resumed;
+  `ProposalPopup` lost `HCBB_STATE_CHANGED`. Every module now owns its
+  AceEvent target (`UI.Listener()` / `Embed`). **Still unverified in-game** —
+  needs the 2-client run, since it cannot reproduce solo. Likely explains any
+  "matching seems broken" report on pre-0.2.0 builds.
 - [x] **Roles hint / error text overlapped** — reported 2026-07-15 (first user
   ticket), fixed same day (actual ~0.2h). `hintRoles` and `errText` share one
   anchor by design (no room for both above `MIN_LABEL`), but `validate()` only
