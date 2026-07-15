@@ -1,5 +1,20 @@
 # Changelog — HCBB Dungeon Finder
 
+## 2026-07-15 — Fix: roles hint and error text overlapped (first user report)
+- The grey roles hint and the red "Select at least one role" error deliberately
+  share a single anchor (there is no room for both lines above `MIN_LABEL`), so
+  the error is meant to *replace* the hint. `validate()` only ever showed/hid
+  the error and never touched the hint, so both rendered on top of each other
+  whenever no role was ticked. New `setRoleError()` owns the swap and keeps
+  exactly one visible; it is also wired into the not-enrolled and
+  already-grouped early returns, which used to hide the error without bringing
+  the hint back. Affected **both game modes** since the start (the anchor is
+  mode-independent) — the report came from Warcraft Reborn.
+- First bug reported by a real user after the 2026-07-15 beta announcement.
+  UI layout is not unit-testable (the CI has no WoW API, `IsShown()` can't be
+  asserted), so the regression is pinned as an explicit case in
+  `docs/project/smoke-test.md` instead of a hollow mock. Validated in-game.
+
 ## 2026-07-14 — In-game Discord links + auto release announcements
 - Options tab gained a **Community & support** section with two buttons:
   **Join our Discord** and **Report a Bug** (which points users at the

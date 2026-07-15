@@ -87,6 +87,20 @@ Effort scale (owner+Claude pair velocity): S < 1h · M 1–2h · L 3–5h · XL 
   Verified end-to-end with a throwaway pre-release. Discord server set up
   (`#announcements` read-only + pinned message, `#bug-report`).
 
+## M7 — Post-beta user reports (rolling)
+
+Bugs and requests from real users, starting with the 2026-07-15 beta
+announcement (forums + community Discords). Reports land in `#bug-report`.
+
+- [x] **Roles hint / error text overlapped** — reported 2026-07-15 (first user
+  ticket), fixed same day (actual ~0.2h). `hintRoles` and `errText` share one
+  anchor by design (no room for both above `MIN_LABEL`), but `validate()` only
+  ever showed the error and never hid the hint, so they rendered on top of each
+  other with no role ticked. Fixed via `setRoleError()` (mutual exclusion, also
+  wired into the not-enrolled / already-grouped early returns). Affected both
+  modes since the start, not WR-specific. Not unit-testable (UI layout, no WoW
+  API in CI) — regression pinned in `docs/project/smoke-test.md`.
+
 ## Open questions
 - ~~Exact Boss Blitz marker~~ — RESOLVED 2026-07-13: permanent **debuff**
   "Hardcore - Boss Blitz", **spellId 93131**. Pinned in `Data.CHALLENGE_AURAS`
