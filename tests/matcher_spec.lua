@@ -1,5 +1,11 @@
 -- Matcher tests (NFR-T1): composition rules R7/R8, level span R9, minSize
 -- R4, leader election R11, role assignment R15, determinism.
+--
+-- Match() returns nil when no group is feasible; a spec that indexes the
+-- result is asserting one was found. Let it blow up — that IS the failure,
+-- and guarding for nil here would turn a real failure into a test that
+-- checks nothing.
+---@diagnostic disable: need-check-nil
 local Matcher = require("HCBBDungeonFinder.Matcher")
 
 local TANK, HEAL, SUPPORT, DPS = 1, 2, 4, 8

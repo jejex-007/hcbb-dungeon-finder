@@ -1,5 +1,10 @@
 -- Codec wire-protocol tests (NFR-T1). Runs under busted (CI) and under
 -- tests/run.lua (local, zero-dependency).
+--
+-- decode() returns nil on bad input by design; a spec that indexes the result
+-- is asserting it decoded. Let it blow up — that IS the failure, and guarding
+-- for nil here would turn a real failure into a test that checks nothing.
+---@diagnostic disable: need-check-nil
 local Codec = require("HCBBDungeonFinder.Codec")
 
 describe("Codec.encode", function()
@@ -130,12 +135,12 @@ describe("Codec.encode", function()
     it("accepts UTF-8 accented names", function()
         local wire = Codec.encode({ type = "P", matchId = "Ambrose-1",
                                     bossId = 2, size = 3, yourRole = 8, members = {
-            { name = "J\195\169r\195\180me", role = 1, level = 20 },
+            { name = "Az\195\169r\195\180th", role = 1, level = 20 },
             { name = "Ambr\195\184se", role = 2, level = 20 },
             { name = "Zo\195\171", role = 8, level = 20 },
         } })
         assert.truthy(wire)
-        assert.equal("J\195\169r\195\180me", Codec.decode(wire).members[1].name)
+        assert.equal("Az\195\169r\195\180th", Codec.decode(wire).members[1].name)
     end)
 
     it("rejects invalid fields", function()
