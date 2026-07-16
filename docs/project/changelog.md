@@ -1,5 +1,50 @@
 # Changelog — HCBB Dungeon Finder
 
+## 2026-07-16 — Three long-standing bugs, all found by hand
+
+Validating the tutorial in-game turned up three defects that had shipped from
+the start. None was caught by a test or an audit: two by clicking, one by
+reading the code while writing documentation.
+
+- **The dungeon filter label never updated** (`fix(browser)`). Picking a
+  dungeon filtered the list but left the button reading "All dungeons"
+  forever — which reads as a broken filter even though filtering worked. The
+  only `SetText` on that button lives in `refreshTexts`, which runs at startup
+  and on a language switch, never on selection. Both menu callbacks now route
+  through `setFilter()`, which owns the three steps that must stay together.
+  Present since M4 (2026-07-13); surfaced now because nobody had clicked that
+  filter in a real session.
+- **Search was blocked without saying why** (`feat(registration)`). Brackets
+  are `[unlock-4, unlock-1]`, so any gap wider than 4 levels between two
+  consecutive bosses leaves a level with **no eligible boss at all**. With the
+  default table that is **28, 41, 42 and 60** — computed from `Data.lua`, not
+  read off the doc. Reported from a level-28 character: the button was
+  correctly disabled and nothing explained it, which reads as a broken addon.
+  The hint now names the next level that opens (computed, so 41 says 43).
+  **Level 60 is not an error but the end of the run** — it gets a gold message,
+  not a red one. The picker stays enabled at dead levels so the player can keep
+  shift-clicking cleared bosses while levelling out.
+- **A blocking hint could be wiped by a pool event** (found while wiring the
+  above). `updateInfo` blanked `infoText` on every `HCBB_POOL_CHANGED` without
+  checking whether a blocking hint was displayed, so "you're already in a
+  group" silently vanished as soon as anyone moved in the pool. Both paths now
+  read one `blockedHint()`, which owns the three reasons in priority order —
+  they share `infoText` and must agree.
+- **The maintainer's first name was in a public test file** since the first
+  push, as `"J\195\169r\195\180me"` (UTF-8 octal escapes, test data for
+  accented names). Renamed to the same-bytes fictional `Azérôth`, so the
+  round-trip keeps its value. The real lesson is the audit, not the string:
+  **the mandated pre-push name grep only matches plain text** and had reported
+  "clean" twice that evening. Then the fixed audit command itself crashed on
+  `\195` (regex back-reference) and printed "clean" anyway because it was
+  chained with `|| echo`. Both traps are now in project memory with the working
+  form (`git grep -nF`, check the exit code).
+- LSP hygiene: `need-check-nil` disabled per spec file with the reason.
+  `decode()`/`Match()` return nil by design, so a spec indexing the result is
+  asserting it worked — guarding for nil would turn a real failure into a test
+  that checks nothing. Also renamed a shadowed dropdown local in `Browser.lua`
+  (`duplicate-set-field` false positive: the table is fresh each iteration).
+
 ## 2026-07-16 — Discord `#tutorial` + R25 validated in the wild
 
 No code shipped. Two things worth recording anyway.

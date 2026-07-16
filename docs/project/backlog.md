@@ -52,6 +52,11 @@ Effort scale (owner+Claude pair velocity): S < 1h · M 1–2h · L 3–5h · XL 
   at the same time** → proposal → invite → party. Who's Playing now doubles as
   the recruiting tool for it: the peers listed there are online, on 0.2.0, and
   whisperable (one answered on 2026-07-16).
+  **This needs two real people — Ascension bans for multiboxing**, so a second
+  client side by side is not an option on a hardcore realm. That makes player
+  adoption (guild message, forum, Discord) the critical path to a stable tag,
+  not a marketing side quest: the gate cannot be forced open by working
+  harder, only by more Blitz players running the addon in the same bracket.
 - [x] Pre-release **v0.1.0-beta** published 2026-07-14 (GitHub Release, zip
   asset, `--prerelease`) so testers can grab it while the smoke test is pending.
   Also `download/HCBBDungeonFinder-latest.zip` for non-Git players.

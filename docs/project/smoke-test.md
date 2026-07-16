@@ -2,8 +2,11 @@
 
 Run before tagging a release, on WoW Ascension (Bronzebeard / CoA). Anything
 touching Comm or UI needs this (busted + luacheck don't exercise the WoW API).
-Two accounts (A, B) both enrolled in the Boss Blitz challenge are ideal;
-some steps are solo.
+Some steps are solo. The rest need a second player — **two real people, not
+two clients side by side**: Ascension bans for multiboxing, and on a hardcore
+realm that is not a risk anyone should take to test an addon. Wherever this
+file says "two clients A + B", it means two humans, coordinated over
+Discord/whisper.
 
 ## Validation log
 
