@@ -46,6 +46,12 @@ every release. Record here what was actually observed, and when.
   → the **button label follows** the selection, not just the list. It read
   "All dungeons" forever until then, which looks exactly like a broken filter
   even though the list was filtering correctly.
+- [ ] **Regression (2026-07-16)**: on a character at a **dead level** (28, 41,
+  42 with the default table — no boss bracket covers them), the Search button
+  is disabled **and** a red hint below it names the next level that opens. At
+  **60** the same hint turns gold and reads as an achievement, not an error —
+  the Blitz is over, not broken. The boss picker stays usable at those levels
+  (shift-click still tracks cleared bosses).
 - [ ] Window opens above WeakAuras; close button clickable; Esc closes.
 - [ ] Boss picker: ineligible bosses disabled with tooltip; cleared bosses
   show a green check (not a "?"); default is first eligible uncleared.

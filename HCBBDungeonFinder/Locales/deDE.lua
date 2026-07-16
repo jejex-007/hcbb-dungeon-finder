@@ -99,6 +99,8 @@ NS.locales.deDE = {
     ST_UPDATE = "Update verfügbar \226\128\148 bitte aktualisiere das Addon",
     NOT_ENROLLED_HINT = "Nur angemeldete Teilnehmer können suchen. Sprecht mit dem Prüfungsmeister in eurem Startgebiet (Stufe 1), um dem Boss Blitz beizutreten.",
     ALREADY_GROUPED_HINT = "Ihr seid bereits in einer Gruppe — verlasst sie, um eine neue zu suchen.",
+    NO_BOSS_NEXT = "Kein Blitz-Boss auf Stufe %d — der nächste öffnet auf Stufe %d.",
+    BLITZ_OVER = "Stufe %d — der Blitz ist vorbei. Glückwunsch!",
 
     ST_IDLE = "Untätig",
     ST_SEARCH = "Suche — %s",

@@ -28,6 +28,28 @@ local function defaultBossId()
     return nil
 end
 
+-- Brackets are [unlock-4, unlock-1], so any gap wider than 4 levels between
+-- two consecutive bosses leaves a dead level: 28, 41, 42 and 60 with the
+-- default table. Nothing is wrong there — the player simply has to level up
+-- (or, at 60, has run out of progression) — but the addon must say so instead
+-- of silently greying the button. Cleared state is irrelevant here: a cleared
+-- boss stays selectable, so this is purely about the level.
+local function anyEligibleBoss()
+    for id = 1, NS.Data.NUM_BOSSES do
+        if NS.Data:IsEligible(id, playerLevel()) then return true end
+    end
+    return false
+end
+
+local function nextBracketFloor()
+    local lvl, best = playerLevel(), nil
+    for id = 1, NS.Data.NUM_BOSSES do
+        local min = NS.Data:GetBracket(id)
+        if min and min > lvl and (not best or min < best) then best = min end
+    end
+    return best
+end
+
 local function updatePicker()
     local id = prefs().bossId
     if id and NS.Data.BOSSES[id] then
@@ -173,8 +195,36 @@ local function onSearchClick()
     end
 end
 
+-- Every reason the player cannot search, in priority order — returns the hint
+-- and its colour, or nil when nothing blocks. Both updateInfo and
+-- OnStateForPanes read it: they share infoText, so a pool event would
+-- otherwise wipe whatever hint the state handler had just written.
+local function blockedHint(state)
+    state = state or NS.Session.state
+    if not NS.eligible then return L["NOT_ENROLLED_HINT"], UI.COLOR.red end
+    if isGrouped() then return L["ALREADY_GROUPED_HINT"], UI.COLOR.muted end
+    -- Idle only: levelling up mid-search must not strand the player with a
+    -- disabled Cancel button.
+    if state == "IDLE" and not anyEligibleBoss() then
+        local nxt = nextBracketFloor()
+        if nxt then
+            return L["NO_BOSS_NEXT"]:format(playerLevel(), nxt), UI.COLOR.red
+        end
+        -- No bracket left above us: level 60, i.e. the Blitz is over. That is
+        -- an achievement, not an error — hence gold, not red.
+        return L["BLITZ_OVER"]:format(playerLevel()), UI.COLOR.gold
+    end
+end
+
 local function updateInfo()
-    if not pane:IsShown() or not NS.eligible then return end
+    if not pane:IsShown() then return end
+    local hint, color = blockedHint()
+    if hint then
+        infoText:SetText(hint)
+        infoText:SetTextColor(unpack(color))
+        return
+    end
+    infoText:SetTextColor(unpack(UI.COLOR.muted))
     if NS.Session.state == "SEARCHING" or NS.Session.state == "PAUSED" then
         local _, count = NS.Session:GetSearchInfo()
         infoText:SetText(L["POOL_COUNT"]:format(count or 0))
@@ -387,24 +437,20 @@ function UI.CreateRegistration(parent)
     end)
 
     UI.OnStateForPanes = function(state)
-        if not NS.eligible then
-            setInputsEnabled(false)
+        local hint, color = blockedHint(state)
+        if hint then
+            -- A dead level is the one block that leaves the inputs usable: the
+            -- player can still shift-click bosses to track their progress
+            -- while they level out of the gap.
+            setInputsEnabled(NS.eligible and not isGrouped())
             searchBtn:Disable()
             searchBtn:SetText(L["BTN_SEARCH"])
-            infoText:SetText(L["NOT_ENROLLED_HINT"])
-            infoText:SetTextColor(unpack(UI.COLOR.red))
+            infoText:SetText(hint)
+            infoText:SetTextColor(unpack(color))
             setRoleError(false)
             return
         end
         infoText:SetTextColor(unpack(UI.COLOR.muted))
-        if isGrouped() then -- can't look for a group when you already have one
-            setInputsEnabled(false)
-            searchBtn:Disable()
-            searchBtn:SetText(L["BTN_SEARCH"])
-            infoText:SetText(L["ALREADY_GROUPED_HINT"])
-            setRoleError(false)
-            return
-        end
         local idle = state == "IDLE"
         setInputsEnabled(idle)
         searchBtn:Enable()

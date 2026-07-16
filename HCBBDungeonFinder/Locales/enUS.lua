@@ -101,6 +101,8 @@ NS.locales.enUS = {
     ST_UPDATE = "Update available \226\128\148 please update the addon",
     NOT_ENROLLED_HINT = "Only enrolled challengers can search. Speak to the Trial Master in your starting zone (level 1) to join the Boss Blitz.",
     ALREADY_GROUPED_HINT = "You're already in a group — leave it to search for a new one.",
+    NO_BOSS_NEXT = "No Blitz boss at level %d — the next one opens at level %d.",
+    BLITZ_OVER = "Level %d — the Blitz is over. Congratulations!",
 
     ST_IDLE = "Idle",
     ST_SEARCH = "Searching — %s",

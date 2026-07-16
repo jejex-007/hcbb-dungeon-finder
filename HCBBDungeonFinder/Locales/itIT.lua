@@ -101,6 +101,8 @@ NS.locales.itIT = {
     ST_UPDATE = "Aggiornamento disponibile \226\128\148 aggiorna l'addon",
     NOT_ENROLLED_HINT = "Solo i partecipanti iscritti possono cercare un gruppo. Parla con il Maestro delle prove nella tua zona iniziale (livello 1) per unirti al Boss Blitz.",
     ALREADY_GROUPED_HINT = "Sei già in un gruppo — lascialo per cercarne uno nuovo.",
+    NO_BOSS_NEXT = "Nessun boss Blitz al livello %d — il prossimo si apre al livello %d.",
+    BLITZ_OVER = "Livello %d — il Blitz è finito. Congratulazioni!",
 
     ST_IDLE = "Inattivo",
     ST_SEARCH = "Ricerca — %s",
