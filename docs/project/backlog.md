@@ -150,6 +150,35 @@ announcement (forums + community Discords). Reports land in `#bug-report`.
   matching and the counter use `FRESH_GREEN`, so nothing else moved. Surfaced
   and fixed while making `/hcbb demo` show a yellow and a red listing to
   validate R26.
+- [x] **Fresh-only matching + active/total counter** (R26, S) — 2026-07-16.
+  Matching ignores listings older than `FRESH_GREEN` (60 s), so a quiet client
+  is never proposed into a group it can't answer. `Pool:CountBracket` returns
+  (fresh, total); the Find-Group line reads "N active (M total)" when some are
+  stale. Validated in-game ("6 active (8 total)" during a live search). The
+  matching-exclusion half still wants the 2-client run to confirm end-to-end.
+- [x] **Cleared tick locked past a boss's level** (R27, S) — 2026-07-16. A boss
+  whose unlock level you've reached is auto-ticked and can't be un-ticked
+  (killing it was required to level past it); tooltip explains instead of
+  offering the toggle. Validated in-game on a level-29 character.
+
+## M8 — Multi-dungeon selection (L–XL)
+
+- [ ] **Register for several dungeons at once** — designed 2026-07-16, not
+  built. The Find-Group list becomes multi-select (all bosses the level allows;
+  e.g. at 30: RFK and/or Gnomeregan and/or SM:GY). Matching priority: (1)
+  largest feasible group, (2) tie-broken by earliest boss in the progression
+  order (not the player's click order). The ACK round-trip already absorbs the
+  divergence when players' target sets overlap (a member gone elsewhere replies
+  "busy" → clean retry, no dead end), which is what makes it feasible serverless.
+  **Gates**:
+  - **Wire decision (blocking, needs an explicit call).** HELLO carries one
+    `bossId`. Options: (a) list in the field `id,id,id` — clients ≤ 0.2.0 stop
+    seeing those listings (invisibility, not a crash); recommended, we're
+    pre-release and everyone's on 0.2.0. (b) a new additive type like `W` —
+    full compat, doubles the emit logic. Do not touch the wire without a go.
+  - **Matcher rework**: loop `findForSelf` per targeted boss + a priority layer;
+    more failed proposals when target sets overlap (bounded by the ACK filter).
+  - **UI**: picker mono → multi-check; **effort L, possibly XL with tests.**
 
 ## Open questions
 - ~~Exact Boss Blitz marker~~ — RESOLVED 2026-07-13: permanent **debuff**

@@ -1,5 +1,37 @@
 # Changelog — HCBB Dungeon Finder
 
+## 2026-07-16 — Cleared-lock, fresh-only matching, red-dot fix
+
+Two maintainer-requested behaviours plus the M7 debt they surfaced. All
+validated in-game (the counter was seen reading "6 active (8 total)" during a
+live search on Bronzebeard).
+
+- **R27 — cleared by level.** A boss whose *beyond* level the character has
+  already reached was necessarily killed to get there (the challenge blocks
+  levelling past it), so it now shows ticked and **cannot be un-ticked** by
+  shift-click; the tooltip says why rather than offering the toggle. New pure
+  `Data:IsClearedByLevel` (based on the raw `unlock` value, so a bracket retune
+  in SavedVariables never rewrites what the game itself enforced); Registration
+  reads it wherever it read the stored flag.
+- **R26 — fresh listings only.** Matching now ignores any listing not heard
+  from within `FRESH_GREEN` (60 s), so a client that went quiet but hasn't
+  expired is never proposed into a group it can't answer. `Pool:CountBracket`
+  returns `(fresh, total)`; the Find-Group line shows the plain count when they
+  agree and **"N active (M total)"** when some are stale, so a full-looking
+  bracket that won't match no longer reads as a bug.
+- **M7 closed — red freshness dot.** `FRESH_YELLOW` 120 → 90, giving the red
+  band a real 30 s window [90, 120) instead of the zero-width one
+  `FRESH_YELLOW == EXPIRY` produced. Browser colour only — matching and the
+  counter key off `FRESH_GREEN`, eviction stays 120 s. `/hcbb demo` now seeds a
+  yellow (**Gorven**) and a red (**Halwyn**) stale listing so the bands and the
+  counter can be checked solo; they drift and expire like real stale listings.
+- Not unit-testable (Pool/Data/UI, no WoW API in CI) — pinned in
+  `smoke-test.md`. R17 threshold, R26/R27 added to business rules.
+- **Deferred**: multi-dungeon selection (pick several targets at once) was
+  designed but not built — it changes the wire (HELLO carries one boss) and the
+  matcher (priority: largest group, then earliest in progression). Scoped as
+  **M8**; the wire decision is the gate and needs an explicit call.
+
 ## 2026-07-16 — Three long-standing bugs, all found by hand
 
 Validating the tutorial in-game turned up three defects that had shipped from
