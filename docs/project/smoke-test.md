@@ -42,6 +42,10 @@ every release. Record here what was actually observed, and when.
   error disappears and the hint comes back. Re-check in both game modes (the
   report came from Warcraft Reborn, but the anchor is mode-independent) and on
   a non-enrolled / already-grouped character (both paths hide the error).
+- [ ] **Regression (2026-07-16)**: pick a dungeon in the "Who's Looking" filter
+  → the **button label follows** the selection, not just the list. It read
+  "All dungeons" forever until then, which looks exactly like a broken filter
+  even though the list was filtering correctly.
 - [ ] Window opens above WeakAuras; close button clickable; Esc closes.
 - [ ] Boss picker: ineligible bosses disabled with tooltip; cleared bosses
   show a green check (not a "?"); default is first eligible uncleared.

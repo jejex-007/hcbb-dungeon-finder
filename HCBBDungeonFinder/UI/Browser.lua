@@ -76,17 +76,26 @@ local function refreshList()
     emptyText[#sorted == 0 and "Show" or "Hide"](emptyText)
 end
 
+-- The button label is only repainted by refreshTexts (startup, language
+-- switch), so selecting a dungeon has to update it here — otherwise the list
+-- filters correctly under a button still reading "All dungeons".
+local function setFilter(dungeon)
+    dungeonFilter = dungeon
+    filterBtn:SetText(dungeon or L["FILTER_ALL"])
+    refreshList()
+end
+
 local function initFilterMenu()
-    local info = UIDropDownMenu_CreateInfo()
-    info.text = L["FILTER_ALL"]
-    info.checked = dungeonFilter == nil
-    info.func = function() dungeonFilter = nil refreshList() end
-    UIDropDownMenu_AddButton(info)
+    local all = UIDropDownMenu_CreateInfo()
+    all.text = L["FILTER_ALL"]
+    all.checked = dungeonFilter == nil
+    all.func = function() setFilter(nil) end
+    UIDropDownMenu_AddButton(all)
     for _, dungeon in ipairs(NS.Data.dungeons) do
-        info = UIDropDownMenu_CreateInfo()
+        local info = UIDropDownMenu_CreateInfo()
         info.text = dungeon
         info.checked = dungeonFilter == dungeon
-        info.func = function() dungeonFilter = dungeon refreshList() end
+        info.func = function() setFilter(dungeon) end
         UIDropDownMenu_AddButton(info)
     end
 end
