@@ -31,8 +31,9 @@ reading the code while writing documentation.
   read one `blockedHint()`, which owns the three reasons in priority order —
   they share `infoText` and must agree.
 - **The maintainer's first name was in a public test file** since the first
-  push, as `"J\195\169r\195\180me"` (UTF-8 octal escapes, test data for
-  accented names). Renamed to the same-bytes fictional `Azérôth`, so the
+  push, written as UTF-8 octal escapes (test data for accented names — the
+  literal is not reproduced here, for the same reason it was removed).
+  Renamed to the same-bytes fictional `Azérôth`, so the
   round-trip keeps its value. The real lesson is the audit, not the string:
   **the mandated pre-push name grep only matches plain text** and had reported
   "clean" twice that evening. Then the fixed audit command itself crashed on
