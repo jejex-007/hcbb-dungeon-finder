@@ -142,14 +142,14 @@ announcement (forums + community Discords). Reports land in `#bug-report`.
   modes since the start, not WR-specific. Not unit-testable (UI layout, no WoW
   API in CI) — regression pinned in `docs/project/smoke-test.md`.
 
-- [ ] **Red freshness dot unreachable in Who's Looking** (cosmetic, S) — found
-  2026-07-16 while documenting the dots for the Discord tutorial.
-  `FRESH_YELLOW` == `EXPIRY` == 120 s in `Data.lua`, so a listing is evicted at
-  the exact moment it would turn red; the state only exists between two sweeps.
-  R17 specifies green and yellow only, so the code is compliant — either drop
-  the yellow threshold to ~90 s to give red a real window, or accept red as
-  purely transitional and say so in `Data.lua`. Who's Playing is unaffected
-  (240 s red vs 300 s TTL; red observed in the wild).
+- [x] **Red freshness dot unreachable in Who's Looking** (cosmetic, S) — found
+  2026-07-16, fixed same day. `FRESH_YELLOW` == `EXPIRY` == 120 s meant a
+  listing was evicted at the exact moment it would turn red. Dropped
+  `FRESH_YELLOW` to 90 s, giving red a real 30 s window [90, 120) without
+  touching the 120 s eviction (R17 updated). Purely a browser colour band —
+  matching and the counter use `FRESH_GREEN`, so nothing else moved. Surfaced
+  and fixed while making `/hcbb demo` show a yellow and a red listing to
+  validate R26.
 
 ## Open questions
 - ~~Exact Boss Blitz marker~~ — RESOLVED 2026-07-13: permanent **debuff**

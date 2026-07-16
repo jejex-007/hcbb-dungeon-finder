@@ -58,9 +58,19 @@ every release. Record here what was actually observed, and when.
 - [ ] Window opens above WeakAuras; close button clickable; Esc closes.
 - [ ] Boss picker: ineligible bosses disabled with tooltip; cleared bosses
   show a green check (not a "?"); default is first eligible uncleared.
+- [ ] **R27 (2026-07-16)**: a boss whose *beyond* level you have already
+  reached (any boss with `unlock <= your level`) shows ticked and **cannot be
+  un-ticked** by shift-click; its tooltip reads "required to pass this level",
+  not the toggle hint. A boss still within reach toggles normally. Check a
+  mid-progress character so both cases are visible at once.
 - [ ] `/hcbb demo` seeds listings in Who's Looking with class-colored names;
   the proposal popup shows, countdown text readable over the bar, Accept
   locks both buttons, footer swaps to "group forming".
+- [ ] `/hcbb demo` also seeds two stale listings — **Gorven (yellow dot)** and
+  **Halwyn (red dot)** — so the freshness bands are visible at a glance. They
+  drift and expire within ~30 s (the demo is a snapshot; re-run to refresh).
+  The counter itself ("N active (M total)") only shows during a live search,
+  so validate that at the 2-client run, not in demo.
 - [ ] Enter combat → window auto-closes; reopen with `/hcbb`, search intact.
 
 ## Who's Playing (R25)
@@ -90,6 +100,12 @@ every release. Record here what was actually observed, and when.
 ## Matchmaking (two clients A + B, same bracket)
 - [ ] Both search the same boss; each sees the other in Who's Looking within
   a heartbeat (~30 s), freshness dot green.
+- [ ] **R26 (2026-07-16)**: only fresh (green) listings are matched. Hard to
+  force on purpose — let one client go quiet (leave the channel / close it)
+  without a clean BYE: within ~60 s its listing goes yellow in the browser and
+  stops being matchable, and the Find-Group counter on the other client flips
+  from "N searching" to "N active (M total)". A resumed heartbeat turns it
+  green and matchable again.
 - [ ] With a full valid composition, a proposal fires; leader election
   matches R11; all-accept → leader invites → party forms.
 - [ ] Decline / timeout on one side → both auto-return to Searching, listing

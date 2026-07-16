@@ -12,8 +12,11 @@ Data.CONST = {
     COMM_PREFIX      = "HCBB",     -- SendAddonMessage prefix
     HEARTBEAT        = 30,         -- s between HELLO rebroadcasts (R17)
     EXPIRY           = 120,        -- s without heartbeat before eviction (R17)
-    FRESH_GREEN      = 60,         -- s thresholds for browser freshness dots
-    FRESH_YELLOW     = 120,
+    FRESH_GREEN      = 60,         -- s: browser dot green below this (R17)
+    FRESH_YELLOW     = 90,         -- s: yellow below this, red above. Kept
+                                   -- under EXPIRY (120) so the red band is a
+                                   -- real 30 s window, not the zero-width one
+                                   -- FRESH_YELLOW == EXPIRY used to give.
     PROPOSAL_TIMEOUT = 30,         -- s to answer a proposal (R12)
     FORMING_TIMEOUT  = 20,         -- s to receive the party invite (design 1l)
     GRACE_SMALLER    = 90,         -- s of searching before size 4 allowed, 2x for 3 (R14)
@@ -216,4 +219,14 @@ function Data:IsEligible(bossId, level)
     local min, max = self:GetBracket(bossId)
     if not min then return false end
     return level >= min and level <= max
+end
+
+-- R27: a boss whose "beyond" level (unlock) you have already reached was
+-- necessarily killed to get there — the challenge blocks levelling past it
+-- otherwise. Such a boss is cleared by level: shown ticked, not un-checkable.
+-- Based on the raw progression value, not the effective bracket, so retuning
+-- a bracket in SavedVariables never changes what the game itself enforced.
+function Data:IsClearedByLevel(bossId, level)
+    local b = self.BOSSES[bossId]
+    return b ~= nil and level >= b.unlock
 end

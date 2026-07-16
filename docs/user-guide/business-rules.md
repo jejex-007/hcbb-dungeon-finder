@@ -27,6 +27,13 @@ happens between addon clients over chat-based messaging.
   target (e.g. a level 16 cannot register for Deadmines / VanCleef).
   Brackets are data-driven defaults, adjustable only in the addon's saved
   configuration (not in the UI), so the community can retune per season.
+- **R27 — Cleared by level.** The Find-Group boss list lets a player
+  shift-click a boss to tick it as *cleared* (a personal progression tracker).
+  A boss whose *beyond* level (§7) the character has already reached is
+  **cleared automatically and cannot be un-ticked**: the challenge blocks
+  levelling past a boss without killing it, so out-levelling one is proof of
+  the kill. Display and tracking only — it does not gate matching (an
+  out-levelled boss is already outside its bracket, R2).
 - **R3 — Roles.** The player declares one or more roles they can fill:
   **Tank, Healer, Support, DPS**. At least one role is required. Roles are
   declared, never inferred (CoA classes don't map to roles). **Support exists
@@ -94,10 +101,18 @@ happens between addon clients over chat-based messaging.
 - **R17 — Heartbeat.** Active listings are re-broadcast periodically
   (default every 30 s). A listing not refreshed for 120 s is dropped from
   every client's pool. Freshness display thresholds: green < 60 s,
-  yellow < 120 s.
+  yellow < 90 s, red 90–120 s (kept below the 120 s drop so the red band is a
+  real window, not a zero-width one).
 - **R18 — Validation.** Every incoming message is validated (protocol
   version, field types, bracket coherence, sender name matches the chat
   event's sender). Invalid messages are silently dropped.
+- **R26 — Fresh listings only.** A group is only ever formed from **fresh
+  (green) listings** — those re-broadcast within the freshness-green window
+  (R17, default 60 s). A listing that has gone quiet (yellow/red) still shows
+  in the browser until it expires (R17) but is not matched, so a player is
+  never proposed into a group they have already left or can no longer answer.
+  The Find-Group counter reflects this: it shows the plain count when every
+  listed player is fresh, and "N active (M total)" when some are stale.
 - **R23 — Participants only.** The addon only activates on characters
   enrolled in the Hardcore Boss Blitz challenge, detected client-side by the
   permanent mode marker on the character — the debuff "Hardcore - Boss Blitz"

@@ -29,6 +29,7 @@ NS.locales.esES = {
     BOSS_LABEL = "Jefe objetivo",
     BOSS_REQ = "Requiere nivel %d–%d — tienes %d",
     BOSS_CLEARED = "Derrotado",
+    BOSS_CLEARED_LEVEL = "Derrotado — necesario para pasar este nivel",
     BOSS_TOGGLE_HINT = "Mayús-clic: marcar derrotado / pendiente",
 
     ROLES_LABEL = "Tus roles",
@@ -50,6 +51,7 @@ NS.locales.esES = {
     BTN_CANCEL = "Cancelar búsqueda",
     SEARCH_ELAPSED = "Buscando — %s",
     POOL_COUNT = "%d jugadores buscan en tu rango",
+    POOL_COUNT_ACTIVE = "%d jugadores activos en tu rango (%d en total)",
 
     PROP_TITLE = "¡Grupo encontrado!",
     PROP_YOU_ROLE = "Tu rol asignado:",

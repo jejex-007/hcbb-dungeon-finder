@@ -129,7 +129,9 @@ function Session:TryMatch()
     for name, untilTime in pairs(self.blocked) do
         if now() > untilTime then self.blocked[name] = nil end
     end
-    local listings = NS.Pool:GetForBoss(self.reg.bossId, self.blocked)
+    -- R26: only match fresh (green) listings, so a client that went quiet but
+    -- hasn't expired yet is never proposed into a group it can't answer.
+    local listings = NS.Pool:GetForBoss(self.reg.bossId, self.blocked, C().FRESH_GREEN)
     local match = NS.Matcher.findForSelf(listings, {
         allowedSizes = self:AllowedSizes(),
         maxSpan = C().MAX_LEVEL_SPAN,
@@ -399,8 +401,10 @@ end
 
 -- UI helpers -----------------------------------------------------------
 
+-- Returns (elapsed, fresh, total): fresh = matchable green listings in the
+-- bracket, total = everyone still listed. See Pool:CountBracket.
 function Session:GetSearchInfo()
     if not self.reg then return nil end
-    return now() - self.reg.startedAt,
-           NS.Pool:CountBracket(self.reg.bossId, self.reg.level, self.me)
+    local fresh, total = NS.Pool:CountBracket(self.reg.bossId, self.reg.level, self.me)
+    return now() - self.reg.startedAt, fresh, total
 end

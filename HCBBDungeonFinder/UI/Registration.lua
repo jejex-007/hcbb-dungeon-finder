@@ -17,11 +17,16 @@ local widgets = {}
 local function prefs() return NS.addon.db.char.prefs end
 local function cleared() return NS.addon.db.char.cleared end
 local function playerLevel() return UnitLevel("player") end
+-- A boss counts as cleared if the player ticked it OR has already out-levelled
+-- it (R27): passing its unlock level means it was killed. The by-level case is
+-- locked — shift-click can't undo a kill the game itself required.
+local function clearedByLevel(id) return NS.Data:IsClearedByLevel(id, playerLevel()) end
+local function isCleared(id) return cleared()[id] or clearedByLevel(id) end
 local function isGrouped() return GetNumPartyMembers() > 0 or GetNumRaidMembers() > 0 end
 
 local function defaultBossId()
     for id = 1, NS.Data.NUM_BOSSES do
-        if not cleared()[id] and NS.Data:IsEligible(id, playerLevel()) then
+        if not isCleared(id) and NS.Data:IsEligible(id, playerLevel()) then
             return id
         end
     end
@@ -53,7 +58,7 @@ end
 local function updatePicker()
     local id = prefs().bossId
     if id and NS.Data.BOSSES[id] then
-        local check = cleared()[id] and (UI.ICON.check .. " ") or ""
+        local check = isCleared(id) and (UI.ICON.check .. " ") or ""
         pickerText:SetText(check .. UI.BossText(id))
         local min, max = NS.Data:GetBracket(id)
         pickerBracket:SetText(("%d\226\128\147%d"):format(min, max))
@@ -74,7 +79,7 @@ local function menuRowUpdate()
         if b then
             row.bossId = id
             local eligible = NS.Data:IsEligible(id, playerLevel())
-            local check = cleared()[id] and (UI.ICON.check .. " ") or ""
+            local check = isCleared(id) and (UI.ICON.check .. " ") or ""
             row.text:SetText(check .. b.dungeon .. " \226\128\148 " .. b.boss)
             row.text:SetTextColor(unpack(eligible and UI.COLOR.text or UI.COLOR.mutedDim))
             row.eligible = eligible
@@ -118,6 +123,8 @@ local function createMenu()
         hl:SetVertexColor(0.78, 0.667, 0.43, 0.15)
         row:SetScript("OnClick", function(self)
             if IsShiftKeyDown() then
+                -- Can't un-clear a boss you had to kill to reach this level (R27).
+                if clearedByLevel(self.bossId) then return end
                 cleared()[self.bossId] = (not cleared()[self.bossId]) or nil
                 menuRowUpdate()
                 updatePicker()
@@ -139,10 +146,15 @@ local function createMenu()
             else
                 GameTooltip:AddLine(("%d\226\128\147%d"):format(min, max), unpack(UI.COLOR.muted))
             end
-            if cleared()[self.bossId] then
+            if isCleared(self.bossId) then
                 GameTooltip:AddLine(L["BOSS_CLEARED"], unpack(UI.COLOR.green))
             end
-            GameTooltip:AddLine(L["BOSS_TOGGLE_HINT"], unpack(UI.COLOR.muted))
+            -- A by-level clear can't be toggled, so drop the misleading hint.
+            if clearedByLevel(self.bossId) then
+                GameTooltip:AddLine(L["BOSS_CLEARED_LEVEL"], unpack(UI.COLOR.muted))
+            else
+                GameTooltip:AddLine(L["BOSS_TOGGLE_HINT"], unpack(UI.COLOR.muted))
+            end
             GameTooltip:Show()
         end)
         row:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -226,8 +238,15 @@ local function updateInfo()
     end
     infoText:SetTextColor(unpack(UI.COLOR.muted))
     if NS.Session.state == "SEARCHING" or NS.Session.state == "PAUSED" then
-        local _, count = NS.Session:GetSearchInfo()
-        infoText:SetText(L["POOL_COUNT"]:format(count or 0))
+        local _, fresh, total = NS.Session:GetSearchInfo()
+        fresh, total = fresh or 0, total or 0
+        -- Only fresh players are matchable (R26). When some are stale, say so,
+        -- so a full-looking bracket that won't match doesn't read as a bug.
+        if total > fresh then
+            infoText:SetText(L["POOL_COUNT_ACTIVE"]:format(fresh, total))
+        else
+            infoText:SetText(L["POOL_COUNT"]:format(fresh))
+        end
     else
         infoText:SetText("")
     end

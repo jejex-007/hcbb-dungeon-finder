@@ -83,10 +83,14 @@ function Pool:Wipe()
 end
 
 -- Matcher input for one boss (R10), minus excluded names (decliner cooldown).
-function Pool:GetForBoss(bossId, excluded)
-    local out = {}
+-- maxAge (R26): only listings heard from within that many seconds are matchable,
+-- so a stale/idle client whose listing hasn't expired yet is not matched into a
+-- group it can't answer. Omitted → no freshness filter (used by counters).
+function Pool:GetForBoss(bossId, excluded, maxAge)
+    local out, t = {}, now()
     for name, e in pairs(self.entries) do
-        if e.bossId == bossId and not (excluded and excluded[name]) then
+        if e.bossId == bossId and not (excluded and excluded[name])
+           and (not maxAge or t - e.lastSeen <= maxAge) then
             out[#out + 1] = { name = name, bossId = e.bossId, level = e.level,
                               roles = e.roles, minSize = e.minSize,
                               lead = e.lead, ts = e.firstSeen }
@@ -96,16 +100,22 @@ function Pool:GetForBoss(bossId, excluded)
 end
 
 -- "N players searching in your bracket" (design 1c): same boss, within
--- MAX_LEVEL_SPAN of the given level, excluding the player themself.
+-- MAX_LEVEL_SPAN of the given level, excluding the player themself. Returns
+-- (fresh, total): fresh = green listings (< FRESH_GREEN), the ones actually
+-- matchable (R26); total = everyone still in the pool. The UI shows only the
+-- count when they agree, and "N active (M total)" when they don't.
 function Pool:CountBracket(bossId, level, selfName)
-    local span, n = NS.Data.CONST.MAX_LEVEL_SPAN, 0
+    local span = NS.Data.CONST.MAX_LEVEL_SPAN
+    local maxAge, t = NS.Data.CONST.FRESH_GREEN, now()
+    local fresh, total = 0, 0
     for name, e in pairs(self.entries) do
         if name ~= selfName and e.bossId == bossId
            and math.abs(e.level - level) <= span then
-            n = n + 1
+            total = total + 1
+            if t - e.lastSeen <= maxAge then fresh = fresh + 1 end
         end
     end
-    return n
+    return fresh, total
 end
 
 -- Browser rows, freshest first (design 1h).

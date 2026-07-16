@@ -29,6 +29,7 @@ NS.locales.frFR = {
     BOSS_LABEL = "Boss visé",
     BOSS_REQ = "Requiert niveau %d–%d — vous êtes %d",
     BOSS_CLEARED = "Vaincu",
+    BOSS_CLEARED_LEVEL = "Vaincu — requis pour passer ce niveau",
     BOSS_TOGGLE_HINT = "Maj-clic : marquer vaincu / à faire",
 
     ROLES_LABEL = "Vos rôles",
@@ -49,6 +50,7 @@ NS.locales.frFR = {
     BTN_SEARCH = "Chercher un groupe",
     BTN_CANCEL = "Annuler la recherche",
     POOL_COUNT = "%d joueurs cherchent dans votre tranche",
+    POOL_COUNT_ACTIVE = "%d joueurs actifs dans votre tranche (%d au total)",
 
     PROP_TITLE = "Groupe trouvé !",
     PROP_YOU_ROLE = "Votre rôle assigné :",

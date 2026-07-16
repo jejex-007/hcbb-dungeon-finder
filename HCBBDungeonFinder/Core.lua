@@ -249,6 +249,22 @@ function addon:Demo()
             profs = profSets[i],
         })
     end
+    -- Two stale "Who's Looking" listings so the freshness dots and the
+    -- "N active (M total)" counter (R26) can be seen: one yellow, one red.
+    -- OnHello stamps lastSeen = now, so we backdate it by hand right after.
+    -- They are NOT matchable (only green listings are, R26) and they drift and
+    -- expire like any real stale listing — re-run /hcbb demo to refresh them.
+    local staleLvl = math.max(b.min, math.min(b.max, level))
+    local stale = { { name = "Gorven", age = 65 },   -- yellow: 60-90 s band
+                    { name = "Halwyn", age = 95 } }   -- red: 90-120 s band
+    for i, s in ipairs(stale) do
+        NS.Pool:OnHello(s.name, {
+            seq = 99, bossId = bossId, level = staleLvl, roles = 8,
+            minSize = 3, lead = 0, ver = NS.VERSION, class = classes[i],
+        })
+        local e = NS.Pool.entries[s.name]
+        if e then e.lastSeen = NS.now() - s.age end
+    end
     NS.Presence.ready = true -- demo answers the "have we pinged yet?" question
     self:Print(("demo: seeded %d listings for %s"):format(#names, b.boss))
     self:ScheduleTimer(function()

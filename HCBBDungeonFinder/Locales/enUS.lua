@@ -32,6 +32,7 @@ NS.locales.enUS = {
     BOSS_LABEL = "Target boss",
     BOSS_REQ = "Requires level %d–%d — you are %d",
     BOSS_CLEARED = "Cleared",
+    BOSS_CLEARED_LEVEL = "Defeated — required to pass this level",
     BOSS_TOGGLE_HINT = "Shift-click: toggle cleared",
 
     ROLES_LABEL = "Your roles",
@@ -52,6 +53,7 @@ NS.locales.enUS = {
     BTN_SEARCH = "Search for Group",
     BTN_CANCEL = "Cancel Search",
     POOL_COUNT = "%d players searching in your bracket",
+    POOL_COUNT_ACTIVE = "%d active players in your bracket (%d total)",
 
     PROP_TITLE = "Group Found!",
     PROP_YOU_ROLE = "You were assigned:",

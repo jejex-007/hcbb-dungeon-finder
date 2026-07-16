@@ -29,6 +29,7 @@ NS.locales.deDE = {
     BOSS_LABEL = "Zielboss",
     BOSS_REQ = "Erfordert Stufe %d–%d — Ihr seid %d",
     BOSS_CLEARED = "Besiegt",
+    BOSS_CLEARED_LEVEL = "Besiegt — nötig, um diese Stufe zu überschreiten",
     BOSS_TOGGLE_HINT = "Umschalt-Klick: besiegt an/aus",
 
     ROLES_LABEL = "Eure Rollen",
@@ -50,6 +51,7 @@ NS.locales.deDE = {
     BTN_CANCEL = "Suche abbrechen",
     SEARCH_ELAPSED = "Suche — %s",
     POOL_COUNT = "%d Spieler suchen in eurem Bereich",
+    POOL_COUNT_ACTIVE = "%d aktive Spieler in eurem Bereich (%d insgesamt)",
 
     PROP_TITLE = "Gruppe gefunden!",
     PROP_YOU_ROLE = "Eure Rolle:",

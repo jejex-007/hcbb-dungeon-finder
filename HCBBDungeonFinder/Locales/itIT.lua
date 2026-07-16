@@ -31,6 +31,7 @@ NS.locales.itIT = {
     BOSS_LABEL = "Boss bersaglio",
     BOSS_REQ = "Richiede livello %d–%d — sei %d",
     BOSS_CLEARED = "Sconfitto",
+    BOSS_CLEARED_LEVEL = "Sconfitto — necessario per superare questo livello",
     BOSS_TOGGLE_HINT = "Maiusc-clic: segna sconfitto / da fare",
 
     ROLES_LABEL = "I tuoi ruoli",
@@ -52,6 +53,7 @@ NS.locales.itIT = {
     BTN_CANCEL = "Annulla ricerca",
     SEARCH_ELAPSED = "Ricerca — %s",
     POOL_COUNT = "%d giocatori cercano nella tua fascia",
+    POOL_COUNT_ACTIVE = "%d giocatori attivi nella tua fascia (%d in totale)",
 
     PROP_TITLE = "Gruppo trovato!",
     PROP_YOU_ROLE = "Il tuo ruolo assegnato:",
