@@ -1,5 +1,47 @@
 # Changelog — HCBB Dungeon Finder
 
+## 2026-07-17 — Multi-dungeon registration (R28) + update banner, v0.3.0
+
+The most-requested feature, designed under `design ON` against BR/NFR before
+a line was written. With a thin population, single-target registration
+fragments the pool (three level-30s split across RFK/Gnomer/SM:GY never
+match); multi-target makes the same three players a group. Liquidity, not
+comfort.
+
+- **R28 — register for several bosses at once** (cap 8, only what the level
+  allows). Picker becomes a toggle list that stays open; browser shows
+  "first target +N" with one tooltip line per boss; the dungeon filter
+  matches any target. Roles/size/lead stay one declaration. Saved prefs
+  migrate from the single `bossId` (NFR-D1).
+- **Wire without a proto bump.** HELLO's boss field becomes a strictly
+  ascending comma list, **encoded as the bare integer when single — byte
+  identical to the 0.2.0 wire** (a codec test pins the exact string). Old
+  clients silently drop multi listings (`tonumber("5,6")` = nil → invalid
+  fields): partial one-way invisibility, never a crash. Ascending order is
+  both the canonical form and the progression priority.
+- **Priority is an iteration order, not a score**: sizes largest-first, then
+  targeted bosses in progression order within a size — "largest group wins,
+  earliest boss breaks ties" falls out of the loop shape. Pure, 8 new tests.
+- **Election electorate (amends R11)**: only the elected leader acts, so the
+  leader must *see* the match. A match containing a multi listing elects
+  among members whose `ver` decodes lists; volunteers still win first within
+  that electorate. All-scalar matches ignore versions entirely — the rule
+  evaporates once everyone upgrades. In mixed pools the optimum can still
+  miss (an old client's replica lacks the multi listings); grace timers +
+  ACK round-trip degrade to smaller valid groups, never a dead end.
+- **Pool fairness**: `firstSeen` is now per boss — adding Gnomeregan doesn't
+  send you to the back of the RFK queue. Levelling out of a target prunes it
+  at heartbeat; pruning the last one cancels the search with a notice.
+- **Update banner (NFR-C5)**: the notice leaves the status strip — which it
+  used to confiscate all session, hiding the live search counter — for a
+  dedicated pulsing bar under the title (AnimationGroup, no OnUpdate,
+  NFR-P1). Click → copyable direct-zip link, popup text carries the
+  full-restart caveat at the exact moment the player needs it.
+- Validated in-game: multi picker, demo "+N", prefs migration across
+  /reload, banner + freed strip. **Cross-client multi matching and the
+  mixed-version election still need the 2-client run** — pinned in
+  smoke-test with a dedicated 0.2.0-vs-0.3.0 back-compat case.
+
 ## 2026-07-16 — Cleared-lock, fresh-only matching, red-dot fix
 
 Two maintainer-requested behaviours plus the M7 debt they surfaced. All

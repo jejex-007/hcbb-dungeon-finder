@@ -161,24 +161,23 @@ announcement (forums + community Discords). Reports land in `#bug-report`.
   (killing it was required to level past it); tooltip explains instead of
   offering the toggle. Validated in-game on a level-29 character.
 
-## M8 — Multi-dungeon selection (L–XL)
+## M8 — Multi-dungeon selection — done 2026-07-17 (est. L–XL, actual ~2.5h)
 
-- [ ] **Register for several dungeons at once** — designed 2026-07-16, not
-  built. The Find-Group list becomes multi-select (all bosses the level allows;
-  e.g. at 30: RFK and/or Gnomeregan and/or SM:GY). Matching priority: (1)
-  largest feasible group, (2) tie-broken by earliest boss in the progression
-  order (not the player's click order). The ACK round-trip already absorbs the
-  divergence when players' target sets overlap (a member gone elsewhere replies
-  "busy" → clean retry, no dead end), which is what makes it feasible serverless.
-  **Gates**:
-  - **Wire decision (blocking, needs an explicit call).** HELLO carries one
-    `bossId`. Options: (a) list in the field `id,id,id` — clients ≤ 0.2.0 stop
-    seeing those listings (invisibility, not a crash); recommended, we're
-    pre-release and everyone's on 0.2.0. (b) a new additive type like `W` —
-    full compat, doubles the emit logic. Do not touch the wire without a go.
-  - **Matcher rework**: loop `findForSelf` per targeted boss + a priority layer;
-    more failed proposals when target sets overlap (bounded by the ACK filter).
-  - **UI**: picker mono → multi-check; **effort L, possibly XL with tests.**
+- [x] **Register for several dungeons at once** (R28) — shipped in **v0.3.0**
+  with the update banner. Wire option (a) refined during the design pass:
+  the comma list encodes as the bare integer when single, so single-target
+  listings stay byte-identical to the 0.2.0 wire (only multi listings are
+  invisible to old clients). Added beyond the original scope: the election
+  electorate (the leader must be able to see the match — R11 amended in R28),
+  per-boss `firstSeen` fairness, heartbeat pruning on level-up, AceDB prefs
+  migration. Priority "largest group, then progression order" implemented as
+  the iteration order of the pure multi layer — 10 new tests, 47 total.
+  In-game solo validation done; **the 2-client run must cover the R28
+  back-compat case** (0.2.0 sees singles, drops multis, mixed election picks
+  a 0.3.0 leader) — pinned in smoke-test.
+- [ ] **Update the Discord `#tutorial`** — replacement texts for messages 2,
+  3 and 4 delivered 2026-07-17 (multi-dungeon + fresh-only matching + the
+  corrected dot thresholds); not yet posted by the maintainer.
 
 ## Open questions
 - ~~Exact Boss Blitz marker~~ — RESOLVED 2026-07-13: permanent **debuff**
