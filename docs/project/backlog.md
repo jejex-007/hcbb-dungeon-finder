@@ -175,9 +175,10 @@ announcement (forums + community Discords). Reports land in `#bug-report`.
   In-game solo validation done; **the 2-client run must cover the R28
   back-compat case** (0.2.0 sees singles, drops multis, mixed election picks
   a 0.3.0 leader) — pinned in smoke-test.
-- [ ] **Update the Discord `#tutorial`** — replacement texts for messages 2,
-  3 and 4 delivered 2026-07-17 (multi-dungeon + fresh-only matching + the
-  corrected dot thresholds); not yet posted by the maintainer.
+- [x] **Update the Discord `#tutorial`** — done 2026-07-17: messages 2, 3
+  and 4 re-edited (multi-dungeon + fresh-only matching + corrected dot
+  thresholds), release announced on the forums and auto-posted to
+  `#announcements` by the release workflow.
 
 ## Open questions
 - ~~Exact Boss Blitz marker~~ — RESOLVED 2026-07-13: permanent **debuff**
