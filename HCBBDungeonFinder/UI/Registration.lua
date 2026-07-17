@@ -9,6 +9,7 @@ local WHITE = "Interface\\Buttons\\WHITE8X8"
 local ROW_H, VISIBLE_ROWS = 24, 8
 
 local pane, picker, pickerText, pickerBracket, menu
+local validate -- forward: menu rows re-validate on toggle, defined below
 local searchBtn, errText, infoText, hintRoles, hintMin
 local bossHeader, rolesHeader, minHeader, leadCheck
 local roleCards, radios = {}, {}
@@ -55,13 +56,34 @@ local function nextBracketFloor()
     return best
 end
 
+-- Selected targets (R28), ascending — ascending ids ARE the progression
+-- priority order, so no separate ordering is ever stored.
+local function selection()
+    local p = prefs()
+    p.bossIds = p.bossIds or {}
+    return p.bossIds
+end
+
+local function isSelected(id)
+    local ids = selection()
+    for i = 1, #ids do if ids[i] == id then return true end end
+    return false
+end
+
 local function updatePicker()
-    local id = prefs().bossId
+    local ids = selection()
+    local id = ids[1]
     if id and NS.Data.BOSSES[id] then
-        local check = isCleared(id) and (UI.ICON.check .. " ") or ""
-        pickerText:SetText(check .. UI.BossText(id))
-        local min, max = NS.Data:GetBracket(id)
-        pickerBracket:SetText(("%d\226\128\147%d"):format(min, max))
+        local check = (#ids == 1 and isCleared(id)) and (UI.ICON.check .. " ") or ""
+        local txt = check .. UI.BossText(id)
+        if #ids > 1 then txt = txt .. L["TARGETS_MORE"]:format(#ids - 1) end
+        pickerText:SetText(txt)
+        if #ids == 1 then
+            local min, max = NS.Data:GetBracket(id)
+            pickerBracket:SetText(("%d\226\128\147%d"):format(min, max))
+        else
+            pickerBracket:SetText("")
+        end
     else
         pickerText:SetText(L["BOSS_LABEL"] .. "\226\128\166")
         pickerBracket:SetText("")
@@ -79,9 +101,15 @@ local function menuRowUpdate()
         if b then
             row.bossId = id
             local eligible = NS.Data:IsEligible(id, playerLevel())
+            local selected = isSelected(id)
             local check = isCleared(id) and (UI.ICON.check .. " ") or ""
             row.text:SetText(check .. b.dungeon .. " \226\128\148 " .. b.boss)
-            row.text:SetTextColor(unpack(eligible and UI.COLOR.text or UI.COLOR.mutedDim))
+            if selected then
+                row.text:SetTextColor(unpack(UI.COLOR.yellow))
+            else
+                row.text:SetTextColor(unpack(eligible and UI.COLOR.text or UI.COLOR.mutedDim))
+            end
+            row.sel[selected and "Show" or "Hide"](row.sel)
             row.eligible = eligible
             row:Show()
         else
@@ -121,6 +149,13 @@ local function createMenu()
         hl:SetAllPoints()
         hl:SetTexture(WHITE)
         hl:SetVertexColor(0.78, 0.667, 0.43, 0.15)
+        -- Persistent tint for selected targets (R28) — the HIGHLIGHT layer
+        -- only shows under the mouse, selection must survive it.
+        row.sel = row:CreateTexture(nil, "BACKGROUND")
+        row.sel:SetAllPoints()
+        row.sel:SetTexture(WHITE)
+        row.sel:SetVertexColor(0.78, 0.667, 0.43, 0.10)
+        row.sel:Hide()
         row:SetScript("OnClick", function(self)
             if IsShiftKeyDown() then
                 -- Can't un-clear a boss you had to kill to reach this level (R27).
@@ -131,9 +166,21 @@ local function createMenu()
                 return
             end
             if not self.eligible then return end
-            prefs().bossId = self.bossId
+            -- Toggle membership (R28); the menu stays open so several
+            -- dungeons can be picked in one visit. Ascending insert keeps
+            -- the list canonical (= progression priority order).
+            local ids = selection()
+            local at
+            for k = 1, #ids do if ids[k] == self.bossId then at = k break end end
+            if at then
+                table.remove(ids, at)
+            elseif #ids < NS.Data.CONST.MAX_TARGETS then
+                ids[#ids + 1] = self.bossId
+                table.sort(ids)
+            end
+            menuRowUpdate()
             updatePicker()
-            menu:Hide()
+            validate()
         end)
         row:SetScript("OnEnter", function(self)
             GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
@@ -148,6 +195,9 @@ local function createMenu()
             end
             if isCleared(self.bossId) then
                 GameTooltip:AddLine(L["BOSS_CLEARED"], unpack(UI.COLOR.green))
+            end
+            if self.eligible then
+                GameTooltip:AddLine(L["BOSS_PICK_HINT"], unpack(UI.COLOR.muted))
             end
             -- A by-level clear can't be toggled, so drop the misleading hint.
             if clearedByLevel(self.bossId) then
@@ -178,10 +228,13 @@ local function setRoleError(on)
     hintRoles[on and "Hide" or "Show"](hintRoles)
 end
 
-local function validate()
+function validate() -- assigns the forward local (menu rows call it on toggle)
     if not NS.eligible then return end
-    local ok = rolesMask() > 0 and prefs().bossId ~= nil
-        and NS.Data:IsEligible(prefs().bossId or 0, playerLevel())
+    local ids, allOk = selection(), true
+    for i = 1, #ids do
+        if not NS.Data:IsEligible(ids[i], playerLevel()) then allOk = false end
+    end
+    local ok = rolesMask() > 0 and #ids > 0 and allOk
     if NS.Session.state == "IDLE" then
         if ok then searchBtn:Enable() else searchBtn:Disable() end
     end
@@ -200,7 +253,7 @@ local function onSearchClick()
     if NS.Session.state == "IDLE" then
         local p = prefs()
         p.roles = rolesMask()
-        NS.Session:StartSearch({ bossId = p.bossId, roles = p.roles,
+        NS.Session:StartSearch({ bossIds = p.bossIds, roles = p.roles,
                                  minSize = p.minSize, lead = p.lead })
     else
         NS.Session:Cancel()
@@ -441,10 +494,17 @@ function UI.CreateRegistration(parent)
     leadCheck:SetChecked(p.lead and true or false)
 
     pane:SetScript("OnShow", function()
-        if not prefs().bossId
-           or not NS.Data:IsEligible(prefs().bossId, playerLevel()) then
-            prefs().bossId = defaultBossId() or prefs().bossId
+        -- Drop targets the level no longer allows (R2), keep the rest; seed
+        -- the first eligible uncleared boss when nothing valid remains.
+        local ids, keep = selection(), {}
+        for _, id in ipairs(ids) do
+            if NS.Data:IsEligible(id, playerLevel()) then keep[#keep + 1] = id end
         end
+        if #keep == 0 then
+            local d = defaultBossId()
+            if d then keep[1] = d end
+        end
+        prefs().bossIds = keep
         refreshTexts()
         UI.OnStateForPanes(NS.Session.state)
     end)

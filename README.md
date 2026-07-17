@@ -12,7 +12,9 @@ through a hidden chat channel and invisible addon whispers.
 ## Features
 
 - **Per-boss registration** following the official Blitz progression
-  (25 bosses), with level-bracket gating and cleared-boss tracking.
+  (25 bosses), with level-bracket gating and cleared-boss tracking. Since
+  0.3.0 you can queue for **several bosses at once** — the matcher takes the
+  largest group it can seat, earliest boss in the progression on ties.
 - **Role-based matching** — Tank / Healer / Support / DPS (declare one or
   more): groups always form as 1 tank, 1 healer, at most 1 support, rest DPS.
 - **Works in both game modes** — Conquest of Azeroth (21 custom classes, with

@@ -37,12 +37,31 @@ local function hashPick(names, n)
 end
 
 -- R11: tank-lead > heal-lead > support-lead > hashed DPS-lead > tank.
--- members: { name, role (assigned), lead }.
+-- members: { name, role (assigned), lead, multi?, sees? }.
+--
+-- R28 electorate: a match containing a multi-target listing is invisible to
+-- clients that cannot decode target lists — electing one of them would leave
+-- a match nobody acts on (only the elected leader's client acts, §6). So the
+-- electorate shrinks to the members who can see the match (`sees`); the R11
+-- chain then applies unchanged within it, with the default fallback extended
+-- (the electorate may have no tank). Guaranteed non-empty: a multi listing's
+-- own sender always sees. All-scalar matches keep pure R11, versions ignored.
 function Matcher.election(members)
-    local tank, byRole, dpsLeads = nil, {}, {}
+    local pool = members
     for i = 1, #members do
-        local m = members[i]
-        if m.role == ROLE_TANK then tank = m end
+        if members[i].multi then
+            pool = {}
+            for j = 1, #members do
+                if members[j].sees then pool[#pool + 1] = members[j] end
+            end
+            break
+        end
+    end
+    local byRole, dpsLeads, byDefault, dpsAll = {}, {}, {}, {}
+    for i = 1, #pool do
+        local m = pool[i]
+        if m.role == ROLE_DPS then dpsAll[#dpsAll + 1] = m.name
+        else byDefault[m.role] = byDefault[m.role] or m.name end
         if m.lead == 1 then
             if m.role == ROLE_DPS then
                 dpsLeads[#dpsLeads + 1] = m.name
@@ -54,12 +73,23 @@ function Matcher.election(members)
     if byRole[ROLE_TANK] then return byRole[ROLE_TANK] end
     if byRole[ROLE_HEAL] then return byRole[ROLE_HEAL] end
     if byRole[ROLE_SUPPORT] then return byRole[ROLE_SUPPORT] end
+    local names
     if #dpsLeads > 0 then
-        local names = {}
+        names = {}
         for i = 1, #members do names[i] = members[i].name end
         return dpsLeads[hashPick(names, #dpsLeads)]
     end
-    return tank and tank.name
+    -- No volunteer: highest-priority role present in the electorate (the
+    -- classic "tank by default", generalized for a tank-less electorate).
+    if byDefault[ROLE_TANK] then return byDefault[ROLE_TANK] end
+    if byDefault[ROLE_HEAL] then return byDefault[ROLE_HEAL] end
+    if byDefault[ROLE_SUPPORT] then return byDefault[ROLE_SUPPORT] end
+    if #dpsAll > 0 then
+        names = {}
+        for i = 1, #members do names[i] = members[i].name end
+        return dpsAll[hashPick(names, #dpsAll)]
+    end
+    return nil
 end
 
 -- Backtracking role assignment for one window. Slots: TANK, HEAL, then
@@ -84,7 +114,8 @@ local function assign(cands, size)
                 if not used[i] and hasRole(cands[i].roles, role) then
                     used[i] = true
                     out[slot] = { name = cands[i].name, role = role,
-                                  level = cands[i].level, lead = cands[i].lead }
+                                  level = cands[i].level, lead = cands[i].lead,
+                                  multi = cands[i].multi, sees = cands[i].sees }
                     if fill(slot + 1, supportUsed or role == ROLE_SUPPORT) then
                         return true
                     end
@@ -164,6 +195,32 @@ function Matcher.find(listings, opts)
         if members then
             return { size = sizes[i], members = members,
                      leader = Matcher.election(members) }
+        end
+    end
+    return nil
+end
+
+-- R28: best match across several targeted bosses. bossIds ascending (= the
+-- progression order, ids follow BR §7); listingsByBoss[bossId] = same-boss
+-- listings. Priority is size-major, boss-minor: every boss is tried at 5
+-- before any boss is tried at 4 — so "largest group wins, progression order
+-- breaks ties" needs no scoring, just this iteration order. Deterministic:
+-- all clients walk the same (size, boss) sequence over the same replica.
+function Matcher.findForSelfMulti(bossIds, listingsByBoss, opts)
+    local one = { allowedSizes = { 0 }, maxSpan = opts.maxSpan,
+                  selfName = opts.selfName }
+    local sizes = opts.allowedSizes
+    for s = 1, #sizes do
+        one.allowedSizes[1] = sizes[s]
+        for b = 1, #bossIds do
+            local listings = listingsByBoss[bossIds[b]]
+            if listings and #listings > 0 then
+                local match = Matcher.findForSelf(listings, one)
+                if match then
+                    match.bossId = bossIds[b]
+                    return match
+                end
+            end
         end
     end
     return nil

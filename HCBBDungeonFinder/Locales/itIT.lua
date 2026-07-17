@@ -29,6 +29,9 @@ NS.locales.itIT = {
     PROF_ta = "Sartoria",
 
     BOSS_LABEL = "Boss bersaglio",
+    BOSS_PICK_HINT = "Clic: aggiungi / rimuovi questo bersaglio",
+    TARGETS_MORE = " +%d",
+    MSG_OUTLEVELED = "Hai superato il livello di tutti i boss selezionati — ricerca annullata.",
     BOSS_REQ = "Richiede livello %d–%d — sei %d",
     BOSS_CLEARED = "Sconfitto",
     BOSS_CLEARED_LEVEL = "Sconfitto — necessario per superare questo livello",
@@ -100,7 +103,8 @@ NS.locales.itIT = {
     ST_SEARCH_FULL = "Ricerca — %s · %d nella tua fascia",
 
     ST_NOT_ENROLLED = "Questo personaggio non è iscritto alla sfida Hardcore Boss Blitz",
-    ST_UPDATE = "Aggiornamento disponibile \226\128\148 aggiorna l'addon",
+    UPDATE_BANNER = "Nuova versione disponibile \226\128\148 clicca qui per il link di download",
+    UPDATE_POPUP = "Scarica l'ultima versione, estraila in Interface\\AddOns e RIAVVIA COMPLETAMENTE il gioco (un /reload non basta). Copia il link (Ctrl+C):",
     NOT_ENROLLED_HINT = "Solo i partecipanti iscritti possono cercare un gruppo. Parla con il Maestro delle prove nella tua zona iniziale (livello 1) per unirti al Boss Blitz.",
     ALREADY_GROUPED_HINT = "Sei già in un gruppo — lascialo per cercarne uno nuovo.",
     NO_BOSS_NEXT = "Nessun boss Blitz al livello %d — il prossimo si apre al livello %d.",

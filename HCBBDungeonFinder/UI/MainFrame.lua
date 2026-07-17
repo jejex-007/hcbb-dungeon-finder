@@ -381,6 +381,43 @@ function UI.Init()
     close:SetScript("OnLeave", function(self) self:SetBackdropBorderColor(0, 0, 0, 1) end)
     close:SetScript("OnClick", function() f:Hide() end)
 
+    -- Update banner: a dedicated clickable bar between the title and the
+    -- content, shown once a newer release is spotted (NFR-C5). It replaces
+    -- the old status-strip hijack, which confiscated the live search status
+    -- for the whole session. Click → copyable direct-download link (no
+    -- browser on this client). Pulse via AnimationGroup — no OnUpdate
+    -- (NFR-P1), same pattern as UI.PulseDot.
+    local banner = CreateFrame("Button", nil, f)
+    f.updateBanner = banner
+    banner:SetPoint("TOPLEFT", 6, -36)
+    banner:SetPoint("TOPRIGHT", -6, -36)
+    banner:SetHeight(20)
+    banner.fill = UI.Fill(banner, "BACKGROUND", UI.GRAD.update)
+    banner.fill:SetAllPoints()
+    banner.text = UI.Label(banner, "small")
+    banner.text:SetPoint("CENTER", 0, 0)
+    banner.text:SetTextColor(unpack(UI.COLOR.white))
+    local bag = banner:CreateAnimationGroup()
+    bag:SetLooping("BOUNCE")
+    local ba = bag:CreateAnimation("Alpha")
+    ba:SetChange(-0.35)
+    ba:SetDuration(0.9)
+    ba:SetSmoothing("IN_OUT")
+    banner:SetScript("OnClick", function()
+        UI.CopyPopup(L["UPDATE_POPUP"], NS.Data.LINKS.download)
+    end)
+    banner:Hide()
+
+    function UI.ShowUpdateBanner()
+        if banner:IsShown() then return end
+        banner.text:SetText(L["UPDATE_BANNER"])
+        banner:Show()
+        bag:Play()
+        -- Content yields the banner row; every pane is anchored to content,
+        -- so the whole body shifts down together.
+        f.content:SetPoint("TOPLEFT", 6, -60)
+    end
+
     -- Status strip (design 1j): state dot + text, channel dot + label.
     local strip = UI.Panel(f, UI.GRAD.strip)
     f.strip = strip
@@ -446,6 +483,9 @@ function UI.Init()
 
     local function refreshTexts()
         f.title:SetText(L["TITLE"])
+        if f.updateBanner:IsShown() then
+            f.updateBanner.text:SetText(L["UPDATE_BANNER"])
+        end
         layoutTabs()
         if StaticPopupDialogs["HCBB_SUGGEST_INVITE"] then
             StaticPopupDialogs["HCBB_SUGGEST_INVITE"].button1 = L["BROWSER_INVITE"]
@@ -469,8 +509,11 @@ function UI.Init()
     listener:RegisterMessage("HCBB_CHANNEL_DOWN", function() UI.UpdateStatus() end)
     listener:RegisterMessage("HCBB_ELIGIBILITY_CHANGED", function() UI.UpdateStatus() end)
     listener:RegisterMessage("HCBB_GROUP_CHANGED", function() UI.UpdateStatus() end)
-    listener:RegisterMessage("HCBB_UPDATE_AVAILABLE", function() UI.UpdateStatus() end)
+    listener:RegisterMessage("HCBB_UPDATE_AVAILABLE", function() UI.ShowUpdateBanner() end)
     listener:RegisterMessage("HCBB_LOCALE_CHANGED", function() UI.OnLocaleChanged() end)
+    -- The notice may have fired before the window was first opened (UI.Init
+    -- is lazy) — catch up now.
+    if NS.updateAvailable then UI.ShowUpdateBanner() end
 
     -- Suggest-invite prompt (R24): only the client that can invite pops it.
     StaticPopupDialogs["HCBB_SUGGEST_INVITE"] = {
@@ -571,14 +614,11 @@ function UI.UpdateStatus(tickOnly)
         ensureTicker(NS.eligible and state == "SEARCHING")
     end
 
-    -- An available update takes over the strip as an accent banner (NFR-C5).
-    -- It's persistent for the session; the state dot still shows live state.
-    local banner = NS.eligible and NS.updateAvailable
+    -- The update notice lives in its own banner (UI.ShowUpdateBanner) — the
+    -- strip stays on live state, so a searching player keeps their counter.
     local text, color
     if not NS.eligible then
         text, color = L["ST_NOT_ENROLLED"], UI.COLOR.red
-    elseif banner then
-        text, color = L["ST_UPDATE"], UI.COLOR.yellow
     elseif state == "SEARCHING" then
         local elapsed, count = NS.Session:GetSearchInfo()
         text = L["ST_SEARCH_FULL"]:format(UI.FormatClock(elapsed or 0), count or 0)
@@ -589,9 +629,6 @@ function UI.UpdateStatus(tickOnly)
     end
     f.status:SetText(text)
     f.status:SetTextColor(color[1], color[2], color[3])
-    if f.strip and f.strip.fill then
-        UI.Recolor(f.strip.fill, banner and UI.GRAD.update or UI.GRAD.strip)
-    end
 
     if UI.OnStateForPanes and not tickOnly then UI.OnStateForPanes(state) end
 end

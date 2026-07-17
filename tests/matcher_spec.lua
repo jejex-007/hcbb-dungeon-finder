@@ -65,6 +65,51 @@ describe("Matcher.election (R11)", function()
     end)
 end)
 
+describe("Matcher.election electorate (R28)", function()
+    -- multi = this member's listing is multi-target (invisible to old
+    -- clients); sees = this member's client decodes target lists.
+    local function m(name, role, lead, multi, sees)
+        return { name = name, role = role, lead = lead,
+                 multi = multi or false, sees = sees or false }
+    end
+
+    it("skips a volunteer who cannot see the match", function()
+        -- Old tank volunteered, but the match contains a multi listing the
+        -- tank's client cannot decode: electing it would orphan the match.
+        assert.equal("H", Matcher.election({
+            m("T", TANK, 1, false, false),        -- 0.2.0 tank, opted in
+            m("H", HEAL, 1, false, true),         -- 0.3.0 heal, opted in
+            m("M", DPS, 0, true, true),           -- the multi-target member
+        }))
+    end)
+
+    it("falls back to a non-volunteer DPS when it is the only seer", function()
+        assert.equal("M", Matcher.election({
+            m("T", TANK, 1, false, false),
+            m("H", HEAL, 1, false, false),
+            m("M", DPS, 0, true, true),           -- only 0.3.0 member, no lead
+        }))
+    end)
+
+    it("prefers role priority among seers when nobody volunteered", function()
+        assert.equal("H", Matcher.election({
+            m("T", TANK, 0, false, false),
+            m("H", HEAL, 0, false, true),
+            m("M", DPS, 0, true, true),
+        }))
+    end)
+
+    it("ignores versions entirely on all-scalar matches", function()
+        -- No multi listing -> the match is visible to everyone -> pure R11,
+        -- even when sees flags happen to be false.
+        assert.equal("T", Matcher.election({
+            m("T", TANK, 1, false, false),
+            m("H", HEAL, 1, false, false),
+            m("D", DPS, 0, false, false),
+        }))
+    end)
+end)
+
 describe("Matcher.find", function()
     it("builds a full 5-player group T/H/D/D/D (R7, R8)", function()
         local pool = {
@@ -193,5 +238,58 @@ describe("Matcher.findForSelf", function()
         assert.truthy(match)
         assert.truthy(names(match):find("Self"))
         assert.equal("Self", match.leader) -- default leader = tank (R11)
+    end)
+end)
+
+describe("Matcher.findForSelfMulti (R28)", function()
+    -- Boss ids mirror the maintainer's level-30 example: RFK=5, Gnomer=6,
+    -- SM:GY=7 (ascending ids = progression order).
+    local function pools(t) return t end
+
+    it("prefers the larger group whatever its boss (size-major)", function()
+        -- RFK can seat 4, SM:GY can seat 5 -> SM:GY wins despite coming later.
+        local match = Matcher.findForSelfMulti({ 5, 7 }, pools({
+            [5] = { listing("Self", 30, TANK), listing("H1", 30, HEAL),
+                    listing("D1", 30, DPS), listing("D2", 30, DPS) },
+            [7] = { listing("Self", 30, TANK), listing("H2", 30, HEAL),
+                    listing("D3", 30, DPS), listing("D4", 30, DPS),
+                    listing("D5", 30, DPS) },
+        }), OPTS)
+        assert.truthy(match)
+        assert.equal(7, match.bossId)
+        assert.equal(5, match.size)
+    end)
+
+    it("breaks size ties on the earliest boss in the progression", function()
+        -- Gnomer (6) and SM:GY (7) both seat 4 -> Gnomer wins.
+        local four = function(healName)
+            return { listing("Self", 30, TANK), listing(healName, 30, HEAL),
+                     listing("Da" .. healName, 30, DPS),
+                     listing("Db" .. healName, 30, DPS) }
+        end
+        local match = Matcher.findForSelfMulti({ 6, 7 },
+            pools({ [6] = four("H6"), [7] = four("H7") }), OPTS)
+        assert.truthy(match)
+        assert.equal(6, match.bossId)
+        assert.equal(4, match.size)
+    end)
+
+    it("returns nil when self fits nowhere", function()
+        assert.falsy(Matcher.findForSelfMulti({ 5, 6 }, pools({
+            [5] = { listing("T", 30, TANK), listing("H", 30, HEAL),
+                    listing("D", 30, DPS) },
+            [6] = {},
+        }), OPTS))
+    end)
+
+    it("honors allowedSizes gating across bosses (R14)", function()
+        local trio = { listing("Self", 30, TANK), listing("H", 30, HEAL),
+                       listing("D", 30, DPS) }
+        assert.falsy(Matcher.findForSelfMulti({ 5 }, pools({ [5] = trio }),
+            { allowedSizes = { 5 }, maxSpan = 3, selfName = "Self" }))
+        local match = Matcher.findForSelfMulti({ 5 }, pools({ [5] = trio }),
+            { allowedSizes = { 5, 4, 3 }, maxSpan = 3, selfName = "Self" })
+        assert.truthy(match)
+        assert.equal(3, match.size)
     end)
 end)

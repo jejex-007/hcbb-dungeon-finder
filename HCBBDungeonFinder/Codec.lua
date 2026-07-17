@@ -4,7 +4,7 @@
 -- (NFR-S2). Payloads stay well under 240 bytes (NFR-C2).
 --
 -- Grammar (docs/design/architecture.md §4):
---   HCBB1:H:<seq>:<bossId>:<level>:<roles>:<minSize>:<lead>:<ver>
+--   HCBB1:H:<seq>:<bossIds>:<level>:<roles>:<minSize>:<lead>:<ver>
 --   HCBB1:B:<seq>
 --   HCBB1:P:<matchId>:<bossId>:<size>:<yourRole>:<name,role,lvl;...>
 --   HCBB1:A:<matchId>
@@ -18,6 +18,13 @@
 -- and Comm drops it silently. A 0.1.x client therefore ignores W without
 -- crashing or firing the update notice, whereas bumping to HCBB2 would make
 -- it reject every message including HELLO. Never bump the major to add a type.
+--
+-- <bossIds> (R28) is a strictly ascending comma list of boss ids. A single
+-- target encodes as the bare integer — byte-identical to the pre-0.3.0 wire —
+-- so single-target listings stay fully visible to old clients. Multi-target
+-- listings fail their tonumber() and are dropped silently (invalid fields):
+-- partial invisibility, never a crash. Ascending order doubles as the
+-- canonical form AND the progression-priority order (ids follow BR §7).
 
 local Codec = { PROTO = 1 }
 
@@ -32,6 +39,10 @@ local REASONS = { busy = true, changed = true, declined = true,
 local VALID_ROLE = { [1] = true, [2] = true, [4] = true, [8] = true }
 -- Wire ceiling for W: a character has at most two primary professions.
 local MAX_PROFS = 2
+-- Wire ceiling for H (R28). Mirrors Data.MAX_TARGETS — Codec is pure and
+-- cannot read Data, keep the two in sync by hand. 6 is the widest eligible
+-- band today (the 56-59 six-pack); 8 leaves headroom for bracket retunes.
+local MAX_TARGETS = 8
 
 -- WoW character names: no spaces or punctuation we use as separators.
 -- UTF-8 accented bytes are > 0x7F and pass the negated class.
@@ -83,15 +94,28 @@ local function encodeProfs(profs)
     return table.concat(parts, ",")
 end
 
+-- Strictly ascending enforces the canonical form and rejects duplicates in
+-- one comparison; a single id concatenates to the bare integer (old wire).
+local function encodeBossIds(ids)
+    if type(ids) ~= "table" or #ids < 1 or #ids > MAX_TARGETS then return nil end
+    local prev = 0
+    for i = 1, #ids do
+        if not (isInt(ids[i], 1, 99) and ids[i] > prev) then return nil end
+        prev = ids[i]
+    end
+    return table.concat(ids, ",")
+end
+
 local encoders = {
     H = function(t)
-        if not (isInt(t.seq, 0, 65535) and isInt(t.bossId, 1, 99)
+        local bossIds = encodeBossIds(t.bossIds)
+        if not (bossIds and isInt(t.seq, 0, 65535)
                 and isInt(t.level, 1, 99) and isInt(t.roles, 1, 15)
                 and isInt(t.minSize, 3, 5) and (t.lead == 0 or t.lead == 1)
                 and type(t.ver) == "string" and t.ver:match(VER_PAT)) then
             return nil
         end
-        local s = table.concat({ HEADER, "H", t.seq, t.bossId, t.level,
+        local s = table.concat({ HEADER, "H", t.seq, bossIds, t.level,
                                  t.roles, t.minSize, t.lead, t.ver }, ":")
         -- Optional trailing class field (2-letter abbrev), backward-compatible.
         if t.class ~= nil then
@@ -210,14 +234,29 @@ local function decodeProfs(s)
     return profs
 end
 
+-- Mirror of encodeBossIds. A pre-0.3.0 scalar ("7") decodes to a one-entry
+-- list, so downstream code has a single shape to deal with.
+local function decodeBossIds(s)
+    local rows = split(s, ",")
+    if #rows < 1 or #rows > MAX_TARGETS then return nil end
+    local ids, prev = {}, 0
+    for i = 1, #rows do
+        local id = tonumber(rows[i])
+        if not (id and isInt(id, 1, 99) and id > prev) then return nil end
+        prev = id
+        ids[i] = id
+    end
+    return ids
+end
+
 local decoders = {
     H = function(f)
         if #f ~= 9 and #f ~= 10 then return nil end
-        local t = { type = "H", seq = tonumber(f[3]), bossId = tonumber(f[4]),
+        local t = { type = "H", seq = tonumber(f[3]), bossIds = decodeBossIds(f[4]),
                     level = tonumber(f[5]), roles = tonumber(f[6]),
                     minSize = tonumber(f[7]), lead = tonumber(f[8]), ver = f[9] }
         if not (t.seq and isInt(t.seq, 0, 65535)
-                and t.bossId and isInt(t.bossId, 1, 99)
+                and t.bossIds
                 and t.level and isInt(t.level, 1, 99)
                 and t.roles and isInt(t.roles, 1, 15)
                 and t.minSize and isInt(t.minSize, 3, 5)

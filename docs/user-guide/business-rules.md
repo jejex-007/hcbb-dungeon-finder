@@ -19,14 +19,40 @@ happens between addon clients over chat-based messaging.
 
 ## 2. Player registration (the "listing")
 
-- **R1 — Target selection.** The player selects the **next Blitz boss they
+- **R1 — Target selection.** The player selects the **Blitz bosses they
   need** from the ordered progression table (§7). The UI groups bosses by
-  dungeon/wing. One active target per character at a time.
+  dungeon/wing. Originally one active target per character; superseded by
+  **R28** (multi-target registration) — a registration now carries an ordered
+  *set* of targets, and every per-target rule (R2 bracket, R10 same-target
+  groups) applies to each member of the set.
 - **R2 — Level bracket.** Each target has a default eligible level bracket
   (§7). A player whose level is outside the bracket cannot register for that
   target (e.g. a level 16 cannot register for Deadmines / VanCleef).
   Brackets are data-driven defaults, adjustable only in the addon's saved
   configuration (not in the UI), so the community can retune per season.
+- **R28 — Multi-target registration.** A player may register for **several
+  bosses at once** — any subset of the bosses their level allows (R2), capped
+  at 8. Roles, minimum size and leader opt-in stay a single declaration for
+  the whole registration. Matching priority across the targeted bosses:
+  1. **the largest feasible group wins**, whatever its boss (extends R8);
+  2. at equal size, **the earliest boss in the progression order** (§7) wins
+     — the table order, not the order the player clicked.
+  A formed group still targets exactly one boss (R10 unchanged); levelling
+  out of a target's bracket mid-search silently drops that target, and
+  dropping the last one cancels the search with a notice.
+  - **Leader visibility (amends R11).** Only the elected leader's client acts
+    on a match, so the leader must be able to *see* it. A match containing a
+    multi-target listing is invisible to clients that predate this rule; for
+    such matches the R11 election runs over the **members whose addon version
+    decodes target lists**, same priority chain, with the default extended
+    down the role order when that electorate has no tank. All-scalar matches
+    elect per pure R11, versions ignored.
+  - **Compatibility.** A single-target registration goes out byte-identical
+    to the pre-R28 wire, fully visible to old clients. A multi-target
+    registration is silently dropped by them (never a crash): the player
+    stays invisible to old clients until those update — the price of the
+    encoding, judged acceptable pre-1.0 with the update notice (NFR-C5)
+    riding every presence ping.
 - **R27 — Cleared by level.** The Find-Group boss list lets a player
   shift-click a boss to tick it as *cleared* (a personal progression tracker).
   A boss whose *beyond* level (§7) the character has already reached is

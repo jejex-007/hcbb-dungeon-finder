@@ -26,7 +26,10 @@ NS.locales.esES = {
     PROF_sk = "Desuello",
     PROF_ta = "Sastrería",
 
-    BOSS_LABEL = "Jefe objetivo",
+    BOSS_LABEL = "Jefes objetivo",
+    BOSS_PICK_HINT = "Clic: añadir / quitar este objetivo",
+    TARGETS_MORE = " +%d",
+    MSG_OUTLEVELED = "Has superado el nivel de todos los jefes seleccionados — búsqueda cancelada.",
     BOSS_REQ = "Requiere nivel %d–%d — tienes %d",
     BOSS_CLEARED = "Derrotado",
     BOSS_CLEARED_LEVEL = "Derrotado — necesario para pasar este nivel",
@@ -98,7 +101,8 @@ NS.locales.esES = {
     ST_SEARCH_FULL = "Buscando — %s · %d en tu rango",
 
     ST_NOT_ENROLLED = "Este personaje no está inscrito en el desafío Hardcore Boss Blitz",
-    ST_UPDATE = "Actualización disponible \226\128\148 actualiza el addon",
+    UPDATE_BANNER = "Nueva versión disponible \226\128\148 haz clic aquí para el enlace de descarga",
+    UPDATE_POPUP = "Descarga la última versión, descomprímela en Interface\\AddOns y REINICIA EL JUEGO POR COMPLETO (un /reload no basta). Copia el enlace (Ctrl+C):",
     NOT_ENROLLED_HINT = "Solo los participantes inscritos pueden buscar grupo. Habla con el Maestro de pruebas en tu zona inicial (nivel 1) para unirte al Boss Blitz.",
     ALREADY_GROUPED_HINT = "Ya estás en un grupo — abandónalo para buscar uno nuevo.",
     NO_BOSS_NEXT = "Ningún jefe Blitz en el nivel %d — el siguiente se abre en el nivel %d.",

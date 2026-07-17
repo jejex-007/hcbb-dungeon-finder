@@ -55,6 +55,12 @@ every release. Record here what was actually observed, and when.
   **60** the same hint turns gold and reads as an achievement, not an error —
   the Blitz is over, not broken. The boss picker stays usable at those levels
   (shift-click still tracks cleared bosses).
+- [ ] **Update banner (2026-07-17)**: `/run HCBB:SendMessage("HCBB_UPDATE_AVAILABLE")`
+  with the window open → a pulsing accent bar appears under the title, the
+  panes shift down without clipping, and the **status strip keeps showing live
+  state** (the old strip hijack is gone). Clicking the banner opens the
+  copyable-link popup with the direct zip URL pre-selected; the popup text
+  says a full restart is required. Language switch relabels the banner.
 - [ ] Window opens above WeakAuras; close button clickable; Esc closes.
 - [ ] Boss picker: ineligible bosses disabled with tooltip; cleared bosses
   show a green check (not a "?"); default is first eligible uncleared.
@@ -71,6 +77,14 @@ every release. Record here what was actually observed, and when.
   drift and expire within ~30 s (the demo is a snapshot; re-run to refresh).
   The counter itself ("N active (M total)") only shows during a live search,
   so validate that at the 2-client run, not in demo.
+- [ ] **R28 (2026-07-17) — multi-select picker**: clicking an eligible boss in
+  the list **toggles** it (gold tint + yellow text when selected) and the menu
+  **stays open**; the picker button reads "Dungeon — Boss +N" past one
+  selection and the bracket label empties. Deselecting everything disables
+  Search. Selection survives `/reload` (saved prefs migrate from the old
+  single-boss field). Every other `/hcbb demo` listing shows the "+N" form in
+  Who's Looking, with one tooltip line per targeted boss; the dungeon filter
+  matches a listing on ANY of its targets.
 - [ ] Enter combat → window auto-closes; reopen with `/hcbb`, search intact.
 
 ## Who's Playing (R25)
@@ -96,6 +110,12 @@ every release. Record here what was actually observed, and when.
 - [ ] **Back-compat (critical)**: a **0.1.0** client must ignore `W` silently —
   no Lua error, and **no "update available" notice** (unknown *type* is not
   unknown *major*). Run one old client alongside a new one to confirm.
+- [ ] **Back-compat R28 (critical)**: against a **0.2.0** client — (a) a 0.3.0
+  player searching a **single** boss is visible to it and can match with it
+  end-to-end (the wire is byte-identical); (b) a 0.3.0 player searching
+  **several** bosses is silently absent from its Who's Looking — no Lua
+  error, no phantom row; (c) a match mixing 0.2.0 members and a multi-target
+  member elects a 0.3.0 leader (watch who sends the proposal).
 
 ## Matchmaking (two clients A + B, same bracket)
 - [ ] Both search the same boss; each sees the other in Who's Looking within

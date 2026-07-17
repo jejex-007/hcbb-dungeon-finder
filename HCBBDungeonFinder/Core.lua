@@ -72,13 +72,20 @@ local defaults = {
         hidePresence = false, -- opt out of broadcasting presence (Who's Playing)
     },
     char = {
-        prefs = { bossId = nil, roles = 0, minSize = 5, lead = false },
+        prefs = { roles = 0, minSize = 5, lead = false }, -- + bossIds (R28)
         cleared = {}, -- bossId -> true
     },
 }
 
 function addon:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("HCBB_DB", defaults, true)
+    -- Migration (NFR-D1): pre-0.3.0 stored a single prefs.bossId; R28 stores
+    -- an ascending list. Convert once, then drop the old key for good.
+    local p = self.db.char.prefs
+    if p.bossId then
+        p.bossIds = p.bossIds or { p.bossId }
+        p.bossId = nil
+    end
     NS.SetLanguage(self.db.global.lang)
 
     -- Game mode (M6.2) is the source of truth for mode-specific behaviour. The
@@ -187,9 +194,9 @@ function addon:OnSlash(input)
         self:Print(("pool: %d listings, channel %s (id %d)"):format(
             NS.Pool.count, NS.Comm.healthy and "OK" or "DOWN", NS.Comm.channelId))
         for name, e in pairs(NS.Pool.entries) do
-            self:Print(("  %s lv%d boss#%d roles=%d min=%d lead=%d age=%ds"):format(
-                name, e.level, e.bossId, e.roles, e.minSize, e.lead,
-                NS.now() - e.firstSeen))
+            self:Print(("  %s lv%d boss#%s roles=%d min=%d lead=%d idle=%ds"):format(
+                name, e.level, table.concat(e.bossIds, ","), e.roles,
+                e.minSize, e.lead, NS.now() - e.lastSeen))
         end
     elseif cmd == "demo" then
         self:Demo()
@@ -237,8 +244,16 @@ function addon:Demo()
     }
     for i, name in ipairs(names) do
         local lvl = math.max(b.min, math.min(b.max, level - (i % 3) + 1))
+        -- Every other seed also targets the next boss its level allows (R28),
+        -- so the browser shows the "+N" form and the tooltip lists them all.
+        local ids = { bossId }
+        if i % 2 == 0 then
+            for id2 = bossId + 1, NS.Data.NUM_BOSSES do
+                if NS.Data:IsEligible(id2, lvl) then ids[2] = id2 break end
+            end
+        end
         NS.Pool:OnHello(name, {
-            seq = i, bossId = bossId, level = lvl,
+            seq = i, bossIds = ids, level = lvl,
             roles = roleSets[i], minSize = 3 + (i % 3), lead = i % 2,
             ver = NS.VERSION, class = classes[i],
         })
@@ -259,7 +274,7 @@ function addon:Demo()
                     { name = "Halwyn", age = 95 } }   -- red: 90-120 s band
     for i, s in ipairs(stale) do
         NS.Pool:OnHello(s.name, {
-            seq = 99, bossId = bossId, level = staleLvl, roles = 8,
+            seq = 99, bossIds = { bossId }, level = staleLvl, roles = 8,
             minSize = 3, lead = 0, ver = NS.VERSION, class = classes[i],
         })
         local e = NS.Pool.entries[s.name]

@@ -26,7 +26,10 @@ NS.locales.frFR = {
     PROF_sk = "Dépeçage",
     PROF_ta = "Couture",
 
-    BOSS_LABEL = "Boss visé",
+    BOSS_LABEL = "Boss visés",
+    BOSS_PICK_HINT = "Clic : ajouter / retirer cette cible",
+    TARGETS_MORE = " +%d",
+    MSG_OUTLEVELED = "Vous avez dépassé le niveau de tous les boss sélectionnés — recherche annulée.",
     BOSS_REQ = "Requiert niveau %d–%d — vous êtes %d",
     BOSS_CLEARED = "Vaincu",
     BOSS_CLEARED_LEVEL = "Vaincu — requis pour passer ce niveau",
@@ -97,7 +100,8 @@ NS.locales.frFR = {
     ST_SEARCH_FULL = "Recherche — %s · %d dans votre tranche",
 
     ST_NOT_ENROLLED = "Ce personnage n'est pas inscrit au défi Hardcore Boss Blitz",
-    ST_UPDATE = "Mise à jour disponible \226\128\148 pensez à mettre à jour l'addon",
+    UPDATE_BANNER = "Nouvelle version disponible \226\128\148 cliquez ici pour le lien de téléchargement",
+    UPDATE_POPUP = "Téléchargez la dernière version, décompressez-la dans Interface\\AddOns, puis RELANCEZ COMPLÈTEMENT le jeu (un /reload ne suffit pas). Copiez le lien (Ctrl+C) :",
     NOT_ENROLLED_HINT = "Seuls les participants inscrits peuvent chercher un groupe. Parlez au Maître des épreuves dans votre zone de départ (niveau 1) pour rejoindre le Boss Blitz.",
     ALREADY_GROUPED_HINT = "Vous êtes déjà dans un groupe — quittez-le pour en chercher un nouveau.",
     NO_BOSS_NEXT = "Aucun boss Blitz au niveau %d — le prochain s'ouvre au niveau %d.",

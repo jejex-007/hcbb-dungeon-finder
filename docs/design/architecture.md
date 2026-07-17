@@ -87,7 +87,7 @@ decode, not by escaping. Header `HCBB<proto>`, proto a single digit;
 unknown major → drop (NFR-C5).
 
 ```
-HELLO  HCBB1:H:<seq>:<bossId>:<level>:<roles>:<minSize>:<lead>:<ver>[:<class>]
+HELLO  HCBB1:H:<seq>:<bossIds>:<level>:<roles>:<minSize>:<lead>:<ver>[:<class>]
 BYE    HCBB1:B:<seq>
 PROPOSE  (whisper)      HCBB1:P:<matchId>:<bossId>:<size>:<yourRole>:<name,role,lvl;…>
 ACK    (whisper)        HCBB1:A:<matchId>
@@ -98,7 +98,14 @@ SUGGEST(party/raid)     HCBB1:S:<target>:<bossId>    -- suggest-invite (R24)
 PRESENCE                HCBB1:W:<seq>:<level>:<ver>:<class>:<ab><rank>,…  -- R25
 ```
 
-- `bossId`: index in the Data table (locale-independent, R22).
+- `bossIds` (R28): strictly ascending comma list of Data-table indexes
+  (locale-independent, R22), max 8. Ascending is both the canonical form and
+  the progression-priority order. **A single target encodes as the bare
+  integer — byte-identical to the pre-0.3.0 wire** — so single-target
+  listings stay fully visible to old clients; a multi-target listing fails
+  their `tonumber()` and is dropped silently (partial one-way invisibility,
+  never a crash, no proto bump). PROPOSE/SUGGEST keep a scalar `bossId`: a
+  formed group targets exactly one boss (R10).
 - `roles`: bitmask T=1 H=2 S=4 D=8. `lead`: 0/1. `ver`: addon release version
   (semver). A received HELLO whose `ver` is a strictly newer release than ours
   (`Codec.isNewer`, numeric per component) triggers a single "update available"
@@ -143,10 +150,13 @@ PRESENCE                HCBB1:W:<seq>:<level>:<ver>:<class>:<ab><rank>,…  -- R
 
 Two stores, deliberately separate (NFR-A2) — same shape, different lifecycles:
 
-`Pool[senderName] = {bossId, level, roles, minSize, lead, lastSeen, reservedBy}`
-— who is **searching**. Fed by HELLO/BYE. TTL expiry 120 s (R17), cap 200
-oldest-first (NFR-P6), per-sender rate limiting and dedupe by `seq` (NFR-S4).
-Emits `HCBB_POOL_CHANGED`, consumed by Matcher scheduling and the Browser tab.
+`Pool[senderName] = {bossIds, firstSeen[bossId]=ts, level, roles, minSize,
+lead, lastSeen, reservedBy}` — who is **searching**. Fed by HELLO/BYE. TTL
+expiry 120 s (R17), cap 200 oldest-first (NFR-P6), per-sender rate limiting
+and dedupe by `seq` (NFR-S4). `firstSeen` is **per boss** (R28): a boss kept
+across heartbeats keeps its ts, an added boss is stamped, a dropped one loses
+its — adding a target never resets the fairness age on the others. Emits
+`HCBB_POOL_CHANGED`, consumed by Matcher scheduling and the Browser tab.
 
 `Presence[senderName] = {level, class, ver, profs, lastSeen}` — who is
 **online** (R25). Fed by `W` only, TTL 300 s, cap 200, same rate-limit/dedupe.
@@ -171,10 +181,25 @@ player is searching.
 4. Leader election per R11 (tank-lead > heal-lead > support-lead > random†
    DPS-lead > tank). †"random" is made deterministic by hashing the sorted
    member names, so all clients pick the same DPS leader.
+   **R28 electorate**: a match containing a multi-target listing is invisible
+   to pre-0.3.0 clients, and electing one of them would leave a match nobody
+   acts on. For such matches the election runs over the members whose
+   advertised version (`ver`, already on every HELLO) decodes target lists —
+   same R11 chain, default extended down the role order when the electorate
+   has no tank. All-scalar matches elect per pure R11, versions ignored, so
+   the rule evaporates once everyone has upgraded.
 5. **Only the elected leader's client acts** on the computed match. Others
    do nothing — they will receive a PROPOSE. This removes the need for
    global consensus: pools may diverge transiently; a stale PROPOSE just
    gets NACKed.
+6. **Multi-target search (R28)** is a thin pure layer above the same-boss
+   matcher: walk sizes largest-first, and within one size walk the player's
+   targeted bosses in ascending (= progression) order — so "largest group
+   wins, progression breaks ties" is the iteration order, not a scoring
+   function. In mixed-version pools the optimum can still fail to fire (an
+   old client's replica lacks the multi listings and may propose a smaller
+   group first); the ACK round-trip and the grace timers absorb this into
+   smaller-but-valid groups, never a dead end.
 
 ## 7. Session state machine (per client)
 

@@ -9,14 +9,17 @@ local Codec = require("HCBBDungeonFinder.Codec")
 
 describe("Codec.encode", function()
     it("round-trips HELLO", function()
-        local msg = { type = "H", seq = 42, bossId = 7, level = 33,
+        local msg = { type = "H", seq = 42, bossIds = { 7 }, level = 33,
                       roles = 9, minSize = 4, lead = 1, ver = "0.1.0" }
         local wire = Codec.encode(msg)
+        -- Single target must stay byte-identical to the pre-0.3.0 wire (R28):
+        -- this string IS the back-compat contract with 0.1.x/0.2.0 clients.
         assert.equal("HCBB1:H:42:7:33:9:4:1:0.1.0", wire)
         local back = Codec.decode(wire)
         assert.equal("H", back.type)
         assert.equal(42, back.seq)
-        assert.equal(7, back.bossId)
+        assert.equal(1, #back.bossIds)
+        assert.equal(7, back.bossIds[1])
         assert.equal(33, back.level)
         assert.equal(9, back.roles)
         assert.equal(4, back.minSize)
@@ -24,8 +27,35 @@ describe("Codec.encode", function()
         assert.equal("0.1.0", back.ver)
     end)
 
+    it("round-trips a multi-target HELLO (R28)", function()
+        local wire = Codec.encode({ type = "H", seq = 5, bossIds = { 5, 6, 7 },
+                      level = 30, roles = 9, minSize = 4, lead = 1, ver = "0.3.0" })
+        assert.equal("HCBB1:H:5:5,6,7:30:9:4:1:0.3.0", wire)
+        local back = Codec.decode(wire)
+        assert.equal(3, #back.bossIds)
+        assert.equal(5, back.bossIds[1])
+        assert.equal(7, back.bossIds[3])
+    end)
+
+    it("rejects non-canonical or oversized target lists (R28)", function()
+        local function h(ids)
+            return Codec.encode({ type = "H", seq = 1, bossIds = ids, level = 30,
+                                  roles = 9, minSize = 4, lead = 1, ver = "0.3.0" })
+        end
+        assert.falsy(h({ 7, 6 }))                      -- descending
+        assert.falsy(h({ 6, 6 }))                      -- duplicate
+        assert.falsy(h({}))                            -- empty
+        assert.falsy(h({ 1, 2, 3, 4, 5, 6, 7, 8, 9 })) -- > MAX_TARGETS
+        assert.falsy(h(7))                             -- scalar (old field name)
+        assert.falsy(Codec.decode("HCBB1:H:1:7,6:30:9:4:1:0.3.0"))   -- descending
+        assert.falsy(Codec.decode("HCBB1:H:1:6,6:30:9:4:1:0.3.0"))   -- duplicate
+        assert.falsy(Codec.decode("HCBB1:H:1:6,:30:9:4:1:0.3.0"))    -- trailing comma
+        assert.falsy(Codec.decode("HCBB1:H:1:,6:30:9:4:1:0.3.0"))    -- leading comma
+        assert.falsy(Codec.decode("HCBB1:H:1:6,x:30:9:4:1:0.3.0"))   -- junk id
+    end)
+
     it("round-trips HELLO with optional class", function()
-        local wire = Codec.encode({ type = "H", seq = 1, bossId = 7, level = 33,
+        local wire = Codec.encode({ type = "H", seq = 1, bossIds = { 7 }, level = 33,
                       roles = 9, minSize = 4, lead = 1, ver = "0.1.0", class = "sa" })
         assert.equal("HCBB1:H:1:7:33:9:4:1:0.1.0:sa", wire)
         assert.equal("sa", Codec.decode(wire).class)
@@ -37,7 +67,7 @@ describe("Codec.encode", function()
 
     it("rejects a malformed class field", function()
         assert.falsy(Codec.decode("HCBB1:H:1:7:33:9:4:1:0.1.0:XX"))
-        assert.falsy(Codec.encode({ type = "H", seq = 1, bossId = 1, level = 20,
+        assert.falsy(Codec.encode({ type = "H", seq = 1, bossIds = { 1 }, level = 20,
                       roles = 1, minSize = 3, lead = 0, ver = "0.1.0", class = "toolong" }))
     end)
 
@@ -144,11 +174,11 @@ describe("Codec.encode", function()
     end)
 
     it("rejects invalid fields", function()
-        assert.falsy(Codec.encode({ type = "H", seq = -1, bossId = 1, level = 20,
+        assert.falsy(Codec.encode({ type = "H", seq = -1, bossIds = { 1 }, level = 20,
                                     roles = 1, minSize = 3, lead = 0, ver = "0.1.0" }))
-        assert.falsy(Codec.encode({ type = "H", seq = 1, bossId = 1, level = 20,
+        assert.falsy(Codec.encode({ type = "H", seq = 1, bossIds = { 1 }, level = 20,
                                     roles = 16, minSize = 3, lead = 0, ver = "0.1.0" }))
-        assert.falsy(Codec.encode({ type = "H", seq = 1, bossId = 1, level = 20,
+        assert.falsy(Codec.encode({ type = "H", seq = 1, bossIds = { 1 }, level = 20,
                                     roles = 1, minSize = 6, lead = 0, ver = "0.1.0" }))
         assert.falsy(Codec.encode({ type = "N", matchId = "X-1", reason = "nope" }))
         assert.falsy(Codec.encode({ type = "Z" }))

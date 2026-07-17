@@ -35,6 +35,12 @@ Data.CONST = {
                                    -- doesn't make every client ping in lockstep
     PRESENCE_EXPIRY  = 300,        -- s without a ping before we treat as offline
     PRESENCE_CAP     = 200,        -- max presence entries kept (NFR-P6)
+    -- Multi-target registration (R28). MAX_TARGETS mirrors Codec's local
+    -- MAX_TARGETS (Codec is pure and cannot read this table — keep in sync).
+    -- MULTI_TARGET_VER = first release whose decoder accepts target lists;
+    -- drives the election electorate (a multi listing is invisible below it).
+    MAX_TARGETS      = 8,
+    MULTI_TARGET_VER = "0.3.0",
 }
 
 -- Community links surfaced in the Options tab. Ascension has no in-game
@@ -42,6 +48,9 @@ Data.CONST = {
 -- copyable edit box (UI.CopyPopup) rather than opening them.
 Data.LINKS = {
     discord = "https://discord.gg/AHpHCd65eQ",
+    -- Direct zip: pasting it in a browser starts the download at once —
+    -- always the latest build (the repo bundle is refreshed on every push).
+    download = "https://github.com/jejex-007/hcbb-dungeon-finder/raw/main/download/HCBBDungeonFinder-latest.zip",
 }
 
 -- The two primary professions, shown in the Who's Playing tab (R25). Keyed by

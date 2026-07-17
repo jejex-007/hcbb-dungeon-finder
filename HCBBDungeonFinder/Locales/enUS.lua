@@ -29,8 +29,11 @@ NS.locales.enUS = {
     PROF_sk = "Skinning",
     PROF_ta = "Tailoring",
 
-    BOSS_LABEL = "Target boss",
+    BOSS_LABEL = "Target bosses",
     BOSS_REQ = "Requires level %d–%d — you are %d",
+    BOSS_PICK_HINT = "Click: add / remove this target",
+    TARGETS_MORE = " +%d",
+    MSG_OUTLEVELED = "You've outgrown every selected boss — search cancelled.",
     BOSS_CLEARED = "Cleared",
     BOSS_CLEARED_LEVEL = "Defeated — required to pass this level",
     BOSS_TOGGLE_HINT = "Shift-click: toggle cleared",
@@ -100,7 +103,8 @@ NS.locales.enUS = {
     ST_SEARCH_FULL = "Searching — %s · %d in your bracket",
 
     ST_NOT_ENROLLED = "This character is not enrolled in the Hardcore Boss Blitz challenge",
-    ST_UPDATE = "Update available \226\128\148 please update the addon",
+    UPDATE_BANNER = "New version available \226\128\148 click here for the download link",
+    UPDATE_POPUP = "Download the latest version, unzip it into Interface\\AddOns, then FULLY RESTART the game (a /reload is not enough). Copy the link (Ctrl+C):",
     NOT_ENROLLED_HINT = "Only enrolled challengers can search. Speak to the Trial Master in your starting zone (level 1) to join the Boss Blitz.",
     ALREADY_GROUPED_HINT = "You're already in a group — leave it to search for a new one.",
     NO_BOSS_NEXT = "No Blitz boss at level %d — the next one opens at level %d.",

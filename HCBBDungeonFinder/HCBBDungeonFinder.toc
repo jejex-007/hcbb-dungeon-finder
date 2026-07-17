@@ -2,7 +2,7 @@
 ## Title: HCBB Dungeon Finder
 ## Notes: Decentralized group finder for the Hardcore Boss Blitz challenge.
 ## Author: KySeEtH
-## Version: 0.2.0
+## Version: 0.3.0
 ## LoadOnDemand: 1
 ## SavedVariables: HCBB_DB
 ## X-Website: https://github.com/jejex-007/hcbb-dungeon-finder

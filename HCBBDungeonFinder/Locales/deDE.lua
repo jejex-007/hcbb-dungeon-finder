@@ -26,7 +26,10 @@ NS.locales.deDE = {
     PROF_sk = "Kürschnerei",
     PROF_ta = "Schneiderei",
 
-    BOSS_LABEL = "Zielboss",
+    BOSS_LABEL = "Zielbosse",
+    BOSS_PICK_HINT = "Klick: dieses Ziel hinzufügen / entfernen",
+    TARGETS_MORE = " +%d",
+    MSG_OUTLEVELED = "Ihr habt jeden gewählten Boss überholt — Suche abgebrochen.",
     BOSS_REQ = "Erfordert Stufe %d–%d — Ihr seid %d",
     BOSS_CLEARED = "Besiegt",
     BOSS_CLEARED_LEVEL = "Besiegt — nötig, um diese Stufe zu überschreiten",
@@ -98,7 +101,8 @@ NS.locales.deDE = {
     ST_SEARCH_FULL = "Suche — %s · %d in eurem Bereich",
 
     ST_NOT_ENROLLED = "Dieser Charakter ist nicht für die Hardcore-Boss-Blitz-Herausforderung angemeldet",
-    ST_UPDATE = "Update verfügbar \226\128\148 bitte aktualisiere das Addon",
+    UPDATE_BANNER = "Neue Version verfügbar \226\128\148 hier klicken für den Download-Link",
+    UPDATE_POPUP = "Ladet die neueste Version herunter, entpackt sie nach Interface\\AddOns und STARTET DAS SPIEL KOMPLETT NEU (ein /reload genügt nicht). Link kopieren (Strg+C):",
     NOT_ENROLLED_HINT = "Nur angemeldete Teilnehmer können suchen. Sprecht mit dem Prüfungsmeister in eurem Startgebiet (Stufe 1), um dem Boss Blitz beizutreten.",
     ALREADY_GROUPED_HINT = "Ihr seid bereits in einer Gruppe — verlasst sie, um eine neue zu suchen.",
     NO_BOSS_NEXT = "Kein Blitz-Boss auf Stufe %d — der nächste öffnet auf Stufe %d.",

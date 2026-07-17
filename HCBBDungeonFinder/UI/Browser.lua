@@ -61,7 +61,11 @@ local function refreshList()
                     badge:Hide()
                 end
             end
-            row.boss:SetText(UI.BossText(e.bossId))
+            local bossTxt = UI.BossText(e.bossIds[1])
+            if #e.bossIds > 1 then
+                bossTxt = bossTxt .. L["TARGETS_MORE"]:format(#e.bossIds - 1)
+            end
+            row.boss:SetText(bossTxt)
             row.min:SetText(e.minSize .. "+")
             row.crown[e.lead == 1 and "Show" or "Hide"](row.crown)
             row:SetBackdropColor(own and 0.20 or 0.13, own and 0.16 or 0.10,
@@ -119,10 +123,13 @@ local function showUnitMenu(entry)
     else
         items[#items + 1] = { text = L["BROWSER_SUGGEST"], notCheckable = true,
             func = function()
-                local boss = NS.Data.BOSSES[entry.bossId].boss
+                -- Multi-target listing: suggest for their top-priority boss
+                -- (first in progression order, R28) — S stays single-boss.
+                local topId = entry.bossIds[1]
+                local boss = NS.Data.BOSSES[topId].boss
                 -- Addon message → the leader's client pops a clickable Invite
                 -- prompt (the server rejects clickable player links in chat).
-                NS.Comm:SendGroup({ type = "S", target = name, bossId = entry.bossId })
+                NS.Comm:SendGroup({ type = "S", target = name, bossId = topId })
                 -- Plain chat fallback so a leader without the addon still sees it.
                 local chan = GetNumRaidMembers() > 0 and "RAID" or "PARTY"
                 SendChatMessage(L["SUGGEST_MSG"]:format(name, boss), chan)
@@ -218,7 +225,10 @@ function UI.CreateBrowser(parent)
                     classColor and classColor[2] or 0.8,
                     classColor and classColor[3] or 0.8)
             end
-            GameTooltip:AddLine(UI.BossText(e.bossId), unpack(UI.COLOR.gold))
+            -- One line per targeted boss (R28) — the row only shows "+N".
+            for k = 1, #e.bossIds do
+                GameTooltip:AddLine(UI.BossText(e.bossIds[k]), unpack(UI.COLOR.gold))
+            end
             local roleNames = {}
             for _, role in ipairs(NS.Data.ROLE_ORDER) do
                 if math.floor(e.roles / role) % 2 == 1 then
