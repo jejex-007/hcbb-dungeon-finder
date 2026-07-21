@@ -1,5 +1,11 @@
 # HCBB Dungeon Finder — Business Rules
 
+> **Legacy — being absorbed into `openspec/specs/`.** Rules stay canonical
+> here until their capability gets a spec under `openspec/specs/`; once it
+> does, that spec wins over this file for that rule (see the project
+> `CLAUDE.md`). Migration is progressive, one archived change at a time —
+> never a big-bang rewrite.
+
 Canonical functional rules. If the code contradicts this file, the code is
 wrong. Rule IDs (R1, R2…) are stable — never renumber, only append.
 

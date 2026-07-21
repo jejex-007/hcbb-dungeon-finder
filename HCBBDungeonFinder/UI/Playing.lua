@@ -14,8 +14,8 @@ local rows, sorted = {}, {}
 
 local function freshColor(age)
     local C = NS.Data.CONST
-    if age < C.PRESENCE_PING then return UI.COLOR.green end
-    if age < C.PRESENCE_PING * 2 then return UI.COLOR.yellow end
+    if age < C.PRESENCE_FRESH_GREEN then return UI.COLOR.green end
+    if age < C.PRESENCE_FRESH_YELLOW then return UI.COLOR.yellow end
     return UI.COLOR.red
 end
 

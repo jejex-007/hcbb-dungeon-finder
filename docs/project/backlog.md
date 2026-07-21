@@ -160,6 +160,11 @@ announcement (forums + community Discords). Reports land in `#bug-report`.
   whose unlock level you've reached is auto-ticked and can't be un-ticked
   (killing it was required to level past it); tooltip explains instead of
   offering the toggle. Validated in-game on a level-29 character.
+- [x] **Who's Playing freshness thresholds decoupled from `PRESENCE_PING`** (S)
+  — 2026-07-21, via the project's first OpenSpec cycle (onboarding). Mirrors
+  the earlier Who's Looking fix; zero behaviour change. See
+  `openspec/changes/archive/2026-07-21-presence-freshness-thresholds/` and
+  the new `presence-freshness` spec.
 
 ## M8 — Multi-dungeon selection — done 2026-07-17 (est. L–XL, actual ~2.5h)
 

@@ -1,5 +1,11 @@
 # HCBB Dungeon Finder — Non-Functional Requirements
 
+> **Legacy — being absorbed into `openspec/specs/`.** Rules stay canonical
+> here until their capability gets a spec under `openspec/specs/`; once it
+> does, that spec wins over this file for that rule (see the project
+> `CLAUDE.md`). Migration is progressive, one archived change at a time —
+> never a big-bang rewrite.
+
 Canonical technical rules. They condition HOW we implement the business
 rules. IDs are stable — never renumber, only append.
 Environment ground truth: `docs/design/ascension-addon-environment.md`.

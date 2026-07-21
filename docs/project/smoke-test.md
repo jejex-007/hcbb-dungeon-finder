@@ -88,6 +88,10 @@ every release. Record here what was actually observed, and when.
 - [ ] Enter combat → window auto-closes; reopen with `/hcbb`, search intact.
 
 ## Who's Playing (R25)
+> Freshness dots read dedicated `PRESENCE_FRESH_GREEN`/`PRESENCE_FRESH_YELLOW`
+> constants (`presence-freshness` spec), no longer derived from
+> `PRESENCE_PING`. Values are unchanged (120 s / 240 s), so every checkbox
+> below should behave exactly as before.
 - [ ] Tab lists **yourself** within ~1 min of login (your own ping loops back
   through the channel), with class colour, level, class and professions+rank.
 - [ ] Professions match your skill sheet: **only the two primaries** — not

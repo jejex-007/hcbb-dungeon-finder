@@ -8,6 +8,11 @@ group finder for the Hardcore Boss Blitz challenge. **Public GitHub repo.**
 - `docs/user-guide/non-functional-requirements.md` (NFR-*) — technical truth.
 - `docs/design/architecture.md` — module & protocol design.
 - `docs/design/ascension-addon-environment.md` — platform ground truth.
+- **OpenSpec conflict rule.** Once a capability has a spec under
+  `openspec/specs/`, that spec wins over the legacy BR/NFR docs above for
+  that capability. Absorption is progressive — each archived change moves
+  the rules it touches out of BR/NFR and into `openspec/specs/`, never a
+  big-bang migration.
 
 ## Stack & constraints
 - Lua 5.1, WoW 3.3.5a API only (`## Interface: 30300`). No retail API.

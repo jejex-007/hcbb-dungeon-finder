@@ -1,5 +1,14 @@
 # Changelog — HCBB Dungeon Finder
 
+## 2026-07-21 — OpenSpec adopted; first change archived
+
+- OpenSpec enabled: legacy header on `business-rules.md` /
+  `non-functional-requirements.md`, conflict rule added to `CLAUDE.md`
+  (a capability's `openspec/specs/` entry wins over the legacy doc once
+  it exists).
+- First full cycle (via `/opsx:onboard`), archived at
+  `openspec/changes/archive/2026-07-21-presence-freshness-thresholds/`.
+
 ## 2026-07-17 — Multi-dungeon registration (R28) + update banner, v0.3.0
 
 The most-requested feature, designed under `design ON` against BR/NFR before

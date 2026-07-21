@@ -35,6 +35,11 @@ Data.CONST = {
                                    -- doesn't make every client ping in lockstep
     PRESENCE_EXPIRY  = 300,        -- s without a ping before we treat as offline
     PRESENCE_CAP     = 200,        -- max presence entries kept (NFR-P6)
+    -- Display bands (presence-freshness spec), decoupled from PRESENCE_PING so
+    -- retuning the emission interval never repaints a peer's dot.
+    -- Invariant: PRESENCE_FRESH_GREEN >= PRESENCE_PING.
+    PRESENCE_FRESH_GREEN  = 120,   -- s age below which the dot is green
+    PRESENCE_FRESH_YELLOW = 240,   -- s age below which the dot is yellow (red after)
     -- Multi-target registration (R28). MAX_TARGETS mirrors Codec's local
     -- MAX_TARGETS (Codec is pure and cannot read this table — keep in sync).
     -- MULTI_TARGET_VER = first release whose decoder accepts target lists;
